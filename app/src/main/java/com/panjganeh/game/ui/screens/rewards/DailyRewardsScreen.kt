@@ -1,8 +1,8 @@
 package com.panjganeh.game.ui.screens.rewards
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,13 +25,14 @@ import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MonetizationOn
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
@@ -65,9 +67,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun DailyRewardsScreen(
     userRepository: UserRepository,
+    tapsellManager: TapsellManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val scope = rememberCoroutineScope()
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
@@ -113,7 +117,7 @@ fun DailyRewardsScreen(
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(text = "تقویم ۷ روزه جوایز", color = GoldLight, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                        Text(text = "هر روز با ورود به بازی، پاداش‌های ارزشمند رایگان دریافت کنید!", color = TextSecondary, fontSize = 12.sp)
+                        Text(text = "هر روز با تماشای ویدیو، پاداش رایگان دریافت کنید!", color = TextSecondary, fontSize = 12.sp)
                     }
                 }
             }
@@ -128,12 +132,35 @@ fun DailyRewardsScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(rewards, key = { it.day }) { reward ->
+                    // چک کن این روز قابل دریافت هست یا نه
+                    // روز جاری = اولین روزی که isClaimed == false هست
+                    val firstUnclaimedDay = rewards.filter { !it.isClaimed }.minOfOrNull { it.day } ?: 8
+                    val isCurrentDay = reward.day == firstUnclaimedDay
+                    val isLocked = !reward.isClaimed && !isCurrentDay
+
                     RewardCard(
                         reward = reward,
+                        isLocked = isLocked,
                         onClaimClick = {
-                            scope.launch {
-                                userRepository.claimDailyReward(reward.day)
-                                Toast.makeText(context, "پاداش روز ${reward.day} دریافت شد!", Toast.LENGTH_SHORT).show()
+                            if (activity != null) {
+                                // اول تبلیغ، بعد جایزه
+                                tapsellManager.showRewardedVideo(
+                                    activity = activity,
+                                    rewardCoins = 0, // جایزه اصلی از claimDailyReward میاد
+                                    onRewarded = {
+                                        scope.launch {
+                                            userRepository.claimDailyReward(reward.day)
+                                            Toast.makeText(
+                                                context,
+                                                "پاداش روز ${reward.day} دریافت شد!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    onError = { error ->
+                                        Toast.makeText(context, "خطا در نمایش تبلیغ: $error", Toast.LENGTH_SHORT).show()
+                                    }
+                                )
                             }
                         }
                     )
@@ -146,6 +173,7 @@ fun DailyRewardsScreen(
 @Composable
 fun RewardCard(
     reward: RewardItemEntity,
+    isLocked: Boolean,
     onClaimClick: () -> Unit
 ) {
     val isDay7 = reward.day == 7
@@ -165,17 +193,28 @@ fun RewardCard(
             .fillMaxWidth()
             .testTag("reward_day_${reward.day}"),
         shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isLocked) ArenaSurface.copy(alpha = 0.5f) else ArenaSurface
+        ),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = if (reward.isClaimed) androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder.copy(alpha = 0.5f))
-            else androidx.compose.ui.graphics.SolidColor(if (isDay7) GoldPrimary else ArenaSurfaceBorder)
+            brush = if (reward.isClaimed)
+                androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder.copy(alpha = 0.5f))
+            else if (isLocked)
+                androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder.copy(alpha = 0.3f))
+            else
+                androidx.compose.ui.graphics.SolidColor(if (isDay7) GoldPrimary else ArenaSurfaceBorder)
         )
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "روز ${reward.day}", color = if (isDay7) GoldLight else TextSecondary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+            Text(
+                text = "روز ${reward.day}",
+                color = if (isLocked) TextMuted else (if (isDay7) GoldLight else TextSecondary),
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -183,10 +222,18 @@ fun RewardCard(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .background(iconColor.copy(alpha = 0.15f)),
+                    .background(
+                        if (isLocked) TextMuted.copy(alpha = 0.1f)
+                        else iconColor.copy(alpha = 0.15f)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(24.dp))
+                Icon(
+                    imageVector = if (isLocked) Icons.Default.Lock else icon,
+                    contentDescription = null,
+                    tint = if (isLocked) TextMuted else iconColor,
+                    modifier = Modifier.size(24.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -196,24 +243,41 @@ fun RewardCard(
                 "TICKETS" -> "${reward.amount} بلیط"
                 else -> "آواتار اختصاصی"
             }
-            Text(text = rewardTitle, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+            Text(
+                text = rewardTitle,
+                color = if (isLocked) TextMuted else TextPrimary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if (reward.isClaimed) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = EmeraldTertiary, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "دریافت شده", color = EmeraldTertiary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+            when {
+                reward.isClaimed -> {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.Check, contentDescription = null, tint = EmeraldTertiary, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "دریافت شده", color = EmeraldTertiary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
-            } else {
-                Button(
-                    onClick = onClaimClick,
-                    modifier = Modifier.fillMaxWidth().height(36.dp).testTag("claim_btn_${reward.day}"),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                ) {
-                    Text(text = "دریافت", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                isLocked -> {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = Icons.Default.Lock, contentDescription = null, tint = TextMuted, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "قفل", color = TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    }
+                }
+                else -> {
+                    Button(
+                        onClick = onClaimClick,
+                        modifier = Modifier.fillMaxWidth().height(36.dp).testTag("claim_btn_${reward.day}"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
+                    ) {
+                        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "تماشا و دریافت", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
