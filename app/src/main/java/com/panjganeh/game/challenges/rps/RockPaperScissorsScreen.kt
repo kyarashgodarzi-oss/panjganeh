@@ -1,9 +1,6 @@
 package com.panjganeh.game.challenges.rps
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,31 +22,31 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
-import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
@@ -60,13 +57,36 @@ import com.panjganeh.game.ui.theme.TextSecondary
 @Composable
 fun RockPaperScissorsScreen(
     viewModel: RockPaperScissorsViewModel,
+    tapsellManager: TapsellManager,
     difficulty: String,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
+    var showResultDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(difficulty) {
         viewModel.startGame(difficulty)
+    }
+
+    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
+    LaunchedEffect(state.isGameOver) {
+        if (state.isGameOver) {
+            if (activity != null) {
+                tapsellManager.onBattleFinished(
+                    activity = activity,
+                    isWin = state.isWin,
+                    onFinished = { showResultDialog = true }
+                )
+            } else {
+                showResultDialog = true
+            }
+        } else {
+            showResultDialog = false
+        }
     }
 
     Scaffold(
@@ -137,7 +157,9 @@ fun RockPaperScissorsScreen(
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder))
+                border = CardDefaults.outlinedCardBorder().copy(
+                    brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -163,7 +185,6 @@ fun RockPaperScissorsScreen(
                             )
                         }
                     } else {
-                        // رویارویی دست شما و AI
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly,
@@ -183,7 +204,12 @@ fun RockPaperScissorsScreen(
                                 ) {
                                     Text(text = state.userChoice?.emoji ?: "❓", fontSize = 40.sp)
                                 }
-                                Text(text = state.userChoice?.titleFa ?: "-", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                                Text(
+                                    text = state.userChoice?.titleFa ?: "-",
+                                    color = TextSecondary,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
                             }
 
                             Text(text = "⚔️", fontSize = 28.sp)
@@ -200,9 +226,17 @@ fun RockPaperScissorsScreen(
                                         .border(2.dp, SkySecondary, CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = if (state.isRevealed) (state.aiChoice?.emoji ?: "❓") else "🤖", fontSize = 40.sp)
+                                    Text(
+                                        text = if (state.isRevealed) (state.aiChoice?.emoji ?: "❓") else "🤖",
+                                        fontSize = 40.sp
+                                    )
                                 }
-                                Text(text = if (state.isRevealed) (state.aiChoice?.titleFa ?: "-") else "...", color = TextSecondary, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
+                                Text(
+                                    text = if (state.isRevealed) (state.aiChoice?.titleFa ?: "-") else "...",
+                                    color = TextSecondary,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
                             }
                         }
                     }
@@ -229,7 +263,7 @@ fun RockPaperScissorsScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // گزینه‌های ۳ گانه سنگ، کاغذ، قیچی برای کاربر
+                    // گزینه‌های ۳ گانه
                     Text(
                         text = "دست خود را انتخاب کنید:",
                         color = TextMuted,
@@ -281,7 +315,7 @@ fun RockPaperScissorsScreen(
             }
         }
 
-        if (state.isGameOver) {
+        if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
                 userScore = state.userWins,
