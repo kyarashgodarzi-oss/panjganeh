@@ -53,6 +53,7 @@ fun ArenaNavGraph(
     val gameRepo = app.gameRepository
     val billingManager = app.billingManager
     val tapsellManager = app.tapsellManager
+    val settingsDataStore = app.settingsDataStore
 
     val settings by gameRepo.settings.collectAsStateWithLifecycle(initialValue = null)
     val aiDifficulty = settings?.aiDifficulty ?: "متوسط"
@@ -77,6 +78,7 @@ fun ArenaNavGraph(
                 userRepository = userRepo,
                 gameRepository = gameRepo,
                 tapsellManager = tapsellManager,
+                settingsDataStore = settingsDataStore,
                 onStartChallenge = { challengeId ->
                     val destination = when (challengeId) {
                         "word" -> ArenaDestinations.BATTLE_WORD
@@ -108,6 +110,7 @@ fun ArenaNavGraph(
         composable(ArenaDestinations.REWARDS) {
             DailyRewardsScreen(
                 userRepository = userRepo,
+                tapsellManager = tapsellManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -115,6 +118,7 @@ fun ArenaNavGraph(
         composable(ArenaDestinations.LEADERBOARD) {
             LeaderboardScreen(
                 userRepository = userRepo,
+                tapsellManager = tapsellManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -123,6 +127,7 @@ fun ArenaNavGraph(
             ProfileScreen(
                 userRepository = userRepo,
                 gameRepository = gameRepo,
+                tapsellManager = tapsellManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
