@@ -1,7 +1,6 @@
 package com.panjganeh.game.ui.screens.home
 
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +25,7 @@ import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.OndemandVideo
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
@@ -60,10 +60,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.CardJoyfulGradient
 import com.panjganeh.game.ui.theme.CreatorCardBorderGradient
 import com.panjganeh.game.ui.theme.DiceChallengeColor
@@ -87,6 +89,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
+    tapsellManager: TapsellManager,
     onStartChallenge: (challengeId: String) -> Unit,
     onNavigateToShop: () -> Unit,
     onNavigateToRewards: () -> Unit,
@@ -120,7 +123,6 @@ fun HomeScreen(
             )
         },
         bottomBar = {
-            // نوار منوی رنگی و شاداب پایین صفحه
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -129,47 +131,47 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                    HomeNavButton(
-                        title = if (currentLang == "en") "Shop" else "فروشگاه",
-                        icon = Icons.Default.ShoppingCart,
-                        tint = WarmYellow,
-                        fontScale = fontScale,
-                        onClick = onNavigateToShop,
-                        tag = "nav_shop"
-                    )
-                    HomeNavButton(
-                        title = if (currentLang == "en") "Rewards" else "جوایز",
-                        icon = Icons.Default.CardGiftcard,
-                        tint = PinkTertiary,
-                        fontScale = fontScale,
-                        onClick = onNavigateToRewards,
-                        tag = "nav_rewards"
-                    )
-                    HomeNavButton(
-                        title = if (currentLang == "en") "Leaderboard" else "برترین‌ها",
-                        icon = Icons.Default.EmojiEvents,
-                        tint = TurquoiseSecondary,
-                        fontScale = fontScale,
-                        onClick = onNavigateToLeaderboard,
-                        tag = "nav_leaderboard"
-                    )
-                    HomeNavButton(
-                        title = if (currentLang == "en") "Profile" else "پروفایل",
-                        icon = Icons.Default.Person,
-                        tint = PurplePrimary,
-                        fontScale = fontScale,
-                        onClick = onNavigateToProfile,
-                        tag = "nav_profile"
-                    )
-                    HomeNavButton(
-                        title = if (currentLang == "en") "Settings" else "تنظیمات",
-                        icon = Icons.Default.Settings,
-                        tint = SkyBlue,
-                        fontScale = fontScale,
-                        onClick = onNavigateToSettings,
-                        tag = "nav_settings"
-                    )
-                }
+                HomeNavButton(
+                    title = if (currentLang == "en") "Shop" else "فروشگاه",
+                    icon = Icons.Default.ShoppingCart,
+                    tint = WarmYellow,
+                    fontScale = fontScale,
+                    onClick = onNavigateToShop,
+                    tag = "nav_shop"
+                )
+                HomeNavButton(
+                    title = if (currentLang == "en") "Rewards" else "جوایز",
+                    icon = Icons.Default.CardGiftcard,
+                    tint = PinkTertiary,
+                    fontScale = fontScale,
+                    onClick = onNavigateToRewards,
+                    tag = "nav_rewards"
+                )
+                HomeNavButton(
+                    title = if (currentLang == "en") "Leaderboard" else "برترین‌ها",
+                    icon = Icons.Default.EmojiEvents,
+                    tint = TurquoiseSecondary,
+                    fontScale = fontScale,
+                    onClick = onNavigateToLeaderboard,
+                    tag = "nav_leaderboard"
+                )
+                HomeNavButton(
+                    title = if (currentLang == "en") "Profile" else "پروفایل",
+                    icon = Icons.Default.Person,
+                    tint = PurplePrimary,
+                    fontScale = fontScale,
+                    onClick = onNavigateToProfile,
+                    tag = "nav_profile"
+                )
+                HomeNavButton(
+                    title = if (currentLang == "en") "Settings" else "تنظیمات",
+                    icon = Icons.Default.Settings,
+                    tint = SkyBlue,
+                    fontScale = fontScale,
+                    onClick = onNavigateToSettings,
+                    tag = "nav_settings"
+                )
+            }
         }
     ) { paddingValues ->
         LazyColumn(
@@ -179,7 +181,41 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // بنر ترویجی VIP پنجگانه
+            // ═══════════════════════════════════════════════════════════
+            // کارت تبلیغ جایزه‌دار تپسل (Rewarded Video)
+            // ═══════════════════════════════════════════════════════════
+            item {
+                if (!isVip) {
+                    RewardedAdCard(
+                        fontScale = fontScale,
+                        currentLang = currentLang,
+                        onWatchClick = {
+                            val activity = context as? android.app.Activity
+                            if (activity != null) {
+                                tapsellManager.showRewardedVideo(
+                                    activity = activity,
+                                    rewardCoins = 150,
+                                    onRewarded = { coins ->
+                                        scope.launch {
+                                            userRepository.addCoins(coins)
+                                            Toast.makeText(
+                                                context,
+                                                if (currentLang == "en") "+$coins coins added!" else "+$coins سکه به حساب شما اضافه شد!",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+                                    onError = { error ->
+                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
+            }
+
+            // بنر ترویجی VIP
             item {
                 if (!isVip) {
                     VipPromoBannerPanjganeh(fontScale = fontScale, onClick = onNavigateToShop)
@@ -196,7 +232,7 @@ fun HomeScreen(
                 )
             }
 
-            // تیتر بخش چالش‌های پنجگانه با شعار بازی
+            // تیتر چالش‌ها
             item {
                 Column(modifier = Modifier.padding(vertical = 4.dp)) {
                     Text(
@@ -213,7 +249,7 @@ fun HomeScreen(
                 }
             }
 
-            // لیست ۵ چالش با رنگ‌های شاد و اختصاصی
+            // لیست چالش‌ها
             items(challenges, key = { it.challengeId }) { challenge ->
                 ChallengeCardPanjganeh(
                     challenge = challenge,
@@ -241,8 +277,94 @@ fun HomeScreen(
                 )
             }
 
+            // ═══════════════════════════════════════════════════════════
+            // بنر تبلیغاتی استاندارد تپسل
+            // ═══════════════════════════════════════════════════════════
+            item {
+                if (!isVip) {
+                    TapsellBanner(tapsellManager = tapsellManager)
+                }
+            }
+
             item {
                 Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+/**
+ * کارت تبلیغ جایزه‌دار تپسل
+ */
+@Composable
+fun RewardedAdCard(
+    fontScale: Float,
+    currentLang: String,
+    onWatchClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("rewarded_ad_card"),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0x2610B981)),
+        border = CardDefaults.outlinedCardBorder().copy(
+            width = 1.5.dp,
+            brush = Brush.horizontalGradient(listOf(Color(0xFF10B981), Color(0xFF34D399)))
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(CircleShape)
+                        .background(Color(0x3310B981)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.OndemandVideo,
+                        contentDescription = null,
+                        tint = Color(0xFF10B981),
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = if (currentLang == "en") "Free Coins!" else "سکه طلا رایگان!",
+                        color = Color(0xFF10B981),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = (14 * fontScale).sp
+                    )
+                    Text(
+                        text = if (currentLang == "en") "Watch a video and get +150 coins" else "تماشای ویدیو و دریافت +۱۵۰ سکه",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = (11 * fontScale).sp
+                    )
+                }
+            }
+
+            Button(
+                onClick = onWatchClick,
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF10B981),
+                    contentColor = Color.Black
+                ),
+                modifier = Modifier.testTag("watch_ad_btn")
+            ) {
+                Text(
+                    text = if (currentLang == "en") "Watch" else "تماشا",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = (12 * fontScale).sp
+                )
             }
         }
     }
@@ -263,13 +385,12 @@ fun ChallengeCardPanjganeh(
         else -> Icons.Default.TextFields
     }
 
-    // رنگ‌های اختصاصی مشخص شده در الزامات پرامپت
     val accentColor = when (challenge.challengeId) {
-        "word" -> WordChallengeColor          // #6C5CE7 بنفش
-        "memory" -> MemoryChallengeColor      // #00D2D3 فیروزه‌ای
-        "dice" -> DiceChallengeColor          // #FDCB6E زرد
-        "rps" -> RpsChallengeColor            // #FD79A8 صورتی
-        else -> SentenceChallengeColor        // #74B9FF آبی
+        "word" -> WordChallengeColor
+        "memory" -> MemoryChallengeColor
+        "dice" -> DiceChallengeColor
+        "rps" -> RpsChallengeColor
+        else -> SentenceChallengeColor
     }
 
     Card(
@@ -302,7 +423,6 @@ fun ChallengeCardPanjganeh(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // آیکون رنگی نئونی چالش
                         Box(
                             modifier = Modifier
                                 .size(54.dp)
@@ -318,9 +438,7 @@ fun ChallengeCardPanjganeh(
                                 modifier = Modifier.size(30.dp)
                             )
                         }
-
                         Spacer(modifier = Modifier.width(14.dp))
-
                         Column {
                             Text(
                                 text = challenge.nameFa,
@@ -350,18 +468,14 @@ fun ChallengeCardPanjganeh(
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(10.dp))
-
                 Text(
                     text = challenge.descriptionFa,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = (12 * fontScale).sp,
                     lineHeight = (18 * fontScale).sp
                 )
-
                 Spacer(modifier = Modifier.height(16.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -382,7 +496,6 @@ fun ChallengeCardPanjganeh(
                             fontWeight = FontWeight.Medium
                         )
                     }
-
                     Button(
                         onClick = onPlayClick,
                         modifier = Modifier
