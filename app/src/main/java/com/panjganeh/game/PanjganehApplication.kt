@@ -13,8 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
- * کلاس اپلیکیشن اصلی بازی پنجگانه
- * مدیریت تزریق وابستگی‌های سراسری و رجیستری مخازن داده
+ * کلاس اپلیکیشن اصلی بازی پنج‌گانه
  */
 class PanjganehApplication : Application() {
 
@@ -40,14 +39,30 @@ class PanjganehApplication : Application() {
         super.onCreate()
         instance = this
 
+        // دیتابیس
         database = AppDatabase.getInstance(this)
+
+        // Repository ها
         userRepository = UserRepository(database)
         gameRepository = GameRepository(this, database)
+
+        // Billing (Poolakey)
         billingManager = BazaarBillingManager(this, userRepository)
-        tapsellManager = TapsellManager(this, userRepository)
+        billingManager.connect(
+            onConnected = { /* متصل شد */ },
+            onFailed = { /* خطا در اتصال */ }
+        )
+
+        // Tapsell
+        tapsellManager = TapsellManager(this)
+        tapsellManager.initialize { success ->
+            // مقداردهی اولیه انجام شد
+        }
+
+        // Settings DataStore
         settingsDataStore = AppSettingsDataStore(this)
 
-        // اطمینان از ساخت داده‌های اولیه به صورت ناهمگام
+        // داده‌های اولیه
         CoroutineScope(Dispatchers.IO).launch {
             initDefaults(database)
         }
