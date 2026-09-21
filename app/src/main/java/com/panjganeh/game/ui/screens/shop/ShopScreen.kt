@@ -4,7 +4,6 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +36,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,10 +62,10 @@ import com.panjganeh.game.ui.theme.GoldDark
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
-import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.VipGold
+import kotlinx.coroutines.launch
 
 @Composable
 fun ShopScreen(
@@ -76,6 +76,7 @@ fun ShopScreen(
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
+    val scope = rememberCoroutineScope()
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
@@ -96,7 +97,7 @@ fun ShopScreen(
             ArenaTopBar(
                 user = user,
                 vip = vip,
-                title = "فروشگاه آرنا",
+                title = "فروشگاه پنجگانه",
                 onBackClick = onNavigateBack
             )
         }
@@ -116,7 +117,10 @@ fun ShopScreen(
                         .testTag("rewarded_video_card"),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = EmeraldTertiary.copy(alpha = 0.15f)),
-                    border = CardDefaults.outlinedCardBorder().copy(width = 1.dp, brush = androidx.compose.ui.graphics.SolidColor(EmeraldTertiary))
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = androidx.compose.ui.graphics.SolidColor(EmeraldTertiary)
+                    )
                 ) {
                     Row(
                         modifier = Modifier
@@ -125,7 +129,7 @@ fun ShopScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                             Box(
                                 modifier = Modifier
                                     .size(44.dp)
@@ -133,7 +137,11 @@ fun ShopScreen(
                                     .background(EmeraldTertiary.copy(alpha = 0.3f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(imageVector = Icons.Default.OndemandVideo, contentDescription = null, tint = EmeraldTertiary)
+                                Icon(
+                                    imageVector = Icons.Default.OndemandVideo,
+                                    contentDescription = null,
+                                    tint = EmeraldTertiary
+                                )
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
@@ -145,9 +153,19 @@ fun ShopScreen(
                         Button(
                             onClick = {
                                 if (activity != null) {
-                                    tapsellManager.showRewardedVideo(activity) { rewardAmount ->
-                                        Toast.makeText(context, "+$rewardAmount سکه طلا دریافت کردید!", Toast.LENGTH_SHORT).show()
-                                    }
+                                    tapsellManager.showRewardedVideo(
+                                        activity = activity,
+                                        rewardCoins = 150,
+                                        onRewarded = { rewardAmount ->
+                                            scope.launch {
+                                                userRepository.addCoins(rewardAmount)
+                                                Toast.makeText(context, "+$rewardAmount سکه طلا دریافت کردید!", Toast.LENGTH_SHORT).show()
+                                            }
+                                        },
+                                        onError = { error ->
+                                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                        }
+                                    )
                                 }
                             },
                             shape = RoundedCornerShape(12.dp),
@@ -209,7 +227,8 @@ fun ProductCard(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = ArenaSurface),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = if (isVipProduct) Brush.horizontalGradient(listOf(VipGold, GoldDark)) else Brush.horizontalGradient(listOf(ArenaSurfaceBorder, ArenaSurfaceBorder))
+            brush = if (isVipProduct) Brush.horizontalGradient(listOf(VipGold, GoldDark))
+            else Brush.horizontalGradient(listOf(ArenaSurfaceBorder, ArenaSurfaceBorder))
         )
     ) {
         Row(
