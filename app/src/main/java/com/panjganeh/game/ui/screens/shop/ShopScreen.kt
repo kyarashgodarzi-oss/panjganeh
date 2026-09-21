@@ -2,6 +2,8 @@ package com.panjganeh.game.ui.screens.shop
 
 import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -81,6 +83,13 @@ fun ShopScreen(
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
 
+    // Launcher برای دریافت نتیجه خرید کافه‌بازار
+    val purchaseLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        billingManager.handleActivityResult(result)
+    }
+
     LaunchedEffect(Unit) {
         billingManager.purchaseEvents.collect { event ->
             when (event) {
@@ -145,8 +154,17 @@ fun ShopScreen(
                             }
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text(text = "سکه طلا رایگان!", color = EmeraldTertiary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(text = "تماشای ویدیوی تبلیغاتی تپسل (+۱۵۰ سکه)", color = TextSecondary, fontSize = 11.sp)
+                                Text(
+                                    text = "سکه طلا رایگان!",
+                                    color = EmeraldTertiary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = "تماشای ویدیوی تبلیغاتی تپسل (+۱۵۰ سکه)",
+                                    color = TextSecondary,
+                                    fontSize = 11.sp
+                                )
                             }
                         }
 
@@ -159,7 +177,11 @@ fun ShopScreen(
                                         onRewarded = { rewardAmount ->
                                             scope.launch {
                                                 userRepository.addCoins(rewardAmount)
-                                                Toast.makeText(context, "+$rewardAmount سکه طلا دریافت کردید!", Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "+$rewardAmount سکه طلا دریافت کردید!",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         },
                                         onError = { error ->
@@ -169,7 +191,10 @@ fun ShopScreen(
                                 }
                             },
                             shape = RoundedCornerShape(12.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldTertiary, contentColor = Color.Black),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = EmeraldTertiary,
+                                contentColor = Color.Black
+                            ),
                             modifier = Modifier.testTag("watch_ad_button")
                         ) {
                             Text(text = "تماشا", fontWeight = FontWeight.Bold)
@@ -193,9 +218,10 @@ fun ShopScreen(
                 ProductCard(
                     product = product,
                     onBuyClick = {
-                        if (activity != null) {
-                            billingManager.purchaseProduct(activity, product.sku)
-                        }
+                        billingManager.launchPurchaseFlow(
+                            activityLauncher = purchaseLauncher,
+                            productId = product.sku
+                        )
                     }
                 )
             }
@@ -227,8 +253,10 @@ fun ProductCard(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = ArenaSurface),
         border = CardDefaults.outlinedCardBorder().copy(
-            brush = if (isVipProduct) Brush.horizontalGradient(listOf(VipGold, GoldDark))
-            else Brush.horizontalGradient(listOf(ArenaSurfaceBorder, ArenaSurfaceBorder))
+            brush = if (isVipProduct)
+                Brush.horizontalGradient(listOf(VipGold, GoldDark))
+            else
+                Brush.horizontalGradient(listOf(ArenaSurfaceBorder, ArenaSurfaceBorder))
         )
     ) {
         Row(
@@ -247,12 +275,22 @@ fun ProductCard(
                         .border(1.5.dp, iconColor, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(imageVector = iconVector, contentDescription = null, tint = iconColor, modifier = Modifier.size(26.dp))
+                    Icon(
+                        imageVector = iconVector,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(26.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = product.titleFa, color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(
+                            text = product.titleFa,
+                            color = TextPrimary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
                         if (product.badgeFa != null) {
                             Spacer(modifier = Modifier.width(6.dp))
                             Box(
@@ -261,11 +299,21 @@ fun ProductCard(
                                     .background(GoldPrimary)
                                     .padding(horizontal = 6.dp, vertical = 2.dp)
                             ) {
-                                Text(text = product.badgeFa, color = Color.Black, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = product.badgeFa,
+                                    color = Color.Black,
+                                    fontSize = 9.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
-                    Text(text = product.descriptionFa, color = TextSecondary, fontSize = 11.sp, modifier = Modifier.padding(top = 2.dp))
+                    Text(
+                        text = product.descriptionFa,
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
                 }
             }
 
@@ -280,7 +328,11 @@ fun ProductCard(
                 ),
                 modifier = Modifier.testTag("buy_btn_${product.sku}")
             ) {
-                Text(text = product.priceFormatted, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                Text(
+                    text = product.priceFormatted,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp
+                )
             }
         }
     }
