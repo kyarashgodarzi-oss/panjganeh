@@ -1,6 +1,6 @@
 package com.panjganeh.game.challenges.sentence
 
-import androidx.compose.animation.AnimatedVisibility
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -29,23 +28,26 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -63,13 +65,36 @@ import com.panjganeh.game.ui.theme.TextSecondary
 @Composable
 fun SentenceBuilderScreen(
     viewModel: SentenceBuilderViewModel,
+    tapsellManager: TapsellManager,
     difficulty: String,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
+    var showResultDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(difficulty) {
         viewModel.startGame(difficulty)
+    }
+
+    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
+    LaunchedEffect(state.isGameOver) {
+        if (state.isGameOver) {
+            if (activity != null) {
+                tapsellManager.onBattleFinished(
+                    activity = activity,
+                    isWin = state.isWin,
+                    onFinished = { showResultDialog = true }
+                )
+            } else {
+                showResultDialog = true
+            }
+        } else {
+            showResultDialog = false
+        }
     }
 
     Scaffold(
@@ -91,7 +116,7 @@ fun SentenceBuilderScreen(
                 onExitClick = onNavigateBack
             )
 
-            // اطلاعات پیشرفت جملات حل شده
+            // اطلاعات پیشرفت
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -115,7 +140,7 @@ fun SentenceBuilderScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // فضای ساخت جمله توسط کاربر (Constructed sentence box)
+            // فضای ساخت جمله
             val borderColor = when (state.checkStatus) {
                 true -> EmeraldTertiary
                 false -> ArenaError
@@ -134,7 +159,10 @@ fun SentenceBuilderScreen(
                         else -> ArenaSurface
                     }
                 ),
-                border = CardDefaults.outlinedCardBorder().copy(width = 1.5.dp, brush = androidx.compose.ui.graphics.SolidColor(borderColor))
+                border = CardDefaults.outlinedCardBorder().copy(
+                    width = 1.5.dp,
+                    brush = androidx.compose.ui.graphics.SolidColor(borderColor)
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -200,7 +228,12 @@ fun SentenceBuilderScreen(
                                             fontSize = 14.sp
                                         )
                                         Spacer(modifier = Modifier.width(4.dp))
-                                        Icon(imageVector = Icons.Default.Clear, contentDescription = null, tint = TextMuted, modifier = Modifier.size(12.dp))
+                                        Icon(
+                                            imageVector = Icons.Default.Clear,
+                                            contentDescription = null,
+                                            tint = TextMuted,
+                                            modifier = Modifier.size(12.dp)
+                                        )
                                     }
                                 }
                             }
@@ -209,7 +242,6 @@ fun SentenceBuilderScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // پیام بازخورد
                     Text(
                         text = state.feedbackMessage,
                         color = when (state.checkStatus) {
@@ -225,7 +257,7 @@ fun SentenceBuilderScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // کاشی‌های کلمات درهم برای انتخاب
+            // کاشی‌های کلمات درهم
             Text(
                 text = "کلمات درهم (برای انتخاب ضربه بزنید):",
                 color = TextSecondary,
@@ -284,7 +316,7 @@ fun SentenceBuilderScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // دکمه بررسی جمله
+            // دکمه بررسی
             Button(
                 onClick = { viewModel.checkSentence() },
                 enabled = state.constructedWords.isNotEmpty() && !state.isGameOver,
@@ -307,7 +339,7 @@ fun SentenceBuilderScreen(
             }
         }
 
-        if (state.isGameOver) {
+        if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
                 userScore = state.userScore,
