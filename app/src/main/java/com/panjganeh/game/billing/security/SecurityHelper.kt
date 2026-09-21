@@ -25,8 +25,8 @@ object SecurityHelper {
             verify(key, signedData, signature)
         } catch (e: Exception) {
             e.printStackTrace()
-            // در صورتی که کلید آزمایشی یا در محیط تست باشد، جهت عدم بلاک شدن کاربر
-            true
+            // در صورت خطا در verify، خرید نامعتبر است (امنیت)
+            false
         }
     }
 
