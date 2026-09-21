@@ -1,5 +1,6 @@
 package com.panjganeh.game.challenges.dice
 
+import android.app.Activity
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -29,24 +30,27 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -57,18 +61,40 @@ import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
-import com.panjganeh.game.ui.theme.TextSecondary
 
 @Composable
 fun DiceBattleScreen(
     viewModel: DiceBattleViewModel,
+    tapsellManager: TapsellManager,
     difficulty: String,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
+    var showResultDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(difficulty) {
         viewModel.startGame(difficulty)
+    }
+
+    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
+    LaunchedEffect(state.isGameOver) {
+        if (state.isGameOver) {
+            if (activity != null) {
+                tapsellManager.onBattleFinished(
+                    activity = activity,
+                    isWin = state.isWin,
+                    onFinished = { showResultDialog = true }
+                )
+            } else {
+                showResultDialog = true
+            }
+        } else {
+            showResultDialog = false
+        }
     }
 
     // انیمیشن چرخش و تکان در حین پرتاب
@@ -120,7 +146,6 @@ fun DiceBattleScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // ۳ ستاره برد کاربر
                 Row {
                     for (i in 1..3) {
                         val isWon = state.userRoundWins >= i
@@ -139,7 +164,6 @@ fun DiceBattleScreen(
                     fontSize = 12.sp
                 )
 
-                // ۳ ستاره برد هوش مصنوعی
                 Row {
                     for (i in 1..3) {
                         val isWon = state.aiRoundWins >= i
@@ -162,7 +186,9 @@ fun DiceBattleScreen(
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-                border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder))
+                border = CardDefaults.outlinedCardBorder().copy(
+                    brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -193,7 +219,6 @@ fun DiceBattleScreen(
                             )
                         }
 
-                        // نماد تقابل
                         Text(
                             text = "VS",
                             color = TextMuted,
@@ -222,7 +247,6 @@ fun DiceBattleScreen(
 
                     Spacer(modifier = Modifier.height(28.dp))
 
-                    // پیام وضعیت هر دست
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -242,7 +266,6 @@ fun DiceBattleScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // دکمه پرتاب تاس
                     Button(
                         onClick = { viewModel.rollDice() },
                         enabled = !state.isRolling && !state.isGameOver,
@@ -270,7 +293,7 @@ fun DiceBattleScreen(
             }
         }
 
-        if (state.isGameOver) {
+        if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
                 userScore = state.userRoundWins,
