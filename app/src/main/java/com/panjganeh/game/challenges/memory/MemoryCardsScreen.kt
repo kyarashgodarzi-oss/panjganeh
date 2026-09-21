@@ -1,6 +1,6 @@
 package com.panjganeh.game.challenges.memory
 
-import androidx.compose.animation.AnimatedVisibility
+import android.app.Activity
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -23,25 +23,26 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HelpOutline
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -52,18 +53,40 @@ import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
-import com.panjganeh.game.ui.theme.TextPrimary
 
 @Composable
 fun MemoryCardsScreen(
     viewModel: MemoryCardsViewModel,
+    tapsellManager: TapsellManager,
     difficulty: String,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
+    var showResultDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(difficulty) {
         viewModel.startGame(difficulty)
+    }
+
+    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
+    LaunchedEffect(state.isGameOver) {
+        if (state.isGameOver) {
+            if (activity != null) {
+                tapsellManager.onBattleFinished(
+                    activity = activity,
+                    isWin = state.isWin,
+                    onFinished = { showResultDialog = true }
+                )
+            } else {
+                showResultDialog = true
+            }
+        } else {
+            showResultDialog = false
+        }
     }
 
     Scaffold(
@@ -142,7 +165,7 @@ fun MemoryCardsScreen(
             }
         }
 
-        if (state.isGameOver) {
+        if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
                 userScore = state.userScore,
@@ -190,14 +213,12 @@ fun MemoryCardItem(
         contentAlignment = Alignment.Center
     ) {
         if (isFront) {
-            // نمایش ایموجی با چرخش معکوس تا متن وارونه نشود
             Text(
                 text = card.emoji,
                 fontSize = 32.sp,
                 modifier = Modifier.graphicsLayer { rotationY = 180f }
             )
         } else {
-            // پشت کارت
             Icon(
                 imageVector = Icons.Default.HelpOutline,
                 contentDescription = null,
