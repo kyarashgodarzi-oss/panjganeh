@@ -3,7 +3,6 @@ package com.panjganeh.game.ui.screens.profile
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,8 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -58,10 +55,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -81,6 +80,7 @@ import kotlinx.coroutines.launch
 fun ProfileScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
+    tapsellManager: TapsellManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -124,7 +124,8 @@ fun ProfileScreen(
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = ArenaSurface),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldDark)) else androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldDark))
+                        else androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
                     )
                 ) {
                     Column(
@@ -235,6 +236,19 @@ fun ProfileScreen(
                 items(matchHistory, key = { it.id }) { match ->
                     MatchHistoryItem(match = match)
                 }
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
+            // ═══════════════════════════════════════════════════════════
+            item {
+                if (!isVip) {
+                    TapsellBanner(tapsellManager = tapsellManager)
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
