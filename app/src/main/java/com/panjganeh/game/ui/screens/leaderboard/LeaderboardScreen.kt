@@ -1,7 +1,6 @@
 package com.panjganeh.game.ui.screens.leaderboard
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,13 +39,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
-import com.panjganeh.game.ui.theme.EmeraldTertiary
-import com.panjganeh.game.ui.theme.GoldDark
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
@@ -69,6 +67,7 @@ data class LeaderboardPlayer(
 @Composable
 fun LeaderboardScreen(
     userRepository: UserRepository,
+    tapsellManager: TapsellManager,
     onNavigateBack: () -> Unit
 ) {
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
@@ -76,7 +75,6 @@ fun LeaderboardScreen(
 
     val isUserVip = vip?.isVip == true
 
-    // ترکیب هوش‌های مصنوعی لیدربورد با رتبه واقعی کاربر
     val userTrophies = 1000 + ((user?.wins ?: 0) * 30) - ((user?.losses ?: 0) * 10)
     val leaderboard = listOf(
         LeaderboardPlayer(1, "سایه شب", "افسانه زنده", 2450, 94, isVip = true),
@@ -113,7 +111,9 @@ fun LeaderboardScreen(
                     modifier = Modifier.fillMaxWidth().testTag("leaderboard_banner"),
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-                    border = CardDefaults.outlinedCardBorder().copy(brush = Brush.horizontalGradient(listOf(GoldPrimary, SkySecondary)))
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        brush = Brush.horizontalGradient(listOf(GoldPrimary, SkySecondary))
+                    )
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -159,7 +159,9 @@ fun LeaderboardScreen(
                     ),
                     border = CardDefaults.outlinedCardBorder().copy(
                         brush = androidx.compose.ui.graphics.SolidColor(
-                            if (player.isUser) GoldPrimary else if (isTop3) rankColor.copy(alpha = 0.5f) else ArenaSurfaceBorder
+                            if (player.isUser) GoldPrimary
+                            else if (isTop3) rankColor.copy(alpha = 0.5f)
+                            else ArenaSurfaceBorder
                         )
                     )
                 ) {
@@ -171,7 +173,6 @@ fun LeaderboardScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            // رتبه عددی یا جام
                             Box(
                                 modifier = Modifier.size(32.dp),
                                 contentAlignment = Alignment.Center
@@ -219,7 +220,6 @@ fun LeaderboardScreen(
                             }
                         }
 
-                        // تعداد جام‌ها و بردها
                         Column(horizontalAlignment = Alignment.End) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(imageVector = Icons.Default.EmojiEvents, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(14.dp))
@@ -230,6 +230,19 @@ fun LeaderboardScreen(
                         }
                     }
                 }
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
+            // ═══════════════════════════════════════════════════════════
+            item {
+                if (!isUserVip) {
+                    TapsellBanner(tapsellManager = tapsellManager)
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
