@@ -32,7 +32,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +55,7 @@ import com.panjganeh.game.billing.BazaarConfig
 import com.panjganeh.game.billing.PurchaseResult
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
@@ -82,6 +82,8 @@ fun ShopScreen(
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
+
+    val isVip = vip?.isVip == true
 
     // Launcher برای دریافت نتیجه خرید کافه‌بازار
     val purchaseLauncher = rememberLauncherForActivityResult(
@@ -224,6 +226,19 @@ fun ShopScreen(
                         )
                     }
                 )
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
+            // ═══════════════════════════════════════════════════════════
+            item {
+                if (!isVip) {
+                    TapsellBanner(tapsellManager = tapsellManager)
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
