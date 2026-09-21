@@ -1,0 +1,7 @@
+{
+  "name": "پنجگانه",
+  "description": "پنج چالش، پنج نبرد، یک قهرمان - بازی پنجگانه با حریف هوش مصنوعی، اثر سیدحمید موسوی زاده",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">پنجگانه</string>
+    <string name="app_title_en">Panjganeh</string>
+    <string name="app_slogan">پنج چالش، پنج نبرد، یک قهرمان</string>
+    <string name="creator_name">سیدحمید موسوی زاده</string>
+    <string name="creator_label">سازنده و توسعه‌دهنده</string>
+    <string name="version_label">نسخه ۱.۰.۰</string>
+    
+    <string name="challenge_word_title">نبرد کلمات</string>
+    <string name="challenge_memory_title">حافظه کارت‌ها</string>
+    <string name="challenge_dice_title">نبرد تاس</string>
+    <string name="challenge_rps_title">سنگ کاغذ قیچی</string>
+    <string name="challenge_sentence_title">ساخت جملات</string>
+    
+    <string name="nav_shop">فروشگاه</string>
+    <string name="nav_rewards">جوایز</string>
+    <string name="nav_leaderboard">برترین‌ها</string>
+    <string name="nav_profile">پروفایل</string>
+    <string name="nav_settings">تنظیمات</string>
+    
+    <string name="start_battle">شروع نبرد</string>
+    <string name="entry_cost">هزینه ورود: ۱ بلیط</string>
+    <string name="vip_title">عضویت ویژه VIP پنجگانه</string>
+    <string name="vip_description">حذف تبلیغات + پاداش ۲ برابری + بلیط نامحدود</string>
+    
+    <string name="settings_theme">تم رنگی بازی</string>
+    <string name="settings_text_size">اندازه قلم و متون</string>
+    <string name="settings_dark_mode">حالت نمایش (روز / شب)</string>
+    <string name="settings_language">زبان برنامه (Language)</string>
+    <string name="settings_about">درباره پنجگانه</string>
+</resources>

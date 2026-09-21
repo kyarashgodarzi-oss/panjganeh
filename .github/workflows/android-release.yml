@@ -1,0 +1,77 @@
+name: Android Release Build
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Signed APK & AAB
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Restore Keystore from Secret
+      id: restore_keystore
+      run: |
+        if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > release.keystore
+          echo "KEYSTORE_PATH=${{ github.workspace }}/release.keystore" >> $GITHUB_ENV
+          echo "keystore_restored=true" >> $GITHUB_OUTPUT
+        else
+          echo "keystore_restored=false" >> $GITHUB_OUTPUT
+          echo "Warning: KEYSTORE_BASE64 secret is not defined."
+        fi
+
+    - name: Build Release APK & Bundle (Signed)
+      if: steps.restore_keystore.outputs.keystore_restored == 'true'
+      env:
+        STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      run: |
+        ./gradlew assembleRelease bundleRelease --stacktrace
+
+    - name: Build Debug APK (Fallback if Keystore not set)
+      if: steps.restore_keystore.outputs.keystore_restored != 'true'
+      run: |
+        ./gradlew assembleDebug --stacktrace
+
+    - name: Upload Release APK
+      if: steps.restore_keystore.outputs.keystore_restored == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Panjganeh-Release-APK
+        path: app/build/outputs/apk/release/*.apk
+
+    - name: Upload Release Bundle (AAB)
+      if: steps.restore_keystore.outputs.keystore_restored == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Panjganeh-Release-Bundle
+        path: app/build/outputs/bundle/release/*.aab
+
+    - name: Upload Debug APK (Fallback)
+      if: steps.restore_keystore.outputs.keystore_restored != 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: Panjganeh-Debug-APK
+        path: app/build/outputs/apk/debug/*.apk
+
+    - name: Cleanup Keystore
+      if: always()
+      run: |
+        rm -f ${{ github.workspace }}/release.keystore
