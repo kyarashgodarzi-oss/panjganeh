@@ -1,5 +1,6 @@
 package com.panjganeh.game.challenges.word
 
+import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,10 +40,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -50,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -68,13 +74,37 @@ import com.panjganeh.game.ui.theme.TextSecondary
 @Composable
 fun WordBattleScreen(
     viewModel: WordBattleViewModel,
+    tapsellManager: TapsellManager,
     difficulty: String,
     onNavigateBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val activity = context as? Activity
+
+    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
+    var showResultDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(difficulty) {
         viewModel.startGame(difficulty)
+    }
+
+    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
+    LaunchedEffect(state.isGameOver) {
+        if (state.isGameOver) {
+            if (activity != null) {
+                // اول تبلیغ (اگه لازمه) بعد دیالوگ
+                tapsellManager.onBattleFinished(
+                    activity = activity,
+                    isWin = state.isWin,
+                    onFinished = { showResultDialog = true }
+                )
+            } else {
+                showResultDialog = true
+            }
+        } else {
+            showResultDialog = false
+        }
     }
 
     Scaffold(
@@ -124,7 +154,10 @@ fun WordBattleScreen(
                         .padding(horizontal = 16.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-                    border = CardDefaults.outlinedCardBorder().copy(width = 1.dp, brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder))
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                    )
                 ) {
                     Column(
                         modifier = Modifier
@@ -147,7 +180,7 @@ fun WordBattleScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // نمایش فرمت معما بر اساس حالت جاری
+                        // نمایش فرمت معما
                         when (state.currentMode) {
                             WordBattleMode.MISSING_LETTERS -> {
                                 Text(
@@ -270,8 +303,8 @@ fun WordBattleScreen(
             }
         }
 
-        // دیالوگ پایان نبرد
-        if (state.isGameOver) {
+        // دیالوگ پایان نبرد (فقط بعد از Interstitial نشون داده می‌شه)
+        if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
                 userScore = state.userScore,
