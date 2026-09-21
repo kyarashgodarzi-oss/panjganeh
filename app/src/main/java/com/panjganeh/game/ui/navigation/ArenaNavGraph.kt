@@ -135,7 +135,9 @@ fun ArenaNavGraph(
             )
         }
 
-        // مسابقات پنج‌گانه
+        // ═══════════════════════════════════════════════════════════════
+        // مسابقات پنج‌گانه (همه با tapsellManager)
+        // ═══════════════════════════════════════════════════════════════
         composable(ArenaDestinations.BATTLE_WORD) {
             val vm: WordBattleViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
                 override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
@@ -145,6 +147,7 @@ fun ArenaNavGraph(
             })
             WordBattleScreen(
                 viewModel = vm,
+                tapsellManager = tapsellManager,
                 difficulty = aiDifficulty,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -159,6 +162,7 @@ fun ArenaNavGraph(
             })
             MemoryCardsScreen(
                 viewModel = vm,
+                tapsellManager = tapsellManager,
                 difficulty = aiDifficulty,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -173,6 +177,7 @@ fun ArenaNavGraph(
             })
             DiceBattleScreen(
                 viewModel = vm,
+                tapsellManager = tapsellManager,
                 difficulty = aiDifficulty,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -187,6 +192,7 @@ fun ArenaNavGraph(
             })
             RockPaperScissorsScreen(
                 viewModel = vm,
+                tapsellManager = tapsellManager,
                 difficulty = aiDifficulty,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -201,6 +207,7 @@ fun ArenaNavGraph(
             })
             SentenceBuilderScreen(
                 viewModel = vm,
+                tapsellManager = tapsellManager,
                 difficulty = aiDifficulty,
                 onNavigateBack = { navController.popBackStack() }
             )
