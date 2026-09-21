@@ -52,6 +52,7 @@ import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
@@ -77,6 +78,8 @@ fun DailyRewardsScreen(
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
     val rewards by userRepository.dailyRewards.collectAsStateWithLifecycle(initialValue = emptyList())
+
+    val isVip = vip?.isVip == true
 
     Scaffold(
         containerColor = ArenaBackground,
@@ -132,8 +135,6 @@ fun DailyRewardsScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(rewards, key = { it.day }) { reward ->
-                    // چک کن این روز قابل دریافت هست یا نه
-                    // روز جاری = اولین روزی که isClaimed == false هست
                     val firstUnclaimedDay = rewards.filter { !it.isClaimed }.minOfOrNull { it.day } ?: 8
                     val isCurrentDay = reward.day == firstUnclaimedDay
                     val isLocked = !reward.isClaimed && !isCurrentDay
@@ -143,10 +144,9 @@ fun DailyRewardsScreen(
                         isLocked = isLocked,
                         onClaimClick = {
                             if (activity != null) {
-                                // اول تبلیغ، بعد جایزه
                                 tapsellManager.showRewardedVideo(
                                     activity = activity,
-                                    rewardCoins = 0, // جایزه اصلی از claimDailyReward میاد
+                                    rewardCoins = 0,
                                     onRewarded = {
                                         scope.launch {
                                             userRepository.claimDailyReward(reward.day)
@@ -165,6 +165,14 @@ fun DailyRewardsScreen(
                         }
                     )
                 }
+            }
+
+            // ═══════════════════════════════════════════════════════════
+            // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
+            // ═══════════════════════════════════════════════════════════
+            if (!isVip) {
+                Spacer(modifier = Modifier.height(8.dp))
+                TapsellBanner(tapsellManager = tapsellManager)
             }
         }
     }
