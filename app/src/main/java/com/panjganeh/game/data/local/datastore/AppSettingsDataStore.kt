@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -21,7 +22,8 @@ data class AppSettings(
     val soundEffects: Boolean = true,
     val music: Boolean = true,
     val vibration: Boolean = true,
-    val notifications: Boolean = true
+    val notifications: Boolean = true,
+    val lastTwoHourRewardClaim: Long = 0L  // ⭐ جدید: زمان آخرین دریافت جایزه ۲ ساعتی
 )
 
 class AppSettingsDataStore(private val context: Context) {
@@ -35,6 +37,7 @@ class AppSettingsDataStore(private val context: Context) {
         val MUSIC_KEY = booleanPreferencesKey("music")
         val VIBRATION_KEY = booleanPreferencesKey("vibration")
         val NOTIFICATIONS_KEY = booleanPreferencesKey("notifications")
+        val LAST_TWO_HOUR_REWARD_KEY = longPreferencesKey("last_two_hour_reward_claim")  // ⭐ جدید
     }
 
     val appSettingsFlow: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -46,7 +49,8 @@ class AppSettingsDataStore(private val context: Context) {
             soundEffects = prefs[SOUND_EFFECTS_KEY] ?: true,
             music = prefs[MUSIC_KEY] ?: true,
             vibration = prefs[VIBRATION_KEY] ?: true,
-            notifications = prefs[NOTIFICATIONS_KEY] ?: true
+            notifications = prefs[NOTIFICATIONS_KEY] ?: true,
+            lastTwoHourRewardClaim = prefs[LAST_TWO_HOUR_REWARD_KEY] ?: 0L
         )
     }
 
@@ -95,6 +99,15 @@ class AppSettingsDataStore(private val context: Context) {
     suspend fun setNotifications(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[NOTIFICATIONS_KEY] = enabled
+        }
+    }
+
+    /**
+     * ثبت زمان آخرین دریافت جایزه ۲ ساعتی
+     */
+    suspend fun setLastTwoHourRewardClaim(timestamp: Long) {
+        context.dataStore.edit { prefs ->
+            prefs[LAST_TWO_HOUR_REWARD_KEY] = timestamp
         }
     }
 }
