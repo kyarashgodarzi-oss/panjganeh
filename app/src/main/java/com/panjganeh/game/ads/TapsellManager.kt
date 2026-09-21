@@ -39,6 +39,9 @@ class TapsellManager(
     private val isRequestInProgress = AtomicBoolean(false)
     private val isShowInProgress = AtomicBoolean(false)
 
+    // شمارنده نبردها برای نمایش Interstitial
+    private var battlesSinceLastInterstitial = 0
+
     // رویدادهای تبلیغات برای UI
     private val _adEvents = MutableSharedFlow<String>()
     val adEvents = _adEvents.asSharedFlow()
@@ -93,7 +96,6 @@ class TapsellManager(
 
     /**
      * نمایش ویدیوی جایزه‌دار (Rewarded Video)
-     * کاربر با تماشای کامل ویدیو، پاداش می‌گیرد
      */
     fun showRewardedVideo(
         activity: Activity,
@@ -225,6 +227,40 @@ class TapsellManager(
                 onClosed?.invoke()
             }
         })
+    }
+
+    /**
+     * مدیریت نمایش Interstitial بعد از پایان نبرد
+     * - اگه کاربر باخت: بلافاصله نمایش بده
+     * - اگه برد: هر ۲ بازی یک بار
+     */
+    fun onBattleFinished(
+        activity: Activity,
+        isWin: Boolean,
+        onFinished: () -> Unit
+    ) {
+        battlesSinceLastInterstitial++
+
+        val shouldShowAd = !isWin || battlesSinceLastInterstitial >= 2
+
+        if (shouldShowAd) {
+            battlesSinceLastInterstitial = 0
+            Log.d(TAG, "Showing interstitial after battle (isWin=$isWin)")
+            showInterstitial(
+                activity = activity,
+                onClosed = onFinished,
+                onError = { onFinished() }
+            )
+        } else {
+            onFinished()
+        }
+    }
+
+    /**
+     * ریست شمارنده نبردها (مثلاً وقتی کاربر VIP می‌خره)
+     */
+    fun resetBattleCounter() {
+        battlesSinceLastInterstitial = 0
     }
 
     /**
