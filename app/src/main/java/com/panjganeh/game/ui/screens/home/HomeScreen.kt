@@ -355,19 +355,12 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                         Box(Modifier.fillMaxWidth(progress).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF8A00)))))
                     }
                 }
-                Box(
-                    Modifier.fillMaxWidth().padding(top = 12.dp) .height(48.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF9800))))
-                        .clickable(onClick = onPlay)
-                        .testTag("start_game_button"),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(if (lang == "en") "START GAME" else "شروع بازی", color = Color(0xFF241407), fontSize = 16.sp, fontWeight = FontWeight.Black)
-                        Icon(Icons.Default.PlayArrow, null, tint = Color(0xFF241407), modifier = Modifier.padding(start = 5.dp))
-                    }
-                }
+                ArenaReferencePrimaryButton(
+                    text = if (lang == "en") "START GAME" else "شروع بازی",
+                    onClick = onPlay,
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    testTag = "start_game_button"
+                )
             }
         }
     }
