@@ -227,7 +227,22 @@ fun RewardCard(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(14.dp),
+            modifier = Modifier.fillMaxWidth()
+                .background(
+                    when {
+                        isLocked -> Brush.horizontalGradient(
+                            listOf(ArenaSurface.copy(alpha = 0.25f), ArenaSurface)
+                        )
+                        isDay7 -> Brush.horizontalGradient(
+                            listOf(GoldPrimary.copy(alpha = 0.16f), ArenaSurface, VipGold.copy(alpha = 0.08f))
+                        )
+                        else -> Brush.horizontalGradient(
+                            listOf(iconColor.copy(alpha = 0.09f), ArenaSurface)
+                        )
+                    },
+                    RoundedCornerShape(18.dp)
+                )
+                .padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
