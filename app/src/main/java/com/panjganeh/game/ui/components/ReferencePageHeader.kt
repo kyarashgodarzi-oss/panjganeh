@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,12 +41,12 @@ fun ReferencePageHeader(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().testTag("reference_page_header"),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.4.dp, WarmYellow.copy(alpha = .42f))
+        border = BorderStroke(1.4.dp, Brush.horizontalGradient(listOf(WarmYellow.copy(alpha = .72f), Color(0xFF2DD4BF).copy(alpha = .50f), WarmYellow.copy(alpha = .30f))))
     ) {
-        Box(Modifier.fillMaxWidth().height(174.dp)) {
+        Box(Modifier.fillMaxWidth().height(174.dp).testTag("reference_page_header_artwork")) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
@@ -73,7 +74,8 @@ fun ReferencePageHeader(
                     color = WarmYellow,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Black,
-                    letterSpacing = 2.sp
+                    letterSpacing = 2.sp,
+                    modifier = Modifier.testTag("reference_page_header_kicker")
                 )
                 Text(
                     title,
@@ -81,14 +83,14 @@ fun ReferencePageHeader(
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp).testTag("reference_page_header_title")
                 )
                 Text(
                     subtitle,
                     color = TextSecondary,
                     fontSize = 10.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp)
+                    modifier = Modifier.padding(top = 4.dp).testTag("reference_page_header_subtitle")
                 )
             }
         }
