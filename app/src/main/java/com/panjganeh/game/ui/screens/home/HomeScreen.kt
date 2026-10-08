@@ -64,9 +64,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.R
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.datastore.AppSettingsDataStore
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
