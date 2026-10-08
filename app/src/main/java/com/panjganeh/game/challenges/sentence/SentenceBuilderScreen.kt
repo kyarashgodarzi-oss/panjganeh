@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -119,7 +120,12 @@ fun SentenceBuilderScreen(
                 onExitClick = onNavigateBack
             )
 
-            // اطلاعات پیشرفت
+            BattleRoundStars(
+                userScore = state.userScore,
+                aiScore = state.aiScore
+            )
+
+                        // اطلاعات پیشرفت
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
