@@ -70,18 +70,18 @@ fun ArenaTopBar(
                     )
                 )
             )
-            .padding(horizontal = 14.dp, vertical = 10.dp),
+            .padding(horizontal = 10.dp, vertical = 7.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (onBackClick != null) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBackClick, modifier = Modifier.size(40.dp).testTag("topbar_back_button")) {
+                IconButton(onClick = onBackClick, modifier = Modifier.size(36.dp).testTag("topbar_back_button")) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 if (title != null) {
                     Spacer(Modifier.width(6.dp))
-                    Text(title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (18 * scale).sp)
+                    Text(title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (16 * scale).sp)
                 }
             }
         } else {
@@ -90,7 +90,7 @@ fun ArenaTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier.size(44.dp).clip(CircleShape)
+                    modifier = Modifier.size(42.dp).clip(CircleShape)
                         .background(if (isVip) VipCrownGradient else Brush.linearGradient(listOf(theme.primary, theme.secondary)))
                         .border(2.dp, if (isVip) VipGold else theme.primary, CircleShape),
                     contentAlignment = Alignment.Center
@@ -100,7 +100,7 @@ fun ArenaTopBar(
                 Spacer(Modifier.width(9.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(user?.username ?: "قهرمان پنجگانه", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (13 * scale).sp)
+                        Text(user?.username ?: "قهرمان پنجگانه", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (12 * scale).sp)
                         if (isVip) {
                             Spacer(Modifier.width(4.dp))
                             Icon(Icons.Default.WorkspacePremium, "VIP", tint = VipGold, modifier = Modifier.size(15.dp))
