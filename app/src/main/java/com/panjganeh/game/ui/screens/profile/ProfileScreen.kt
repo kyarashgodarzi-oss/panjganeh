@@ -60,6 +60,7 @@ import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -118,6 +119,14 @@ fun ProfileScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                ReferencePageHeader(
+                    kicker = "PROFILE",
+                    title = "مشخصات جنگجو",
+                    subtitle = "آمار، سطح و تاریخچه نبردهای تو."
+                )
+            }
+
             // کارت پروفایل کاربر
             item {
                 Card(
