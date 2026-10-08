@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
+import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -110,7 +111,9 @@ fun WordBattleScreen(
     Scaffold(
         containerColor = ArenaBackground
     ) { paddingValues ->
-        Column(
+        Box(Modifier.fillMaxSize()) {
+            BattleArenaBackground(challenge = "نبرد کلمات", modifier = Modifier.fillMaxSize())
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -304,6 +307,8 @@ fun WordBattleScreen(
         }
 
         // دیالوگ پایان نبرد (فقط بعد از Interstitial نشون داده می‌شه)
+        }
+
         if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
