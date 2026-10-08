@@ -89,7 +89,7 @@ fun LeaderboardScreen(
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
 
     Scaffold(
-        containerColor = ArenaBackground,
+        containerColor = Color.Transparent,
         topBar = {
             ArenaTopBar(
                 user = user,
@@ -102,6 +102,7 @@ fun LeaderboardScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -110,9 +111,10 @@ fun LeaderboardScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("leaderboard_banner"),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = Brush.horizontalGradient(listOf(GoldPrimary, SkySecondary))
+                        width = 1.5.dp,
+                        brush = Brush.horizontalGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF)))
                     )
                 ) {
                     Row(
