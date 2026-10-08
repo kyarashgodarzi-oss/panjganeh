@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +52,8 @@ fun ArenaTopBar(
     onBackClick: (() -> Unit)? = null,
     onCoinsClick: () -> Unit = {},
     onTicketsClick: () -> Unit = {},
-    onProfileClick: () -> Unit = {}
+    onProfileClick: () -> Unit = {},
+    onSettingsClick: (() -> Unit)? = null
 ) {
     val scale = LocalFontScale.current
     val theme = LocalPanjganehTheme.current
@@ -126,6 +128,11 @@ fun ArenaTopBar(
                 onClick = onTicketsClick,
                 tag = "tickets_counter"
             )
+            if (onSettingsClick != null) {
+                IconButton(onClick = onSettingsClick, modifier = Modifier.size(36.dp).testTag("topbar_settings_button")) {
+                    Icon(Icons.Default.Settings, "تنظیمات", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(19.dp))
+                }
+            }
         }
     }
 }
