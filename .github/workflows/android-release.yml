@@ -81,6 +81,17 @@ jobs:
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
+      - name: Package Source ZIP
+        run: |
+          git archive --format=zip --output=panjganeh-reference-qa-source.zip HEAD
+
+      - name: Upload Source ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: panjganeh-reference-qa-source
+          path: panjganeh-reference-qa-source.zip
+          if-no-files-found: error
+
       - name: Cleanup Sensitive Files
         if: always()
         run: |
