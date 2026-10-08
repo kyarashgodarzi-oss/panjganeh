@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleArenaBackground
+import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
@@ -102,52 +103,20 @@ fun RockPaperScissorsScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RpsReferenceHeader(
-                round = state.roundNumber,
+            BattleHeader(
+                challengeTitle = "سنگ کاغذ قیچی (بهترین از ۵)",
                 userScore = state.userWins,
                 aiScore = state.aiWins,
-                onExit = onNavigateBack
+                currentRound = state.roundNumber,
+                maxRounds = 5,
+                aiProfile = null,
+                onExitClick = onNavigateBack
             )
 
-            // نشانگر برد دست‌ها
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.userWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) GoldPrimary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = "اولین به ۳ برد برنده است",
-                    color = TextMuted,
-                    fontSize = 12.sp
-                )
-
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.aiWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) SkySecondary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
-
+            BattleRoundStars(
+                userScore = state.userWins,
+                aiScore = state.aiWins
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Card(

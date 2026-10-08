@@ -160,7 +160,11 @@ fun MemoryCardsScreen(
                 columns = GridCells.Fixed(4),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 33.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(ArenaSurface.copy(alpha = 0.86f))
+                    .border(1.dp, ArenaSurfaceBorder.copy(alpha = 0.85f), RoundedCornerShape(24.dp))
+                    .padding(16.dp)
                     .testTag("memory_cards_grid"),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

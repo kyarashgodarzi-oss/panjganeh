@@ -160,8 +160,8 @@ fun WordBattleScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 14.dp),
-                    shape = RoundedCornerShape(20.dp),
+                        .padding(horizontal = 33.dp),
+                    shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = ArenaSurface),
                     border = CardDefaults.outlinedCardBorder().copy(
                         width = 1.dp,

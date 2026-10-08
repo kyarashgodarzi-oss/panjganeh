@@ -159,8 +159,8 @@ fun SentenceBuilderScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(20.dp),
+                    .padding(horizontal = 33.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = when (state.checkStatus) {
                         true -> EmeraldTertiary.copy(alpha = 0.1f)
