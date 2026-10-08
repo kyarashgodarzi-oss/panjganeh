@@ -108,7 +108,7 @@ fun SettingsScreen(
     val currentRoomSettings = roomSettings ?: GameSettingsEntity()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         topBar = {
             ArenaTopBar(
                 user = user,
@@ -121,6 +121,7 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
