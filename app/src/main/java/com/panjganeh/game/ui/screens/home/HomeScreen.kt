@@ -151,7 +151,7 @@ fun HomeScreen(
             Box(Modifier.size(220.dp).align(Alignment.TopStart).padding(start = 0.dp).clip(CircleShape).background(PurplePrimary.copy(alpha = 0.08f)))
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 item {
@@ -276,7 +276,7 @@ private fun ReferenceHeader(
     lang: String,
     scale: Float
 ) {
-    Row(Modifier.fillMaxWidth().padding(horizontal = 2.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 1.dp, vertical = 1.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier.size(50.dp)
                 .clip(CircleShape)
@@ -324,11 +324,11 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
     val progress = ((xp % 1000) / 1000f).coerceIn(0f, 1f)
     Card(
         Modifier.fillMaxWidth().testTag("reference_hero"),
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = 0.5f))
     ) {
-        Box(Modifier.fillMaxWidth().height(330.dp)) {
+        Box(Modifier.fillMaxWidth().height(235.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
@@ -354,7 +354,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                 Text(
                     if (lang == "en") "FIVE CHALLENGES. ONE CHAMPION." else "پنج چالش؛ یک قهرمان",
                     color = Color.White,
-                    fontSize = 24.sp,
+                    fontSize = 21.sp,
                     fontWeight = FontWeight.Black,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp)
@@ -367,7 +367,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                     }
                 }
                 Box(
-                    Modifier.fillMaxWidth().padding(top = 12.dp).height(52.dp)
+                    Modifier.fillMaxWidth().padding(top = 12.dp) .height(48.dp)
                         .clip(RoundedCornerShape(16.dp))
                         .background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF9800))))
                         .clickable(onClick = onPlay)
