@@ -24,6 +24,8 @@ import com.panjganeh.game.challenges.word.WordBattleViewModel
 import com.panjganeh.game.ui.screens.help.HelpScreen
 import com.panjganeh.game.ui.screens.home.HomeScreen
 import com.panjganeh.game.ui.screens.leaderboard.LeaderboardScreen
+import com.panjganeh.game.ui.screens.modes.ModeSelectionScreen
+import com.panjganeh.game.ui.screens.online.OnlineConnectionScreen
 import com.panjganeh.game.ui.screens.profile.ProfileScreen
 import com.panjganeh.game.ui.screens.rewards.DailyRewardsScreen
 import com.panjganeh.game.ui.screens.settings.SettingsScreen
@@ -39,6 +41,8 @@ object ArenaDestinations {
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
     const val HELP = "help"
+    const val MODES = "modes"
+    const val ONLINE = "online"
     const val BATTLE_WORD = "battle_word"
     const val BATTLE_MEMORY = "battle_memory"
     const val BATTLE_DICE = "battle_dice"
@@ -96,8 +100,34 @@ fun ArenaNavGraph(
                 onNavigateToRewards = { navController.navigate(ArenaDestinations.REWARDS) },
                 onNavigateToLeaderboard = { navController.navigate(ArenaDestinations.LEADERBOARD) },
                 onNavigateToProfile = { navController.navigate(ArenaDestinations.PROFILE) },
-                onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) }
+                onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) },
+                onNavigateToModes = { navController.navigate(ArenaDestinations.MODES) }
             )
+        }
+
+        composable(ArenaDestinations.MODES) {
+            ModeSelectionScreen(
+                userRepository = userRepo,
+                gameRepository = gameRepo,
+                onStartChallenge = { challengeId ->
+                    val destination = when (challengeId) {
+                        "word" -> ArenaDestinations.BATTLE_WORD
+                        "memory" -> ArenaDestinations.BATTLE_MEMORY
+                        "dice" -> ArenaDestinations.BATTLE_DICE
+                        "rps" -> ArenaDestinations.BATTLE_RPS
+                        "sentence" -> ArenaDestinations.BATTLE_SENTENCE
+                        else -> ArenaDestinations.BATTLE_WORD
+                    }
+                    navController.navigate(destination)
+                },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.ONLINE) },
+                onNavigateToRewards = { navController.navigate(ArenaDestinations.REWARDS) },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(ArenaDestinations.ONLINE) {
+            OnlineConnectionScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         composable(ArenaDestinations.SHOP) {
