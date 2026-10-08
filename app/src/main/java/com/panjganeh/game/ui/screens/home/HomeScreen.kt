@@ -197,14 +197,34 @@ fun HomeScreen(
                     )
                 }
                 item {
-                    Column(Modifier.padding(top = 4.dp)) {
-                        Text(
-                            if (lang == "en") "CHOOSE YOUR BATTLE" else "انتخاب نبرد",
-                            color = TurquoiseSecondary,
-                            fontSize = (10 * fontScale).sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 1.5.sp
+                    Box(
+                        Modifier.fillMaxWidth().height(118.dp).clip(RoundedCornerShape(22.dp))
+                    ) {
+                        Image(
+                            painter = painterResource(id = com.panjganeh.game.R.drawable.arena_clash_icon_1789948798958),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
+                        Box(
+                            Modifier.fillMaxSize().background(
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        Color(0xFF070B18).copy(alpha = 0.20f),
+                                        Color(0xFF070B18).copy(alpha = 0.72f),
+                                        Color(0xFF070B18).copy(alpha = 0.96f)
+                                    )
+                                )
+                            )
+                        )
+                        Column(Modifier.align(Alignment.CenterEnd).padding(16.dp)) {
+                            Text(
+                                if (lang == "en") "CHOOSE YOUR BATTLE" else "انتخاب نبرد",
+                                color = TurquoiseSecondary,
+                                fontSize = (10 * fontScale).sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 1.5.sp
+                            )
                         Text(
                             if (lang == "en") "Five arenas. One champion." else "پنج میدان؛ یک قهرمان",
                             color = TextPrimary,
@@ -218,6 +238,7 @@ fun HomeScreen(
                             fontSize = (11 * fontScale).sp,
                             modifier = Modifier.padding(top = 3.dp)
                         )
+                        }
                     }
                 }
                 items(challenges, key = { it.challengeId }) { challenge ->
