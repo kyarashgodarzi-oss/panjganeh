@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
+import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -92,7 +93,9 @@ fun MemoryCardsScreen(
     Scaffold(
         containerColor = ArenaBackground
     ) { paddingValues ->
-        Column(
+        Box(Modifier.fillMaxSize()) {
+            BattleArenaBackground(challenge = "حافظه کارت‌ها", modifier = Modifier.fillMaxSize())
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -163,6 +166,8 @@ fun MemoryCardsScreen(
                     )
                 }
             }
+        }
+
         }
 
         if (showResultDialog && state.isGameOver) {
