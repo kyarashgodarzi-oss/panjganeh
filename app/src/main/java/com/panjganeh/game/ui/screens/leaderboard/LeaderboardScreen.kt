@@ -87,6 +87,7 @@ fun LeaderboardScreen(
         LeaderboardPlayer(8, "سیروس ربات", "تازه وارد", 980, 28)
     ).sortedByDescending { it.trophies }
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
+    val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -107,6 +108,42 @@ fun LeaderboardScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth().testTag("your_rank_summary"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = GoldPrimary.copy(alpha = .10f)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.5.dp,
+                        brush = Brush.horizontalGradient(listOf(GoldPrimary.copy(alpha = .75f), TurquoiseSecondary.copy(alpha = .55f)))
+                    )
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                Modifier.size(40.dp).clip(CircleShape).background(GoldPrimary.copy(alpha = .16f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Person, null, tint = GoldPrimary, modifier = Modifier.size(22.dp))
+                            }
+                            Spacer(Modifier.width(10.dp))
+                            Column {
+                                Text("رتبه فعلی شما", color = GoldLight, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                                Text("بر اساس امتیاز نبردها", color = TextMuted, fontSize = 9.sp)
+                            }
+                        }
+                        Column(horizontalAlignment = Alignment.End) {
+                            Text(if (currentUserRank > 0) "#$currentUserRank" else "—", color = GoldPrimary, fontSize = 22.sp, fontWeight = FontWeight.Black)
+                            Text("${user?.wins ?: 0} برد", color = TextSecondary, fontSize = 9.sp)
+                        }
+                    }
+                }
+            }
+
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("leaderboard_banner"),
