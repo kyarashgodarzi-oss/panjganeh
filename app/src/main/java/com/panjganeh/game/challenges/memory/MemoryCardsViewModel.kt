@@ -41,7 +41,7 @@ class MemoryCardsViewModel(
     private val _uiState = MutableStateFlow(MemoryUiState())
     val uiState = _uiState.asStateFlow()
 
-    private val emojis = listOf("🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼")
+    private val emojis = listOf("👑", "💎", "🛡️", "🔥", "⭐", "🔮")
     private var timerJob: Job? = null
     private var aiJob: Job? = null
     private var aiProfile: AiProfile? = null
@@ -52,7 +52,7 @@ class MemoryCardsViewModel(
     fun startGame(difficulty: String) {
         viewModelScope.launch {
             aiProfile = AiProfile.createRandom(difficulty)
-            // ساخت جدول 4x4 با ۸ جفت
+            // ساخت جدول 3x4 با ۶ جفت
             val cardList = (emojis + emojis).shuffled().mapIndexed { index, emoji ->
                 MemoryCard(id = index, emoji = emoji, isFaceUp = true, isMatched = false)
             }
@@ -60,7 +60,7 @@ class MemoryCardsViewModel(
             _uiState.update {
                 it.copy(
                     cards = cardList,
-                    remainingSeconds = 90,
+                    remainingSeconds = 45,
                     userScore = 0,
                     aiScore = 0,
                     isInitialPreview = true,
