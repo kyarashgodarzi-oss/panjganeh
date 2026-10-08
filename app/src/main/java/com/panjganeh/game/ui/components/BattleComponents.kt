@@ -1,5 +1,6 @@
 package com.panjganeh.game.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.panjganeh.game.R
 import com.panjganeh.game.ai.AiProfile
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -62,6 +66,40 @@ import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.TurquoiseSecondary
+
+@Composable
+fun BattleArenaBackground(
+    challenge: String,
+    modifier: Modifier = Modifier
+) {
+    val resource = when {
+        challenge.contains("تاس") -> R.drawable.arena_hero_banner_1789948811846
+        challenge.contains("کلمات") -> R.drawable.arena_clash_icon_1789948798958
+        challenge.contains("حافظه") -> R.drawable.arena_hero_banner_1789948811846
+        challenge.contains("قیچی") -> R.drawable.arena_clash_icon_1789948798958
+        else -> R.drawable.arena_hero_banner_1789948811846
+    }
+    Box(modifier.background(ArenaBackground)) {
+        Image(
+            painter = painterResource(resource),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alpha = 0.20f
+        )
+        Box(
+            Modifier.fillMaxSize().background(
+                Brush.verticalGradient(
+                    listOf(
+                        ArenaBackground.copy(alpha = 0.72f),
+                        ArenaBackground.copy(alpha = 0.92f),
+                        ArenaBackground
+                    )
+                )
+            )
+        )
+    }
+}
 
 @Composable
 fun BattleHeader(
