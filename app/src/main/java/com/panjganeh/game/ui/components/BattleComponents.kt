@@ -112,58 +112,184 @@ fun BattleHeader(
     aiProfile: AiProfile?,
     onExitClick: () -> Unit
 ) {
+    val roundText = if (currentRound != null && maxRounds != null) "$currentRound/$maxRounds" else "1/5"
     val urgent = remainingSeconds != null && remainingSeconds <= 10
+
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).testTag("battle_header"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.86f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 10.dp)
+            .testTag("battle_header"),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.88f)),
         border = androidx.compose.foundation.BorderStroke(
-            1.dp,
-            Brush.horizontalGradient(listOf(PurplePrimary.copy(alpha = .65f), TurquoiseSecondary.copy(alpha = .55f)))
+            1.5.dp,
+            Brush.horizontalGradient(
+                listOf(
+                    PurplePrimary.copy(alpha = .75f),
+                    TurquoiseSecondary.copy(alpha = .65f),
+                    GoldPrimary.copy(alpha = .55f)
+                )
+            )
         )
     ) {
-        Column(Modifier.fillMaxWidth().padding(14.dp)) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onExitClick, modifier = Modifier.size(38.dp).testTag("exit_battle_button")) {
-                    Icon(Icons.Default.Close, "خروج", tint = TextSecondary)
-                }
-                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(challengeTitle, color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
-                    Text("پنجگانه • ARENA", color = TextMuted, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
-                }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
-                    Modifier.clip(RoundedCornerShape(13.dp))
-                        .background(if (urgent) ArenaError.copy(alpha=.16f) else GoldPrimary.copy(alpha=.12f))
-                        .border(1.dp, if (urgent) ArenaError.copy(alpha=.45f) else GoldPrimary.copy(alpha=.35f), RoundedCornerShape(13.dp))
-                        .padding(horizontal=9.dp, vertical=6.dp)
+                    modifier = Modifier
+                        .size(58.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(
+                            if (urgent) ArenaError.copy(alpha = .14f)
+                            else GoldPrimary.copy(alpha = .12f)
+                        )
+                        .border(
+                            1.dp,
+                            if (urgent) ArenaError.copy(alpha = .60f)
+                            else GoldPrimary.copy(alpha = .60f),
+                            RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Timer, null, tint = if (urgent) ArenaError else GoldPrimary, modifier=Modifier.size(15.dp))
-                        Spacer(Modifier.width(4.dp))
                         Text(
-                            remainingSeconds?.let { "$it" } ?: if (currentRound != null && maxRounds != null) "$currentRound/$maxRounds" else "LIVE",
+                            roundText,
                             color = if (urgent) ArenaError else GoldPrimary,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 12.sp
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                        Icon(
+                            Icons.Default.Timer,
+                            contentDescription = null,
+                            tint = if (urgent) ArenaError else GoldPrimary,
+                            modifier = Modifier
+                                .size(17.dp)
+                                .padding(start = 2.dp)
                         )
                     }
                 }
-            }
-            Spacer(Modifier.height(12.dp))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                FighterBadge("شما", userScore, Icons.Default.Person, GoldPrimary, Modifier.weight(1f))
-                Box(Modifier.size(34.dp).clip(CircleShape).background(ArenaBackground).border(1.dp, ArenaSurfaceBorder, CircleShape), contentAlignment=Alignment.Center) {
-                    Text("VS", color=TextMuted, fontSize=10.sp, fontWeight=FontWeight.Black)
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "ARENA BATTLE",
+                        color = TextMuted,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Black,
+                        letterSpacing = 2.sp
+                    )
+                    Text(
+                        challengeTitle,
+                        color = TextPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Black,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 3.dp)
+                    )
                 }
-                FighterBadge(aiProfile?.name ?: "حریف AI", aiScore, Icons.Default.SmartToy, SkySecondary, Modifier.weight(1f), true)
+
+                IconButton(
+                    onClick = onExitClick,
+                    modifier = Modifier
+                        .size(42.dp)
+                        .testTag("exit_battle_button")
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "خروج",
+                        tint = TextSecondary,
+                        modifier = Modifier.size(34.dp)
+                    )
+                }
             }
-            if (remainingSeconds != null) {
-                Spacer(Modifier.height(10.dp))
-                LinearProgressIndicator(
-                    progress = { (remainingSeconds / 60f).coerceIn(0f, 1f) },
-                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(CircleShape),
-                    color = if (urgent) ArenaError else TurquoiseSecondary,
-                    trackColor = ArenaSurfaceBorder.copy(alpha=.35f)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FighterBadge(
+                    aiProfile?.name ?: "تایان هوشمند",
+                    aiScore,
+                    Icons.Default.SmartToy,
+                    SkySecondary,
+                    Modifier.weight(1f)
+                )
+
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(ArenaBackground)
+                        .border(1.dp, ArenaSurfaceBorder, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("VS", color = TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Black)
+                }
+
+                FighterBadge(
+                    "شما",
+                    userScore,
+                    Icons.Default.Person,
+                    GoldPrimary,
+                    Modifier.weight(1f),
+                    true
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BattleRoundStars(
+    userScore: Int,
+    aiScore: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row {
+            repeat(3) { index ->
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = null,
+                    tint = if (userScore > index) GoldPrimary else ArenaSurfaceBorder,
+                    modifier = Modifier.size(27.dp)
+                )
+            }
+        }
+
+        Text(
+            "اولین به ۳ برد برنده است",
+            color = TextMuted,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
+
+        Row {
+            repeat(3) { index ->
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = null,
+                    tint = if (aiScore > index) SkySecondary else ArenaSurfaceBorder,
+                    modifier = Modifier.size(27.dp)
                 )
             }
         }
