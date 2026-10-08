@@ -90,7 +90,8 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToHelp: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -698,6 +699,40 @@ fun SettingsScreen(
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onNavigateToHelp)
+                        .testTag("help_entry_card"),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, TurquoiseSecondary.copy(alpha = .45f))
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.HelpOutline, null, tint = TurquoiseSecondary, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (currentLang == "en") "Help & Tutorials" else "راهنما و آموزش بازی",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = (13 * fontScale).sp
+                            )
+                            Text(
+                                text = if (currentLang == "en") "Learn the five Arena challenges" else "قوانین و آموزش پنج چالش",
+                                color = Color(0xFF94A3B8),
+                                fontSize = (10 * fontScale).sp
+                            )
+                        }
+                        Icon(Icons.Default.ChevronLeft, null, tint = TurquoiseSecondary, modifier = Modifier.size(18.dp))
                     }
                 }
             }
