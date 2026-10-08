@@ -44,6 +44,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -364,7 +365,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                     Text(if (lang == "en") "LEVEL " + level else "سطح " + level, color = TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.width(9.dp))
                     Box(Modifier.width(100.dp).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.15f))) {
-                        Box(Modifier.fillMaxWidth(progress).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF8A00))))
+                        Box(Modifier.fillMaxWidth(progress).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF8A00)))))
                     }
                 }
                 Box(
