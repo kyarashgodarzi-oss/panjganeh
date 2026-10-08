@@ -53,6 +53,7 @@ import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -72,6 +73,14 @@ fun DailyRewardsScreen(
     tapsellManager: TapsellManager,
     onNavigateBack: () -> Unit
 ) {
+            item {
+                ReferencePageHeader(
+                    kicker = "DAILY REWARDS",
+                    title = "جوایز روزانه",
+                    subtitle = "هر روز وارد شو، پاداش بگیر و برای نبرد بعدی آماده شو."
+                )
+            }
+
     val context = LocalContext.current
     val activity = context as? Activity
     val scope = rememberCoroutineScope()
