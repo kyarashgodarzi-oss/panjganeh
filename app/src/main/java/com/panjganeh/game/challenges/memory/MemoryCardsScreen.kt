@@ -141,7 +141,7 @@ fun MemoryCardsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "جفت‌های کشف شده: ${state.matchedPairsCount} از ۸",
+                        text = "جفت‌های کشف شده: ${state.matchedPairsCount} از ۶",
                         color = TextMuted,
                         fontSize = 12.sp
                     )
@@ -157,7 +157,7 @@ fun MemoryCardsScreen(
 
             // جدول 4x4 کارت‌های حافظه
             LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 33.dp)
