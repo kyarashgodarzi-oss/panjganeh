@@ -58,6 +58,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -290,12 +292,30 @@ private fun ArenaHeroCard(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.dp, accent.copy(alpha = 0.42f))
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(Brush.linearGradient(listOf(Color(0xFF251B5E), Color(0xFF171A45), Color(0xFF0D3B43))))
-                .padding(20.dp)
-        ) {
+        Box(Modifier.fillMaxWidth().height(390.dp)) {
+            Image(
+                painter = painterResource(id = com.panjganeh.game.R.drawable.arena_hero_banner_1789948811846),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF070B18).copy(alpha = 0.08f),
+                            Color(0xFF070B18).copy(alpha = 0.48f),
+                            Color(0xFF070B18).copy(alpha = 0.96f)
+                        )
+                    )
+                )
+            )
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(20.dp)
+            ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(8.dp).clip(CircleShape).background(TurquoiseSecondary))
                 Text(
@@ -384,6 +404,7 @@ private fun ArenaHeroCard(
                 fontSize = 10.sp,
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 7.dp)
             )
+            }
         }
     }
 }
