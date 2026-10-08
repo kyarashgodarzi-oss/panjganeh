@@ -39,7 +39,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -98,8 +97,7 @@ fun HomeScreen(
     val scale = LocalFontScale.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val now = remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val isVip = vip?.isVip == true && (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > now.longValue)
+    val isVip = vip?.isVip == true && (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
 
     Scaffold(
         containerColor = ArenaBackground,
