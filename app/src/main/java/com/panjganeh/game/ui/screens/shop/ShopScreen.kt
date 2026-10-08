@@ -287,6 +287,14 @@ fun ProductCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    if (isVipProduct) Brush.horizontalGradient(
+                        listOf(VipGold.copy(alpha = 0.10f), ArenaSurface, ArenaSurface)
+                    ) else Brush.horizontalGradient(
+                        listOf(iconColor.copy(alpha = 0.08f), ArenaSurface, ArenaSurface)
+                    ),
+                    RoundedCornerShape(20.dp)
+                )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
