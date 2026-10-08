@@ -55,6 +55,7 @@ import com.panjganeh.game.billing.BazaarConfig
 import com.panjganeh.game.billing.PurchaseResult
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -121,6 +122,14 @@ fun ShopScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                ReferencePageHeader(
+                    kicker = "SHOP",
+                    title = "فروشگاه پنجگانه",
+                    subtitle = "سکه، بلیت و VIP را برای نبرد بعدی آماده کن."
+                )
+            }
+
             // بخش دریافت سکه رایگان با ویدیوی تپسل
             item {
                 Card(
