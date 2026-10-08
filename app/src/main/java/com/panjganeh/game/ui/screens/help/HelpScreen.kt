@@ -99,7 +99,14 @@ private fun HelpHero() {
         border = androidx.compose.foundation.BorderStroke(1.5.dp, TurquoiseSecondary.copy(alpha = .65f))
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(18.dp),
+            modifier = Modifier.fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(TurquoiseSecondary.copy(alpha = 0.12f), ArenaSurface.copy(alpha = 0.92f))
+                    ),
+                    RoundedCornerShape(22.dp)
+                )
+                .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(Icons.Default.Info, null, tint = TurquoiseSecondary, modifier = Modifier.padding(end = 12.dp))
@@ -119,7 +126,17 @@ private fun HelpCard(title: String, body: String, icon: androidx.compose.ui.grap
         colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .82f)),
         border = androidx.compose.foundation.BorderStroke(1.dp, accent.copy(alpha = .35f))
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(15.dp), verticalAlignment = Alignment.Top) {
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(accent.copy(alpha = 0.08f), ArenaSurface.copy(alpha = 0.94f))
+                    ),
+                    RoundedCornerShape(18.dp)
+                )
+                .padding(15.dp),
+            verticalAlignment = Alignment.Top
+        ) {
             Icon(icon, null, tint = accent, modifier = Modifier.padding(end = 12.dp))
             Column {
                 Text(title, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Black)
