@@ -22,6 +22,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.SkipNext
@@ -119,17 +121,38 @@ fun WordBattleScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // هدر نبرد
-            BattleHeader(
-                challengeTitle = "نبرد کلمات",
-                userScore = state.userScore,
-                aiScore = state.aiScore,
-                remainingSeconds = state.remainingSeconds,
-                aiProfile = state.aiProfile,
-                onExitClick = onNavigateBack
-            )
+            // هدر مطابق تصویر مرجع
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 7.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onNavigateBack,
+                    modifier = Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape)
+                        .background(Color(0xCC071326))
+                        .border(1.dp, SkySecondary.copy(alpha = .75f), androidx.compose.foundation.shape.CircleShape)
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = Color.White)
+                }
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("بازی کلمات", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Black)
+                    Text("پنجگانه • ARENA", color = TextMuted, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
+                }
+                Box(
+                    Modifier.clip(RoundedCornerShape(12.dp))
+                        .background(GoldPrimary.copy(alpha = .14f))
+                        .border(1.dp, GoldPrimary.copy(alpha = .5f), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 9.dp, vertical = 6.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Timer, null, tint = GoldPrimary, modifier = Modifier.size(15.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text(state.remainingSeconds.toString(), color = GoldPrimary, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                    }
+                }
+            }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // حالت جاری چالش
             Box(
@@ -154,8 +177,8 @@ fun WordBattleScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(24.dp),
+                        .padding(horizontal = 14.dp),
+                    shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(containerColor = ArenaSurface),
                     border = CardDefaults.outlinedCardBorder().copy(
                         width = 1.dp,
@@ -165,7 +188,7 @@ fun WordBattleScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp),
+                            .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // راهنمای کلمه
@@ -188,7 +211,7 @@ fun WordBattleScreen(
                             WordBattleMode.MISSING_LETTERS -> {
                                 Text(
                                     text = current.missing,
-                                    fontSize = 32.sp,
+                                    fontSize = 38.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                     color = TextPrimary,
                                     letterSpacing = 4.sp
