@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -424,7 +425,7 @@ private fun ArenaBottomBar(lang: String, scale: Float, home: () -> Unit, games: 
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomItem(if (lang == "en") "Home" else "خانه", Icons.Default.Person, TurquoiseSecondary, scale, home, true)
+        BottomItem(if (lang == "en") "Home" else "خانه", Icons.Default.Home, TurquoiseSecondary, scale, home, true)
         BottomItem(if (lang == "en") "Games" else "بازی‌ها", Icons.Default.Casino, WarmYellow, scale, games)
         BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, SkyBlue, scale, shop)
         BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, PinkTertiary, scale, profile)
