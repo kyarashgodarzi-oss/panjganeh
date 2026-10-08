@@ -230,7 +230,7 @@ fun DiceBattleScreen(
                             DiceVisual(
                                 value = if (index == 4) state.aiDiceValue else state.userDiceValue,
                                 color = if (index == 4) SkySecondary else GoldPrimary,
-                                modifier = Modifier.size(42.dp)
+                                compact = true
                             )
                         }
                     }
@@ -305,11 +305,12 @@ fun DiceBattleScreen(
 fun DiceVisual(
     value: Int,
     color: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    compact: Boolean = false
 ) {
     Box(
         modifier = modifier
-            .size(90.dp)
+            .size(if (compact) 42.dp else 90.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(ArenaBackground)
             .border(2.5.dp, color, RoundedCornerShape(18.dp))
