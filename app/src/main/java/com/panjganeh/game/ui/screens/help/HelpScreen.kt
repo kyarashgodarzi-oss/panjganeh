@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.PanjganehApplication
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
@@ -70,6 +71,14 @@ fun HelpScreen(onNavigateBack: () -> Unit) {
             contentPadding = PaddingValues(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            item {
+                ReferencePageHeader(
+                    kicker = "HELP",
+                    title = "راهنمای پنجگانه",
+                    subtitle = "قوانین، نبردها و مسیر قهرمانی را بشناس."
+                )
+            }
+
             item {
                 HelpHero()
             }
