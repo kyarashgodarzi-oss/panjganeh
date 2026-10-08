@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,14 +44,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
+import com.panjganeh.game.ui.components.ArenaReferencePrimaryButton
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.DiceChallengeColor
@@ -105,6 +110,50 @@ fun ModeSelectionScreen(
             contentPadding = PaddingValues(horizontal = 14.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("mode_reference_hero"),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = .45f))
+                ) {
+                    Box(Modifier.fillMaxWidth().height(188.dp)) {
+                        Image(
+                            painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Box(
+                            Modifier.fillMaxSize().background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color(0xFF07101E).copy(alpha = .10f),
+                                        Color(0xFF07101E).copy(alpha = .52f),
+                                        ArenaBackground.copy(alpha = .96f)
+                                    )
+                                )
+                            )
+                        )
+                        Column(
+                            Modifier.fillMaxSize().padding(18.dp),
+                            verticalArrangement = Arrangement.Bottom,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("ARENA MODE", color = WarmYellow, fontSize = 10.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                            Text("پنج نبرد؛ یک مسیر قهرمانی", color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+                            Text("حالت بازی خودت را انتخاب کن و وارد میدان شو.", color = TextSecondary, fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
+                            ArenaReferencePrimaryButton(
+                                text = "انتخاب نبرد",
+                                onClick = { challenges.firstOrNull()?.let { play(it.challengeId) } },
+                                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                                testTag = "mode_start_button"
+                            )
+                        }
+                    }
+                }
+            }
+
             item {
                 androidx.compose.material3.Card(
                     Modifier.fillMaxWidth(),
