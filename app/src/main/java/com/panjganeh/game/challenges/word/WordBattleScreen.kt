@@ -174,7 +174,7 @@ fun WordBattleScreen(
                             Spacer(Modifier.height(12.dp))
 
                             Text(
-                                if (state.userInput.isEmpty()) "حروف را انتخاب کن" else "پاسخ: \${state.userInput}",
+                                if (state.userInput.isEmpty()) "حروف را انتخاب کن" else "پاسخ: ${state.userInput}",
                                 color = if (state.isCorrectFeedback) EmeraldTertiary else TextPrimary,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Black
