@@ -907,7 +907,7 @@ private fun ArenaHeroCard(
                     }
                     Box(
                         modifier = Modifier.size(58.dp).clip(CircleShape)
-                            .background(VipCrownGradient.copy(alpha = 0.18f))
+                            .background(WarmYellow.copy(alpha = 0.12f))
                             .border(1.dp, WarmYellow.copy(alpha = 0.45f), CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
