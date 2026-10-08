@@ -52,6 +52,7 @@ import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
+import com.panjganeh.game.ui.theme.TurquoiseSecondary
 import com.panjganeh.game.ui.theme.VipGold
 
 data class LeaderboardPlayer(
