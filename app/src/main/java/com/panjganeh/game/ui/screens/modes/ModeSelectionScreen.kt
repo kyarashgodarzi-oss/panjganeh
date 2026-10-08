@@ -1,0 +1,212 @@
+package com.panjganeh.game.ui.screens.modes
+
+import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Casino
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.SportsKabaddi
+import androidx.compose.material.icons.filled.Spellcheck
+import androidx.compose.material.icons.filled.TextFields
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.panjganeh.game.data.local.entity.ChallengeItemEntity
+import com.panjganeh.game.data.repository.GameRepository
+import com.panjganeh.game.data.repository.UserRepository
+import com.panjganeh.game.ui.theme.ArenaBackground
+import com.panjganeh.game.ui.theme.ArenaSurface
+import com.panjganeh.game.ui.theme.DiceChallengeColor
+import com.panjganeh.game.ui.theme.MemoryChallengeColor
+import com.panjganeh.game.ui.theme.PinkTertiary
+import com.panjganeh.game.ui.theme.PurplePrimary
+import com.panjganeh.game.ui.theme.SkyBlue
+import com.panjganeh.game.ui.theme.TextMuted
+import com.panjganeh.game.ui.theme.TextPrimary
+import com.panjganeh.game.ui.theme.TextSecondary
+import com.panjganeh.game.ui.theme.TurquoiseSecondary
+import com.panjganeh.game.ui.theme.WarmYellow
+import com.panjganeh.game.ui.theme.WordChallengeColor
+import kotlinx.coroutines.launch
+
+@Composable
+fun ModeSelectionScreen(
+    userRepository: UserRepository,
+    gameRepository: GameRepository,
+    onStartChallenge: (String) -> Unit,
+    onNavigateToOnline: () -> Unit,
+    onNavigateToRewards: () -> Unit,
+    onNavigateBack: () -> Unit
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val challenges by gameRepository.allChallenges.collectAsState(initial = emptyList())
+    val vip by userRepository.vipState.collectAsState(initial = null)
+    val isVip = vip?.isVip == true &&
+        (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
+
+    fun play(id: String) {
+        scope.launch {
+            if (isVip || userRepository.deductTickets(1)) {
+                onStartChallenge(id)
+            } else {
+                Toast.makeText(context, "بلیطت تمام شده؛ از فروشگاه بلیط بگیر.", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    Box(Modifier.fillMaxSize().background(ArenaBackground)) {
+        Box(
+            Modifier.fillMaxSize().background(
+                Brush.verticalGradient(
+                    listOf(Color(0xFF091426), Color(0xFF07101E), ArenaBackground)
+                )
+            )
+        )
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier.size(42.dp).clip(CircleShape)
+                            .background(ArenaSurface)
+                            .border(1.dp, TurquoiseSecondary.copy(alpha = .35f), CircleShape)
+                            .clickable(onClick = onNavigateBack),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.ArrowBack, "بازگشت", tint = TextPrimary)
+                    }
+                    Column(Modifier.weight(1f).padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("انتخاب حالت بازی", color = TextPrimary, fontSize = 21.sp, fontWeight = FontWeight.Black)
+                        Text("پنجگانه • THE ARENA", color = TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
+                    }
+                    Box(Modifier.size(42.dp))
+                }
+            }
+            item {
+                androidx.compose.material3.Card(
+                    Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .78f)),
+                    border = BorderStroke(1.dp, PurplePrimary.copy(alpha = .40f))
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(18.dp)) {
+                        Text("CHOOSE YOUR BATTLE", color = WarmYellow, fontSize = 11.sp, fontWeight = FontWeight.Black, letterSpacing = 1.3.sp)
+                        Text("یک میدان را انتخاب کن و وارد نبرد شو.", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 4.dp))
+                        Text("هر نبرد یک امتیاز و یک مسیر برای قهرمانی دارد.", color = TextSecondary, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
+                        Row(Modifier.fillMaxWidth().padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+                            ModePill("آنلاین", "دوستان", TurquoiseSecondary, onNavigateToOnline, Modifier.weight(1f))
+                            ModePill("آفلاین", "حریف AI", SkyBlue, null, Modifier.weight(1f))
+                            ModePill("روزانه", "جایزه", PinkTertiary, onNavigateToRewards, Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+            items(challenges.take(5), key = { it.challengeId }) { challenge ->
+                SelectionCard(challenge, ::play)
+            }
+            item {
+                Spacer(Modifier.height(8.dp))
+                Text("هر نبرد با یک بلیط شروع می‌شود • VIP بدون محدودیت", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModePill(title: String, subtitle: String, color: Color, onClick: (() -> Unit)?, modifier: Modifier) {
+    Column(
+        modifier.clip(RoundedCornerShape(15.dp))
+            .background(color.copy(alpha = .10f))
+            .border(1.dp, color.copy(alpha = .30f), RoundedCornerShape(15.dp))
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(vertical = 9.dp, horizontal = 5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(title, color = color, fontSize = 10.sp, fontWeight = FontWeight.Black)
+        Text(subtitle, color = TextMuted, fontSize = 8.sp, modifier = Modifier.padding(top = 2.dp))
+    }
+}
+
+@Composable
+private fun SelectionCard(challenge: ChallengeItemEntity, onPlay: (String) -> Unit) {
+    val meta = when (challenge.challengeId) {
+        "memory" -> Meta("حافظه", "جفت‌های پنهان را پیدا کن.", MemoryChallengeColor, Icons.Default.Memory)
+        "dice" -> Meta("دوئل تاس", "هوشمندانه‌تر از حریف تاس بریز.", DiceChallengeColor, Icons.Default.Casino)
+        "rps" -> Meta("سنگ، کاغذ، قیچی", "حرکت حریف را بخوان.", PinkTertiary, Icons.Default.SportsKabaddi)
+        "sentence" -> Meta("جمله‌ساز", "جمله‌ی درست را بساز.", SkyBlue, Icons.Default.TextFields)
+        else -> Meta("نبرد کلمات", "قبل از تمام شدن زمان جواب را پیدا کن.", WordChallengeColor, Icons.Default.Spellcheck)
+    }
+    Card(
+        Modifier.fillMaxWidth().clickable { onPlay(challenge.challengeId) },
+        shape = RoundedCornerShape(19.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .82f)),
+        border = BorderStroke(1.dp, meta.color.copy(alpha = .34f))
+    ) {
+        Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                Modifier.size(52.dp).clip(RoundedCornerShape(15.dp))
+                    .background(meta.color.copy(alpha = .13f))
+                    .border(1.dp, meta.color.copy(alpha = .32f), RoundedCornerShape(15.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(meta.icon, null, tint = meta.color, modifier = Modifier.size(27.dp))
+            }
+            Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
+                Text(meta.title, color = TextPrimary, fontSize = 15.sp, fontWeight = FontWeight.Black)
+                Text(meta.subtitle, color = TextSecondary, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
+                Row(Modifier.padding(top = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+                    repeat(3) { i ->
+                        Text("★", color = if (i < challenge.stars) WarmYellow else TextMuted.copy(alpha = .35f), fontSize = 10.sp)
+                    }
+                    Text("  رکورد " + challenge.highscore, color = TextMuted, fontSize = 9.sp)
+                }
+            }
+            Box(Modifier.size(40.dp).clip(CircleShape).background(meta.color.copy(alpha = .14f)), contentAlignment = Alignment.Center) {
+                Icon(Icons.Default.PlayArrow, null, tint = meta.color)
+            }
+        }
+    }
+}
+
+private data class Meta(val title: String, val subtitle: String, val color: Color, val icon: ImageVector)
