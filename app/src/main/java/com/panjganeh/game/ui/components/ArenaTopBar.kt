@@ -68,7 +68,19 @@ fun ArenaTopBar(
                         theme.primary.copy(alpha = 0.10f),
                         MaterialTheme.colorScheme.surface
                     )
-                )
+                ),
+                shape
+            )
+            .border(
+                1.dp,
+                Brush.horizontalGradient(
+                    listOf(
+                        theme.primary.copy(alpha = 0.28f),
+                        theme.secondary.copy(alpha = 0.20f),
+                        WarmYellow.copy(alpha = 0.20f)
+                    )
+                ),
+                shape
             )
             .padding(horizontal = 10.dp, vertical = 7.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
