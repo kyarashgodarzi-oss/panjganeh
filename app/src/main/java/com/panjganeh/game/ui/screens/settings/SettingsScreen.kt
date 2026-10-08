@@ -29,6 +29,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
