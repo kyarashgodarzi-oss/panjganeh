@@ -1,12 +1,5 @@
 package com.panjganeh.game.ui.components
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,16 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,17 +35,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,18 +54,15 @@ import com.panjganeh.game.ui.theme.ArenaError
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
 import com.panjganeh.game.ui.theme.EmeraldTertiary
-import com.panjganeh.game.ui.theme.GoldDark
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
+import com.panjganeh.game.ui.theme.PurplePrimary
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
-import com.panjganeh.game.ui.theme.VipGold
+import com.panjganeh.game.ui.theme.TurquoiseSecondary
 
-/**
- * هدر استاندارد نبرد با نمایش امتیاز کاربر و AI، تایمر و اطلاعات مبارزه
- */
 @Composable
 fun BattleHeader(
     challengeTitle: String,
@@ -91,138 +74,86 @@ fun BattleHeader(
     aiProfile: AiProfile?,
     onExitClick: () -> Unit
 ) {
+    val urgent = remainingSeconds != null && remainingSeconds <= 10
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .testTag("battle_header"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-        border = CardDefaults.outlinedCardBorder().copy(brush = Brush.horizontalGradient(listOf(GoldPrimary.copy(alpha = 0.5f), SkySecondary.copy(alpha = 0.5f))))
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).testTag("battle_header"),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(
+            1.dp,
+            Brush.horizontalGradient(listOf(PurplePrimary.copy(alpha = .65f), TurquoiseSecondary.copy(alpha = .55f)))
+        )
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            // ردیف عنوان بازی و خروج
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onExitClick, modifier = Modifier.size(36.dp).testTag("exit_battle_button")) {
-                    Icon(imageVector = Icons.Default.Close, contentDescription = "خروج", tint = TextSecondary)
+        Column(Modifier.fillMaxWidth().padding(14.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onExitClick, modifier = Modifier.size(38.dp).testTag("exit_battle_button")) {
+                    Icon(Icons.Default.Close, "خروج", tint = TextSecondary)
                 }
-
-                Text(
-                    text = challengeTitle,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    color = GoldPrimary
-                )
-
-                // تایمر معکوس یا شمارنده دست
-                if (remainingSeconds != null) {
-                    val isUrgent = remainingSeconds <= 10
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(if (isUrgent) ArenaError.copy(alpha = 0.2f) else GoldPrimary.copy(alpha = 0.15f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Timer,
-                            contentDescription = "زمان باقی‌مانده",
-                            tint = if (isUrgent) ArenaError else GoldPrimary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("ARENA BATTLE", color = TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
+                    Text(challengeTitle, color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Black)
+                }
+                Box(
+                    Modifier.clip(RoundedCornerShape(13.dp))
+                        .background(if (urgent) ArenaError.copy(alpha=.16f) else GoldPrimary.copy(alpha=.12f))
+                        .border(1.dp, if (urgent) ArenaError.copy(alpha=.45f) else GoldPrimary.copy(alpha=.35f), RoundedCornerShape(13.dp))
+                        .padding(horizontal=9.dp, vertical=6.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Timer, null, tint = if (urgent) ArenaError else GoldPrimary, modifier=Modifier.size(15.dp))
+                        Spacer(Modifier.width(4.dp))
                         Text(
-                            text = "${remainingSeconds}s",
-                            color = if (isUrgent) ArenaError else GoldPrimary,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
+                            remainingSeconds?.let { "$it" } ?: if (currentRound != null && maxRounds != null) "$currentRound/$maxRounds" else "LIVE",
+                            color = if (urgent) ArenaError else GoldPrimary,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 12.sp
                         )
                     }
-                } else if (currentRound != null && maxRounds != null) {
-                    Text(
-                        text = "دست $currentRound از $maxRounds",
-                        color = SkySecondary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(SkySecondary.copy(alpha = 0.15f))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // ردیف مبارزه‌کنندگان (کاربر در مقابل AI)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // بازیکن (سمت چپ/راست متناسب با RTL)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .background(GoldPrimary.copy(alpha = 0.2f))
-                            .border(2.dp, GoldPrimary, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(imageVector = Icons.Default.Person, contentDescription = "شما", tint = GoldPrimary, modifier = Modifier.size(24.dp))
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Column {
-                        Text(text = "شما", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        Text(text = "امتیاز: $userScore", color = GoldLight, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
-                    }
+            Spacer(Modifier.height(12.dp))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                FighterBadge("شما", userScore, Icons.Default.Person, GoldPrimary, Modifier.weight(1f))
+                Box(Modifier.size(34.dp).clip(CircleShape).background(ArenaBackground).border(1.dp, ArenaSurfaceBorder, CircleShape), contentAlignment=Alignment.Center) {
+                    Text("VS", color=TextMuted, fontSize=10.sp, fontWeight=FontWeight.Black)
                 }
-
-                // آیکون وسط VS
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(ArenaBackground)
-                        .border(1.dp, ArenaSurfaceBorder, CircleShape)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                ) {
-                    Text(text = "VS", color = TextMuted, fontWeight = FontWeight.Black, fontSize = 12.sp)
-                }
-
-                // حریف هوش مصنوعی
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(text = aiProfile?.name ?: "هوش مصنوعی", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 13.sp)
-                        Text(text = "امتیاز: $aiScore", color = SkySecondary, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .size(42.dp)
-                            .clip(CircleShape)
-                            .background(SkySecondary.copy(alpha = 0.2f))
-                            .border(2.dp, SkySecondary, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(imageVector = Icons.Default.SmartToy, contentDescription = "AI", tint = SkySecondary, modifier = Modifier.size(24.dp))
-                    }
-                }
+                FighterBadge(aiProfile?.name ?: "حریف AI", aiScore, Icons.Default.SmartToy, SkySecondary, Modifier.weight(1f), true)
+            }
+            if (remainingSeconds != null) {
+                Spacer(Modifier.height(10.dp))
+                LinearProgressIndicator(
+                    progress = { (remainingSeconds / 60f).coerceIn(0f, 1f) },
+                    modifier = Modifier.fillMaxWidth().height(4.dp).clip(CircleShape),
+                    color = if (urgent) ArenaError else TurquoiseSecondary,
+                    trackColor = ArenaSurfaceBorder.copy(alpha=.35f)
+                )
             }
         }
     }
 }
 
-/**
- * دیالوگ نمایش نتیجه مسابقه (پیروزی یا شکست) همراه با پاداش و دکمه بازگشت
- */
+@Composable
+private fun FighterBadge(name: String, score: Int, icon: androidx.compose.ui.graphics.vector.ImageVector, tint: Color, modifier: Modifier, end: Boolean=false) {
+    Row(modifier, horizontalArrangement=if(end) Arrangement.End else Arrangement.Start, verticalAlignment=Alignment.CenterVertically) {
+        if (!end) {
+            AvatarIcon(icon, tint)
+            Spacer(Modifier.width(7.dp))
+        }
+        Column(horizontalAlignment=if(end) Alignment.End else Alignment.Start) {
+            Text(name, color=TextSecondary, fontSize=10.sp, fontWeight=FontWeight.Bold)
+            Text(score.toString(), color=tint, fontSize=20.sp, fontWeight=FontWeight.Black)
+        }
+        if (end) { Spacer(Modifier.width(7.dp)); AvatarIcon(icon, tint) }
+    }
+}
+
+@Composable
+private fun AvatarIcon(icon: androidx.compose.ui.graphics.vector.ImageVector, tint: Color) {
+    Box(Modifier.size(38.dp).clip(CircleShape).background(tint.copy(alpha=.13f)).border(1.5.dp, tint.copy(alpha=.6f), CircleShape), contentAlignment=Alignment.Center) {
+        Icon(icon, null, tint=tint, modifier=Modifier.size(21.dp))
+    }
+}
+
 @Composable
 fun BattleResultDialog(
     isWin: Boolean,
@@ -234,188 +165,79 @@ fun BattleResultDialog(
 ) {
     Dialog(onDismissRequest = {}) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-                .testTag("battle_result_dialog"),
-            shape = RoundedCornerShape(28.dp),
-            colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-            border = CardDefaults.outlinedCardBorder().copy(brush = Brush.verticalGradient(
-                if (isWin) listOf(GoldPrimary, EmeraldTertiary) else listOf(ArenaError, ArenaSurfaceBorder)
-            ))
+            Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
+            shape=RoundedCornerShape(30.dp),
+            colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),
+            border=androidx.compose.foundation.BorderStroke(
+                1.5.dp,
+                if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
+            )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // آیکون جام یا مدال
-                Box(
-                    modifier = Modifier
-                        .size(72.dp)
-                        .clip(CircleShape)
-                        .background(if (isWin) GoldPrimary.copy(alpha = 0.2f) else ArenaError.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isWin) Icons.Default.EmojiEvents else Icons.Default.Close,
-                        contentDescription = null,
-                        tint = if (isWin) GoldPrimary else ArenaError,
-                        modifier = Modifier.size(44.dp)
-                    )
+            Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally) {
+                Box(Modifier.size(82.dp).clip(CircleShape).background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f)).border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape), contentAlignment=Alignment.Center) {
+                    Icon(if(isWin) Icons.Default.EmojiEvents else Icons.Default.Close, null, tint=if(isWin) GoldPrimary else ArenaError, modifier=Modifier.size(46.dp))
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = if (isWin) "🎉 پیروزی درخشان!" else " شکستی در میدان پنجگانه!",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = if (isWin) GoldLight else ArenaError,
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = if (isWin) "حریف هوش مصنوعی مغلوب توانایی شما شد" else "حریف این بار دست بالا را گرفت، دوباره تلاش کن!",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // باکس مقایسه امتیاز
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(ArenaBackground)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "شما", color = TextSecondary, fontSize = 12.sp)
-                        Text(text = "$userScore", color = GoldPrimary, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                Spacer(Modifier.height(14.dp))
+                Text(if(isWin) "پیروزی!" else "نبرد تمام شد", color=if(isWin) GoldLight else ArenaError, fontSize=26.sp, fontWeight=FontWeight.Black)
+                Text(if(isWin) "تو کنترل میدان را در دست گرفتی." else "این راند را از دست دادی؛ دوباره وارد میدان شو.", color=TextSecondary, fontSize=12.sp, textAlign=TextAlign.Center, modifier=Modifier.padding(top=5.dp))
+                Spacer(Modifier.height(18.dp))
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(16.dp), horizontalArrangement=Arrangement.SpaceEvenly) {
+                    ScoreColumn("شما", userScore, GoldPrimary)
+                    Column(horizontalAlignment=Alignment.CenterHorizontally) {
+                        Text("RESULT", color=TextMuted, fontSize=8.sp, fontWeight=FontWeight.Black, letterSpacing=1.sp)
+                        Text("VS", color=TextMuted, fontWeight=FontWeight.Black)
                     }
-                    Text(text = "-", color = TextMuted, fontSize = 24.sp)
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "حریف AI", color = TextSecondary, fontSize = 12.sp)
-                        Text(text = "$aiScore", color = SkySecondary, fontWeight = FontWeight.Bold, fontSize = 24.sp)
+                    ScoreColumn("حریف AI", aiScore, SkySecondary)
+                }
+                Spacer(Modifier.height(12.dp))
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(15.dp)).background(EmeraldTertiary.copy(alpha=.10f)).padding(12.dp), verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.Center) {
+                    Icon(Icons.Default.MonetizationOn, null, tint=GoldPrimary, modifier=Modifier.size(20.dp))
+                    Spacer(Modifier.width(7.dp))
+                    Text("+$earnedCoins سکه پاداش", color=EmeraldTertiary, fontWeight=FontWeight.Black, fontSize=13.sp)
+                }
+                Spacer(Modifier.height(18.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(9.dp)) {
+                    OutlinedButton(onClick=onBackHome, Modifier.weight(1f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp)) {
+                        Text("خروج", color=TextSecondary, fontWeight=FontWeight.Bold)
                     }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // پاداش مسابقه
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(EmeraldTertiary.copy(alpha = 0.15f))
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.Default.MonetizationOn, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(20.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "پاداش دریافت شده: +$earnedCoins سکه طلا",
-                        color = EmeraldTertiary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // دکمه‌های اقدام
-                Button(
-                    onClick = onPlayAgain,
-                    modifier = Modifier.fillMaxWidth().height(48.dp).testTag("play_again_button"),
-                    shape = RoundedCornerShape(14.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
-                ) {
-                    Icon(imageVector = Icons.Default.Replay, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "نبرد دوباره", fontWeight = FontWeight.Bold)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                OutlinedButton(
-                    onClick = onBackHome,
-                    modifier = Modifier.fillMaxWidth().height(46.dp).testTag("back_home_button"),
-                    shape = RoundedCornerShape(14.dp)
-                ) {
-                    Text(text = "بازگشت به منوی اصلی", color = TextSecondary)
+                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=PurplePrimary)) {
+                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("نبرد دوباره", fontWeight=FontWeight.Black)
+                    }
                 }
             }
         }
     }
 }
 
-/**
- * بنر ویدیوی جایزه‌دار تپسل (در صورتی که کاربر VIP نباشد)
- */
 @Composable
-fun TapsellBannerAdView(
-    isVip: Boolean,
-    onAdClick: () -> Unit = {}
-) {
+fun TapsellBannerAdView(isVip: Boolean, onAdClick: () -> Unit = {}) {
     if (isVip) return
-
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
-            .clickable { onAdClick() }
-            .testTag("tapsell_banner_ad"),
-        shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = ArenaSurfaceBorder.copy(alpha = 0.6f))
+        Modifier.fillMaxWidth().padding(horizontal=16.dp, vertical=6.dp).clickable { onAdClick() }.testTag("tapsell_banner_ad"),
+        shape=RoundedCornerShape(16.dp), colors=CardDefaults.cardColors(containerColor=ArenaSurface),
+        border=androidx.compose.foundation.BorderStroke(1.dp, GoldPrimary.copy(alpha=.18f))
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(GoldPrimary.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(imageVector = Icons.Default.CardGiftcard, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(20.dp))
-                }
-                Spacer(modifier = Modifier.width(10.dp))
-                Column {
-                    Text(
-                        text = "ویدیوی جایزه‌دار تپسل",
-                        color = TextPrimary,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "مشاهده ویدیو و دریافت سکه رایگان",
-                        color = TextMuted,
-                        fontSize = 11.sp
-                    )
-                }
+        Row(Modifier.fillMaxWidth().padding(11.dp), verticalAlignment=Alignment.CenterVertically) {
+            Box(Modifier.size(36.dp).clip(RoundedCornerShape(10.dp)).background(GoldPrimary.copy(alpha=.13f)), contentAlignment=Alignment.Center) {
+                Icon(Icons.Default.CardGiftcard, null, tint=GoldPrimary, modifier=Modifier.size(19.dp))
             }
+            Spacer(Modifier.width(10.dp))
+            Column(Modifier.weight(1f)) {
+                Text("ویدیوی جایزه‌دار", color=TextPrimary, fontSize=11.sp, fontWeight=FontWeight.Bold)
+                Text("تماشا کن و سکه رایگان بگیر", color=TextMuted, fontSize=10.sp)
+            }
+            Text("REWARD", color=GoldPrimary, fontSize=9.sp, fontWeight=FontWeight.Black)
+        }
+    }
+}
 
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(ArenaBackground)
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(text = "پاداش", color = TextMuted, fontSize = 10.sp)
-            }
+@Composable
+private fun ScoreColumn(label:String, score:Int, tint:Color) {
+    Column(horizontalAlignment=Alignment.CenterHorizontally) {
+        Text(label, color=TextSecondary, fontSize=11.sp)
+        Text(score.toString(), color=tint, fontSize=28.sp, fontWeight=FontWeight.Black)
+        Row {
+            repeat(3) { Icon(Icons.Default.Star, null, tint=tint.copy(alpha=.8f), modifier=Modifier.size(11.dp)) }
         }
     }
 }
