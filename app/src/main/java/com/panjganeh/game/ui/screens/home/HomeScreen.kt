@@ -170,6 +170,21 @@ fun HomeScreen(
                     )
                 }
                 item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (lang == "en") "ARENA EDITION  •  v1.1.0" else "نسخه آرنا  •  ۱.۱.۰",
+                            color = WarmYellow.copy(alpha = 0.9f),
+                            fontSize = (9 * fontScale).sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        )
+                    }
+                }
+                item {
                     QuickStats(
                         coins = user?.coins ?: 0,
                         tickets = user?.tickets ?: 0,
