@@ -73,14 +73,6 @@ fun DailyRewardsScreen(
     tapsellManager: TapsellManager,
     onNavigateBack: () -> Unit
 ) {
-            item {
-                ReferencePageHeader(
-                    kicker = "DAILY REWARDS",
-                    title = "جوایز روزانه",
-                    subtitle = "هر روز وارد شو، پاداش بگیر و برای نبرد بعدی آماده شو."
-                )
-            }
-
     val context = LocalContext.current
     val activity = context as? Activity
     val scope = rememberCoroutineScope()
@@ -110,6 +102,12 @@ fun DailyRewardsScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            ReferencePageHeader(
+                kicker = "DAILY REWARDS",
+                title = "جوایز روزانه",
+                subtitle = "هر روز وارد شو، پاداش بگیر و برای نبرد بعدی آماده شو."
+            )
+            Spacer(modifier = Modifier.height(10.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
