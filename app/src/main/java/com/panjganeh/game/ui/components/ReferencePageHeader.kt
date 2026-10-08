@@ -45,15 +45,15 @@ fun ReferencePageHeader(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.4.dp, WarmYellow.copy(alpha = .42f))
     ) {
-        Box(Modifier.fillMaxWidth().height(154.dp)) {
+        Box(Modifier.fillMaxWidth().height(174.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(154.dp),
+                modifier = Modifier.fillMaxWidth().height(174.dp),
                 contentScale = ContentScale.Crop
             )
             Box(
-                Modifier.fillMaxWidth().height(154.dp).background(
+                Modifier.fillMaxWidth().height(174.dp).background(
                     Brush.verticalGradient(
                         listOf(
                             Color(0xFF07101E).copy(alpha = .18f),
@@ -64,7 +64,7 @@ fun ReferencePageHeader(
                 )
             )
             Column(
-                Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 15.dp),
+                Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
