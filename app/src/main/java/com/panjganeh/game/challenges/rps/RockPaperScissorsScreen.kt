@@ -218,6 +218,7 @@ fun RockPaperScissorsScreen(
         }
     }
 
+}
 
 @Composable
 private fun RpsReferenceChoice(
