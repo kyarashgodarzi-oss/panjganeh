@@ -327,49 +327,112 @@ fun BattleResultDialog(
     onPlayAgain: () -> Unit,
     onBackHome: () -> Unit
 ) {
+    val accent = if (isWin) GoldPrimary else ArenaError
     Dialog(onDismissRequest = {}) {
         Card(
-            Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
-            shape=RoundedCornerShape(30.dp),
-            colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),
-            border=androidx.compose.foundation.BorderStroke(
+            Modifier.fillMaxWidth().padding(10.dp).testTag("battle_result_dialog"),
+            shape = RoundedCornerShape(30.dp),
+            colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+            border = androidx.compose.foundation.BorderStroke(
                 1.5.dp,
-                if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
+                if (isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
             )
         ) {
-            Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally) {
-                Box(Modifier.size(82.dp).clip(CircleShape).background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f)).border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape), contentAlignment=Alignment.Center) {
-                    Icon(if(isWin) Icons.Default.EmojiEvents else Icons.Default.Close, null, tint=if(isWin) GoldPrimary else ArenaError, modifier=Modifier.size(46.dp))
+            Column(
+                Modifier.fillMaxWidth().padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    Modifier.size(96.dp)
+                        .clip(CircleShape)
+                        .background(accent.copy(alpha = .12f))
+                        .border(2.dp, accent, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        if (isWin) Icons.Default.EmojiEvents else Icons.Default.Close,
+                        null,
+                        tint = accent,
+                        modifier = Modifier.size(52.dp)
+                    )
                 }
-                Spacer(Modifier.height(14.dp))
-                Text(if(isWin) "پیروزی!" else "نبرد تمام شد", color=if(isWin) GoldLight else ArenaError, fontSize=26.sp, fontWeight=FontWeight.Black)
-                Text(if(isWin) "تو کنترل میدان را در دست گرفتی." else "این راند را از دست دادی؛ دوباره وارد میدان شو.", color=TextSecondary, fontSize=12.sp, textAlign=TextAlign.Center, modifier=Modifier.padding(top=5.dp))
-                Spacer(Modifier.height(18.dp))
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(16.dp), horizontalArrangement=Arrangement.SpaceEvenly) {
-                    ScoreColumn("شما", userScore, GoldPrimary)
-                    Column(horizontalAlignment=Alignment.CenterHorizontally) {
-                        Text("RESULT", color=TextMuted, fontSize=8.sp, fontWeight=FontWeight.Black, letterSpacing=1.sp)
-                        Text("VS", color=TextMuted, fontWeight=FontWeight.Black)
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    if (isWin) "برد!" else "باخت!",
+                    color = if (isWin) GoldLight else ArenaError,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Black
+                )
+                Text(
+                    if (isWin) "شما در این مرحله پیروز شدید!" else "حریف این مرحله را برد!",
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.Center) {
+                    repeat(3) { i ->
+                        Icon(Icons.Default.Star, null, tint = if (isWin && i < 2) GoldPrimary else ArenaSurfaceBorder, modifier = Modifier.size(22.dp))
                     }
-                    ScoreColumn("حریف AI", aiScore, SkySecondary)
                 }
                 Spacer(Modifier.height(12.dp))
-                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(15.dp)).background(EmeraldTertiary.copy(alpha=.10f)).padding(12.dp), verticalAlignment=Alignment.CenterVertically, horizontalArrangement=Arrangement.Center) {
-                    Icon(Icons.Default.MonetizationOn, null, tint=GoldPrimary, modifier=Modifier.size(20.dp))
-                    Spacer(Modifier.width(7.dp))
-                    Text("+$earnedCoins سکه پاداش", color=EmeraldTertiary, fontWeight=FontWeight.Black, fontSize=13.sp)
-                }
-                Spacer(Modifier.height(18.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-                    OutlinedButton(onClick=onBackHome, Modifier.weight(1f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp)) {
-                        Text("خروج", color=TextSecondary, fontWeight=FontWeight.Bold)
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp))
+                        .background(ArenaBackground).padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    ScoreColumn("شما", userScore, GoldPrimary)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("VS", color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Black)
+                        Text("مرحله", color = TextMuted, fontSize = 9.sp)
                     }
-                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=PurplePrimary)) {
-                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("نبرد دوباره", fontWeight=FontWeight.Black)
+                    ScoreColumn("حریف", aiScore, SkySecondary)
+                }
+                Spacer(Modifier.height(10.dp))
+                Row(
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp))
+                        .background(GoldPrimary.copy(alpha = .10f))
+                        .border(1.dp, GoldPrimary.copy(alpha = .28f), RoundedCornerShape(16.dp))
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    RewardItem(Icons.Default.MonetizationOn, "+$earnedCoins", "سکه")
+                    RewardItem(Icons.Default.Star, if (isWin) "+50" else "+10", "XP")
+                    RewardItem(Icons.Default.CardGiftcard, if (isWin) "پاداش" else "تلاش دوباره", "جایزه")
+                }
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    OutlinedButton(
+                        onClick = onBackHome,
+                        Modifier.weight(1f).height(48.dp).testTag("back_home_button"),
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Text(if (isWin) "ادامه" else "خروج", color = TextSecondary, fontWeight = FontWeight.Bold)
+                    }
+                    Button(
+                        onClick = onPlayAgain,
+                        Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color(0xFF241407))
+                    ) {
+                        Icon(Icons.Default.Replay, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(5.dp))
+                        Text(if (isWin) "ادامه نبرد" else "تلاش دوباره", fontWeight = FontWeight.Black)
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RewardItem(icon: androidx.compose.ui.graphics.vector.ImageVector, value: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Icon(icon, null, tint = GoldPrimary, modifier = Modifier.size(21.dp))
+        Text(value, color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Black)
+        Text(label, color = TextMuted, fontSize = 9.sp)
     }
 }
 
