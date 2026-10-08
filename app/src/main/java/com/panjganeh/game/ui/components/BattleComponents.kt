@@ -214,6 +214,20 @@ fun BattleHeader(
                 }
             }
 
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 3.dp, vertical = 8.dp)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(GoldPrimary, TurquoiseSecondary, PurplePrimary)
+                        )
+                    )
+                    .testTag("battle_reference_accent")
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
