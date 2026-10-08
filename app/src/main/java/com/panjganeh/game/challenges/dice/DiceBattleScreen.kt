@@ -53,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -141,44 +142,10 @@ fun DiceBattleScreen(
                 onExitClick = onNavigateBack
             )
 
-            // نشانگر تعداد بردهای دست
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.userRoundWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) GoldPrimary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = "اولین به ۳ برد برنده نهایی است",
-                    color = TextMuted,
-                    fontSize = 12.sp
-                )
-
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.aiRoundWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) SkySecondary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
+            BattleRoundStars(
+                userScore = state.userRoundWins,
+                aiScore = state.aiRoundWins
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
