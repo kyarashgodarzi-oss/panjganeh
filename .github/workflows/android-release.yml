@@ -1,4 +1,5 @@
 name: Android Release Build & CI
+# Premium redesign validation
 
 on:
   push:
