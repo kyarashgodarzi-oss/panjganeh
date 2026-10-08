@@ -847,6 +847,7 @@ fun HomeNavButton(
 
 /** Premium game-hub hero: turns the landing screen into an arena rather than a utility dashboard. */
 @Composable
+/** Premium Arena Hub */
 private fun ArenaHeroCard(
     level: Int,
     xp: Int,
