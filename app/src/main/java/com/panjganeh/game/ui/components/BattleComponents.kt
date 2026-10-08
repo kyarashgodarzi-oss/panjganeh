@@ -85,14 +85,14 @@ fun BattleArenaBackground(
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            alpha = 0.20f
+            alpha = 0.34f
         )
         Box(
             Modifier.fillMaxSize().background(
                 Brush.verticalGradient(
                     listOf(
-                        ArenaBackground.copy(alpha = 0.72f),
-                        ArenaBackground.copy(alpha = 0.92f),
+                        ArenaBackground.copy(alpha = 0.48f),
+                        ArenaBackground.copy(alpha = 0.78f),
                         ArenaBackground
                     )
                 )
