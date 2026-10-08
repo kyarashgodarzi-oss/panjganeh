@@ -100,7 +100,7 @@ fun ProfileScreen(
     val xpProgress = (user?.xp ?: 0).toFloat() / nextLevelXp.toFloat()
 
     Scaffold(
-        containerColor = ArenaBackground,
+        containerColor = Color.Transparent,
         topBar = {
             ArenaTopBar(
                 user = user,
@@ -113,6 +113,7 @@ fun ProfileScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -122,10 +123,11 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("profile_main_card"),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldDark))
-                        else androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                        width = 1.5.dp,
+                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldPrimary))
+                        else Brush.horizontalGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF)))
                     )
                 ) {
                     Column(
@@ -136,7 +138,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(74.dp)
                                 .clip(CircleShape)
-                                .background(Brush.linearGradient(listOf(GoldPrimary, GoldDark)))
+                                .background(Brush.linearGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF))))
                                 .border(2.5.dp, if (isVip) VipGold else GoldLight, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
