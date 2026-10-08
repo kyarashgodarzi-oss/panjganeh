@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.SkipNext
@@ -32,10 +29,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,12 +40,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.clip
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,8 +54,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
-import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -69,6 +63,7 @@ import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
 import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
+import com.panjganeh.game.ui.theme.PurplePrimary
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
@@ -85,24 +80,14 @@ fun WordBattleScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val activity = context as? Activity
-
-    // وضعیت نمایش دیالوگ نتیجه (با تأخیر برای Interstitial)
     var showResultDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(difficulty) {
-        viewModel.startGame(difficulty)
-    }
+    LaunchedEffect(difficulty) { viewModel.startGame(difficulty) }
 
-    // وقتی بازی تموم شد، اول Interstitial نشون بده، بعد دیالوگ
     LaunchedEffect(state.isGameOver) {
         if (state.isGameOver) {
             if (activity != null) {
-                // اول تبلیغ (اگه لازمه) بعد دیالوگ
-                tapsellManager.onBattleFinished(
-                    activity = activity,
-                    isWin = state.isWin,
-                    onFinished = { showResultDialog = true }
-                )
+                tapsellManager.onBattleFinished(activity, state.isWin) { showResultDialog = true }
             } else {
                 showResultDialog = true
             }
@@ -111,208 +96,158 @@ fun WordBattleScreen(
         }
     }
 
-    Scaffold(
-        containerColor = ArenaBackground
-    ) { paddingValues ->
+    Scaffold(containerColor = ArenaBackground) { padding ->
         Box(Modifier.fillMaxSize()) {
             BattleArenaBackground(challenge = "نبرد کلمات", modifier = Modifier.fillMaxSize())
+
             Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            BattleHeader(
-                challengeTitle = "نبرد کلمات",
-                userScore = state.userScore,
-                aiScore = state.aiScore,
-                remainingSeconds = state.remainingSeconds,
-                aiProfile = state.aiProfile,
-                onExitClick = onNavigateBack
-            )
-
-            BattleRoundStars(
-                userScore = state.userScore,
-                aiScore = state.aiScore
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // حالت جاری چالش
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SkySecondary.copy(alpha = 0.15f))
-                    .padding(horizontal = 14.dp, vertical = 6.dp)
+                Modifier.fillMaxSize().padding(padding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = state.currentMode.titleFa,
-                    color = SkySecondary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.sp
+                BattleHeader(
+                    challengeTitle = "نبرد کلمات",
+                    userScore = state.userScore,
+                    aiScore = state.aiScore,
+                    remainingSeconds = state.remainingSeconds,
+                    aiProfile = state.aiProfile,
+                    onExitClick = onNavigateBack
                 )
-            }
+                BattleRoundStars(userScore = state.userScore, aiScore = state.aiScore)
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // کارت معما و کلمه
-            val current = state.currentWordItem
-            if (current != null) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 33.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface),
-                    border = CardDefaults.outlinedCardBorder().copy(
-                        width = 1.dp,
-                        brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                val current = state.currentWordItem
+                if (current != null) {
+                    Card(
+                        Modifier.fillMaxWidth().padding(horizontal = 18.dp).testTag("word_puzzle_card"),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .96f)),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, SkySecondary.copy(alpha = .55f))
                     ) {
-                        // راهنمای کلمه
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(GoldPrimary.copy(alpha = 0.1f))
-                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        Column(
+                            Modifier.fillMaxWidth().padding(15.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Icon(imageVector = Icons.Default.Lightbulb, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(16.dp))
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "راهنما: ${current.hint}", color = GoldLight, fontSize = 12.sp)
-                        }
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        // نمایش فرمت معما
-                        when (state.currentMode) {
-                            WordBattleMode.MISSING_LETTERS -> {
-                                Text(
-                                    text = current.missing,
-                                    fontSize = 38.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = TextPrimary,
-                                    letterSpacing = 4.sp
-                                )
-                                Text(text = "حروف جاافتاده را در کلمه بنویسید", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
-                            }
-                            WordBattleMode.SCRAMBLED_LETTERS -> {
-                                Text(
-                                    text = current.scrambled,
-                                    fontSize = 32.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = SkySecondary,
-                                    letterSpacing = 4.sp
-                                )
-                                Text(text = "حروف به‌هم‌ریخته را مرتب کرده و کلمه صحیح را بیابید", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
-                            }
-                            WordBattleMode.TABLE_FILL -> {
-                                Row(
-                                    horizontalArrangement = Arrangement.Center,
-                                    modifier = Modifier.fillMaxWidth()
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    Modifier.clip(RoundedCornerShape(10.dp))
+                                        .background(GoldPrimary.copy(alpha = .12f))
+                                        .padding(horizontal = 9.dp, vertical = 5.dp)
                                 ) {
-                                    current.word.forEachIndexed { idx, ch ->
-                                        val isHidden = idx % 2 != 0
-                                        Box(
-                                            modifier = Modifier
-                                                .padding(4.dp)
-                                                .size(42.dp)
-                                                .clip(RoundedCornerShape(8.dp))
-                                                .background(if (isHidden) ArenaBackground else GoldPrimary.copy(alpha = 0.2f))
-                                                .border(1.dp, if (isHidden) ArenaSurfaceBorder else GoldPrimary, RoundedCornerShape(8.dp)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = if (isHidden) "؟" else ch.toString(),
-                                                color = if (isHidden) TextMuted else GoldPrimary,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 18.sp
-                                            )
-                                        }
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Lightbulb, null, tint = GoldPrimary, modifier = Modifier.size(15.dp))
+                                        Spacer(Modifier.width(4.dp))
+                                        Text("راهنما", color = GoldLight, fontSize = 10.sp, fontWeight = FontWeight.Black)
                                     }
                                 }
-                                Text(text = "کلمه کامل جدول را در کادر زیر تایپ کنید", color = TextMuted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
+                                Text(state.currentMode.titleFa, color = SkySecondary, fontSize = 11.sp, fontWeight = FontWeight.Black)
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(24.dp))
-
-                        // فیلد ورودی کلمه
-                        OutlinedTextField(
-                            value = state.userInput,
-                            onValueChange = { viewModel.onUserInputChange(it) },
-                            placeholder = { Text("پاسخ کلمه را وارد کنید...", color = TextMuted) },
-                            singleLine = true,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag("word_input_field"),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedContainerColor = ArenaBackground,
-                                unfocusedContainerColor = ArenaBackground,
-                                focusedBorderColor = GoldPrimary,
-                                unfocusedBorderColor = ArenaSurfaceBorder,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
-                            ),
-                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                            keyboardActions = KeyboardActions(onDone = { viewModel.submitAnswer() })
-                        )
-
-                        Spacer(modifier = Modifier.height(14.dp))
-
-                        // پیام بازخورد
-                        AnimatedVisibility(visible = state.feedbackMessage.isNotEmpty()) {
                             Text(
-                                text = state.feedbackMessage,
-                                color = if (state.isCorrectFeedback) EmeraldTertiary else ArenaError,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp,
-                                textAlign = TextAlign.Center
+                                current.hint,
+                                color = TextSecondary,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                             )
-                        }
 
-                        Spacer(modifier = Modifier.height(14.dp))
+                            Spacer(Modifier.height(13.dp))
 
-                        // دکمه‌های تایید و بعدی
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextButton(
-                                onClick = { viewModel.skipWord() },
-                                modifier = Modifier.testTag("skip_word_button")
-                            ) {
-                                Icon(imageVector = Icons.Default.SkipNext, contentDescription = null, tint = TextMuted)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "کلمه بعدی", color = TextMuted)
+                            if (state.currentMode == WordBattleMode.SCRAMBLED_LETTERS) {
+                                Text(
+                                    current.scrambled,
+                                    color = SkySecondary,
+                                    fontSize = 28.sp,
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 4.sp,
+                                    modifier = Modifier.testTag("scrambled_word")
+                                )
                             }
 
-                            Button(
-                                onClick = { viewModel.submitAnswer() },
-                                modifier = Modifier
-                                    .height(48.dp)
-                                    .testTag("submit_word_button"),
-                                shape = RoundedCornerShape(14.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color.Black)
+                            WordSlots(
+                                wordLength = current.word.length,
+                                input = state.userInput,
+                                revealed = if (state.currentMode == WordBattleMode.MISSING_LETTERS) current.word else null
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+
+                            Text(
+                                if (state.userInput.isEmpty()) "حروف را انتخاب کن" else "پاسخ: \${state.userInput}",
+                                color = if (state.isCorrectFeedback) EmeraldTertiary else TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Black
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth().testTag("word_letter_keyboard"),
+                                horizontalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterHorizontally),
+                                verticalArrangement = Arrangement.spacedBy(7.dp)
                             ) {
-                                Icon(imageVector = Icons.Default.Check, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "ثبت کلمه (+۱۰)", fontWeight = FontWeight.Bold)
+                                letterChoices(current.word).forEach { letter ->
+                                    LetterKey(
+                                        letter = letter,
+                                        enabled = !state.isGameOver && state.userInput.length < current.word.length,
+                                        onClick = { viewModel.onUserInputChange(state.userInput + letter) }
+                                    )
+                                }
+                            }
+
+                            Spacer(Modifier.height(12.dp))
+
+                            AnimatedVisibility(state.feedbackMessage.isNotEmpty()) {
+                                Text(
+                                    state.feedbackMessage,
+                                    color = if (state.isCorrectFeedback) EmeraldTertiary else ArenaError,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+
+                            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                TextButton(
+                                    onClick = { viewModel.onUserInputChange(state.userInput.dropLast(1)) },
+                                    enabled = state.userInput.isNotEmpty() && !state.isGameOver,
+                                    modifier = Modifier.weight(1f).testTag("word_backspace_button")
+                                ) {
+                                    Icon(Icons.Default.Backspace, null, tint = TextMuted, modifier = Modifier.size(17.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("پاک کردن", color = TextMuted, fontSize = 11.sp)
+                                }
+
+                                TextButton(
+                                    onClick = { viewModel.skipWord() },
+                                    enabled = !state.isGameOver,
+                                    modifier = Modifier.weight(1f).testTag("skip_word_button")
+                                ) {
+                                    Icon(Icons.Default.SkipNext, null, tint = TextMuted, modifier = Modifier.size(17.dp))
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("بعدی", color = TextMuted, fontSize = 11.sp)
+                                }
+
+                                Button(
+                                    onClick = { viewModel.submitAnswer() },
+                                    enabled = state.userInput.isNotEmpty() && !state.isGameOver,
+                                    modifier = Modifier.weight(1.45f).height(46.dp).testTag("submit_word_button"),
+                                    shape = RoundedCornerShape(13.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color(0xFF201307))
+                                ) {
+                                    Icon(Icons.Default.Check, null, modifier = Modifier.size(17.dp))
+                                    Spacer(Modifier.width(5.dp))
+                                    Text("ثبت کلمه", fontWeight = FontWeight.Black, fontSize = 12.sp)
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-
-        // دیالوگ پایان نبرد (فقط بعد از Interstitial نشون داده می‌شه)
         }
 
         if (showResultDialog && state.isGameOver) {
@@ -326,4 +261,66 @@ fun WordBattleScreen(
             )
         }
     }
+}
+
+@Composable
+private fun WordSlots(wordLength: Int, input: String, revealed: String?) {
+    Row(
+        Modifier.fillMaxWidth().testTag("word_letter_slots"),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        repeat(wordLength) { index ->
+            val char = input.getOrNull(index)
+            val reveal = revealed?.getOrNull(index)
+            Box(
+                Modifier.padding(horizontal = 3.dp).size(38.dp)
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(
+                        when {
+                            char != null -> PurplePrimary.copy(alpha = .28f)
+                            reveal != null && index % 2 == 0 -> GoldPrimary.copy(alpha = .12f)
+                            else -> ArenaBackground
+                        }
+                    )
+                    .border(
+                        1.dp,
+                        when {
+                            char != null -> PurplePrimary
+                            reveal != null && index % 2 == 0 -> GoldPrimary.copy(alpha = .6f)
+                            else -> ArenaSurfaceBorder
+                        },
+                        RoundedCornerShape(9.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = char?.toString() ?: if (reveal != null && index % 2 == 0) reveal.toString() else "•",
+                    color = if (char != null) TextPrimary else if (reveal != null && index % 2 == 0) GoldLight else TextMuted,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LetterKey(letter: String, enabled: Boolean, onClick: () -> Unit) {
+    Box(
+        Modifier.size(43.dp)
+            .clip(RoundedCornerShape(11.dp))
+            .background(if (enabled) PurplePrimary.copy(alpha = .18f) else ArenaBackground)
+            .border(1.dp, if (enabled) PurplePrimary.copy(alpha = .75f) else ArenaSurfaceBorder, RoundedCornerShape(11.dp))
+            .clickable(enabled = enabled, onClick = onClick)
+            .testTag("letter_$letter"),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(letter, color = if (enabled) TextPrimary else TextMuted, fontSize = 17.sp, fontWeight = FontWeight.Black)
+    }
+}
+
+private fun letterChoices(word: String): List<String> {
+    val base = word.filter { !it.isWhitespace() }.map { it.toString() }.distinct()
+    val distractors = listOf("ا", "ب", "ت", "ر", "س", "ن", "م", "ی", "د", "ک", "ل", "و")
+    return (base + distractors).distinct().shuffled().take(12)
 }
