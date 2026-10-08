@@ -140,7 +140,12 @@ fun ProfileScreen(
                     )
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp),
+                        modifier = Modifier.fillMaxWidth()
+                            .background(
+                                Brush.verticalGradient(listOf(Color(0xFF1B1740), ArenaSurface)),
+                                RoundedCornerShape(24.dp)
+                            )
+                            .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Box(
