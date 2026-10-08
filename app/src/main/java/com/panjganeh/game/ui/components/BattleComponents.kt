@@ -114,9 +114,9 @@ fun BattleHeader(
 ) {
     val urgent = remainingSeconds != null && remainingSeconds <= 10
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).testTag("battle_header"),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).testTag("battle_header"),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.86f)),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             Brush.horizontalGradient(listOf(PurplePrimary.copy(alpha = .65f), TurquoiseSecondary.copy(alpha = .55f)))
@@ -128,8 +128,8 @@ fun BattleHeader(
                     Icon(Icons.Default.Close, "خروج", tint = TextSecondary)
                 }
                 Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("ARENA BATTLE", color = TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Black, letterSpacing = 1.4.sp)
-                    Text(challengeTitle, color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Black)
+                    Text(challengeTitle, color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center)
+                    Text("پنجگانه • ARENA", color = TextMuted, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
                 }
                 Box(
                     Modifier.clip(RoundedCornerShape(13.dp))
