@@ -187,7 +187,7 @@ fun DiceBattleScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = ArenaSurface),
                 border = CardDefaults.outlinedCardBorder().copy(
                     brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
@@ -196,54 +196,41 @@ fun DiceBattleScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                         .padding(horizontal = 18.dp, vertical = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // تاس کاربر
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "تاس شما", color = GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            DiceVisual(
-                                value = state.userDiceValue,
-                                color = GoldPrimary,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        if (state.isRolling) {
-                                            rotationZ = diceRotation
-                                            scaleX = diceScale
-                                            scaleY = diceScale
-                                        }
-                                    }
-                            )
+                    Text(
+                        text = "تاس میدان",
+                        color = GoldLight,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 13.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    DiceVisual(
+                        value = state.userDiceValue,
+                        color = GoldPrimary,
+                        modifier = Modifier.graphicsLayer {
+                            if (state.isRolling) {
+                                rotationZ = diceRotation
+                                scaleX = diceScale
+                                scaleY = diceScale
+                            }
                         }
-
-                        Text(
-                            text = "VS",
-                            color = TextMuted,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 20.sp
-                        )
-
-                        // تاس AI
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "تاس حریف", color = SkySecondary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(12.dp))
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(13.dp))
+                            .background(Color(0xB8071326))
+                            .border(1.dp, ArenaSurfaceBorder, RoundedCornerShape(13.dp))
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(7.dp)
+                    ) {
+                        repeat(5) { index ->
                             DiceVisual(
-                                value = state.aiDiceValue,
-                                color = SkySecondary,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        if (state.isRolling) {
-                                            rotationZ = -diceRotation
-                                            scaleX = diceScale
-                                            scaleY = diceScale
-                                        }
-                                    }
+                                value = if (index == 4) state.aiDiceValue else state.userDiceValue,
+                                color = if (index == 4) SkySecondary else GoldPrimary,
+                                modifier = Modifier.size(42.dp)
                             )
                         }
                     }
