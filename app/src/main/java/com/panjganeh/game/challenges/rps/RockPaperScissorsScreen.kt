@@ -214,9 +214,9 @@ fun RockPaperScissorsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         listOf(
+                            RpsChoice.ROCK,
                             RpsChoice.PAPER,
-                            RpsChoice.SCISSORS,
-                            RpsChoice.ROCK
+                            RpsChoice.SCISSORS
                         ).forEach { choice ->
                             val isSelected = state.userChoice == choice
                             RpsReferenceChoice(
@@ -340,11 +340,12 @@ private fun RpsReferenceHeader(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 RpsPlayerBadge(
-                    name = "تایان هوشمند",
-                    score = aiScore,
-                    color = SkySecondary,
-                    icon = Icons.Default.SmartToy,
-                    modifier = Modifier.weight(1f)
+                    name = "شما",
+                    score = userScore,
+                    color = GoldPrimary,
+                    icon = Icons.Default.Person,
+                    modifier = Modifier.weight(1f),
+                    rightAligned = true
                 )
                 Box(
                     modifier = Modifier
@@ -357,12 +358,11 @@ private fun RpsReferenceHeader(
                     Text("VS", color = TextMuted, fontSize = 11.sp, fontWeight = FontWeight.Black)
                 }
                 RpsPlayerBadge(
-                    name = "شما",
-                    score = userScore,
-                    color = GoldPrimary,
-                    icon = Icons.Default.Person,
-                    modifier = Modifier.weight(1f),
-                    rightAligned = true
+                    name = "تایان هوشمند",
+                    score = aiScore,
+                    color = SkySecondary,
+                    icon = Icons.Default.SmartToy,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
