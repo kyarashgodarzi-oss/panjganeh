@@ -2,6 +2,7 @@ package com.panjganeh.game.challenges.rps
 
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -216,4 +217,48 @@ fun RockPaperScissorsScreen(
             )
         }
     }
+
+
+@Composable
+private fun RpsReferenceChoice(
+    choice: RpsChoice,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    val emoji = when (choice) {
+        RpsChoice.ROCK -> "✊"
+        RpsChoice.PAPER -> "✋"
+        RpsChoice.SCISSORS -> "✌️"
+    }
+    Box(
+        modifier = modifier
+            .height(194.dp)
+            .clip(RoundedCornerShape(22.dp))
+            .background(
+                if (selected) GoldPrimary.copy(alpha = 0.16f)
+                else Color(0xFF070B17).copy(alpha = 0.84f)
+            )
+            .border(
+                if (selected) 2.dp else 1.dp,
+                if (selected) GoldPrimary else ArenaSurfaceBorder,
+                RoundedCornerShape(22.dp)
+            )
+            .clickable(enabled = enabled, onClick = onClick)
+            .testTag("rps_choice_" + choice.name.lowercase()),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(emoji, fontSize = 54.sp)
+            Spacer(Modifier.height(10.dp))
+            Text(
+                choice.titleFa,
+                color = if (selected) GoldPrimary else TextPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Black
+            )
+        }
+    }
+}
 
