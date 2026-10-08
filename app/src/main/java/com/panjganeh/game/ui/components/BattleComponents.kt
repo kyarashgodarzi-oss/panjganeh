@@ -98,6 +98,27 @@ fun BattleArenaBackground(
                 )
             )
         )
+        // Soft ambient glows reproduce the reference arena's layered, illuminated backdrop.
+        Box(
+            Modifier
+                .align(Alignment.TopStart)
+                .size(260.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(PurplePrimary.copy(alpha = 0.22f), Color.Transparent)
+                    )
+                )
+        )
+        Box(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .size(300.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(TurquoiseSecondary.copy(alpha = 0.15f), Color.Transparent)
+                    )
+                )
+        )
     }
 }
 
