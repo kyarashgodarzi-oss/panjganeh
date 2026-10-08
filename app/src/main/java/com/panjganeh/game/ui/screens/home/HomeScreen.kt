@@ -588,25 +588,25 @@ private fun ArenaChallengeCard(challenge: ChallengeItemEntity, lang: String, sca
     val meta = challengeMeta(challenge.challengeId, lang)
     Card(
         Modifier.fillMaxWidth().testTag("challenge_" + challenge.challengeId).clickable(onClick = onPlay),
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.97f)),
+        shape = RoundedCornerShape(17.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.88f)),
         border = BorderStroke(1.dp, meta.color.copy(alpha = 0.30f))
     ) {
-        Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(
-                Modifier.size(52.dp).clip(RoundedCornerShape(17.dp))
+                Modifier.size(44.dp).clip(RoundedCornerShape(14.dp))
                     .background(meta.color.copy(alpha = 0.14f))
                     .border(1.dp, meta.color.copy(alpha = 0.35f), RoundedCornerShape(17.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(meta.icon, null, tint = meta.color, modifier = Modifier.size(27.dp))
+                Icon(meta.icon, null, tint = meta.color, modifier = Modifier.size(23.dp))
             }
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
-                Text(meta.title, color = TextPrimary, fontSize = (16 * scale).sp, fontWeight = FontWeight.Black)
+                Text(meta.title, color = TextPrimary, fontSize = (13 * scale).sp, fontWeight = FontWeight.Black)
                 Text(
                     if (lang == "en") meta.subtitle else challenge.descriptionFa,
                     color = TextSecondary,
-                    fontSize = (10 * scale).sp,
+                    fontSize = (9 * scale).sp,
                     maxLines = 1,
                     modifier = Modifier.padding(top = 2.dp)
                 )
