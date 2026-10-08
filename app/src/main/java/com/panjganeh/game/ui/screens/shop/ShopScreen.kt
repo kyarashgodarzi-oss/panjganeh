@@ -103,7 +103,7 @@ fun ShopScreen(
     }
 
     Scaffold(
-        containerColor = ArenaBackground,
+        containerColor = Color.Transparent,
         topBar = {
             ArenaTopBar(
                 user = user,
@@ -116,6 +116,7 @@ fun ShopScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -127,10 +128,10 @@ fun ShopScreen(
                         .fillMaxWidth()
                         .testTag("rewarded_video_card"),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = EmeraldTertiary.copy(alpha = 0.15f)),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                     border = CardDefaults.outlinedCardBorder().copy(
                         width = 1.dp,
-                        brush = androidx.compose.ui.graphics.SolidColor(EmeraldTertiary)
+                        brush = Brush.horizontalGradient(listOf(EmeraldTertiary, Color(0xFF7C5CFF)))
                     )
                 ) {
                     Row(
