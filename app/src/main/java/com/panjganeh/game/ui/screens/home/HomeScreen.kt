@@ -206,6 +206,17 @@ fun HomeScreen(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                ArenaHeroCard(
+                    level = user?.level ?: 1,
+                    xp = user?.experience ?: 0,
+                    lang = currentLang,
+                    onPlayClick = {
+                        challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) }
+                    }
+                )
+            }
+
             // ═══════════════════════════════════════════════════════════
             // کارت تبلیغ جایزه‌دار تپسل (Rewarded Video)
             // ═══════════════════════════════════════════════════════════
@@ -831,5 +842,112 @@ fun HomeNavButton(
         }
         Spacer(modifier = Modifier.height(3.dp))
         Text(text = title, color = tint, fontSize = (10 * fontScale).sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+/** Premium game-hub hero: turns the landing screen into an arena rather than a utility dashboard. */
+@Composable
+private fun ArenaHeroCard(
+    level: Int,
+    xp: Int,
+    lang: String,
+    onPlayClick: () -> Unit
+) {
+    val shape = RoundedCornerShape(26.dp)
+    Card(
+        modifier = Modifier.fillMaxWidth().testTag("arena_hero_card"),
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = CardDefaults.outlinedCardBorder().copy(
+            width = 1.dp,
+            brush = Brush.horizontalGradient(
+                listOf(PurplePrimary.copy(alpha = 0.75f), TurquoiseSecondary.copy(alpha = 0.55f), WarmYellow.copy(alpha = 0.5f))
+            )
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        listOf(Color(0xFF17163A), Color(0xFF101B34), Color(0xFF0D2630))
+                    )
+                )
+                .padding(20.dp)
+        ) {
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = if (lang == "en") "THE ARENA" else "آرِنای پنجگانه",
+                            color = WarmYellow,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 1.5.sp
+                        )
+                        Spacer(Modifier.height(5.dp))
+                        Text(
+                            text = if (lang == "en") "Five battles.\nOne champion." else "پنج نبرد.\nیک قهرمان.",
+                            color = Color.White,
+                            fontSize = 27.sp,
+                            lineHeight = 31.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                        Spacer(Modifier.height(7.dp))
+                        Text(
+                            text = if (lang == "en") "Pick a challenge and beat your best score." else "یک چالش را انتخاب کن و رکورد خودت را شکست بده.",
+                            color = Color(0xFFC7D2E8),
+                            fontSize = 12.sp,
+                            lineHeight = 18.sp
+                        )
+                    }
+                    Box(
+                        modifier = Modifier.size(58.dp).clip(CircleShape)
+                            .background(VipCrownGradient.copy(alpha = 0.18f))
+                            .border(1.dp, WarmYellow.copy(alpha = 0.45f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.EmojiEvents, null, tint = WarmYellow, modifier = Modifier.size(31.dp))
+                    }
+                }
+
+                Spacer(Modifier.height(18.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier.weight(1f).height(8.dp).clip(CircleShape)
+                            .background(Color.White.copy(alpha = 0.10f))
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(((xp % 1000) / 1000f).coerceIn(0.08f, 1f)).height(8.dp)
+                                .clip(CircleShape).background(Brush.horizontalGradient(listOf(PurplePrimary, TurquoiseSecondary)))
+                        )
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Text("LV $level", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Black)
+                }
+
+                Spacer(Modifier.height(15.dp))
+
+                Button(
+                    onClick = onPlayClick,
+                    modifier = Modifier.fillMaxWidth().height(50.dp).testTag("hero_start_button"),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C5CFF), contentColor = Color.White)
+                ) {
+                    Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(22.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = if (lang == "en") "START THE RUN" else "شروع نبرد",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
     }
 }
