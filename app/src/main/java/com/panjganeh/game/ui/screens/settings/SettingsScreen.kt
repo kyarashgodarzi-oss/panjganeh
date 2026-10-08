@@ -607,7 +607,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = if (currentLang == "en") "Panjganeh — Version 1.0.0" else "پنجگانه — نسخه ۱.۰.۰",
+                                    text = if (currentLang == "en") "Panjganeh — Version 1.1.0" else "پنجگانه — نسخه ۱.۱.۰",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = (14 * fontScale).sp
