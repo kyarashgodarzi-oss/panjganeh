@@ -153,22 +153,9 @@ fun HomeScreen(
             Box(Modifier.size(220.dp).align(Alignment.TopStart).padding(start = 0.dp).clip(CircleShape).background(PurplePrimary.copy(alpha = 0.08f)))
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
-                item {
-                    ReferenceHeader(
-                        username = user?.username ?: "Player_01",
-                        level = user?.level ?: 1,
-                        coins = user?.coins ?: 0,
-                        tickets = user?.tickets ?: 0,
-                        onProfile = onNavigateToProfile,
-                        onSettings = onNavigateToSettings,
-                        onShop = onNavigateToShop,
-                        lang = lang,
-                        scale = fontScale
-                    )
-                }
                 item {
                     ReferenceHero(
                         level = user?.level ?: 1,
@@ -330,7 +317,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = 0.5f))
     ) {
-        Box(Modifier.fillMaxWidth().height(235.dp)) {
+        Box(Modifier.fillMaxWidth().height(170.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
