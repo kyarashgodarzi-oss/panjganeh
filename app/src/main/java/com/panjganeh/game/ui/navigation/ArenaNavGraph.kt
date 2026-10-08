@@ -21,6 +21,7 @@ import com.panjganeh.game.challenges.sentence.SentenceBuilderScreen
 import com.panjganeh.game.challenges.sentence.SentenceBuilderViewModel
 import com.panjganeh.game.challenges.word.WordBattleScreen
 import com.panjganeh.game.challenges.word.WordBattleViewModel
+import com.panjganeh.game.ui.screens.help.HelpScreen
 import com.panjganeh.game.ui.screens.home.HomeScreen
 import com.panjganeh.game.ui.screens.leaderboard.LeaderboardScreen
 import com.panjganeh.game.ui.screens.profile.ProfileScreen
@@ -37,6 +38,7 @@ object ArenaDestinations {
     const val LEADERBOARD = "leaderboard"
     const val PROFILE = "profile"
     const val SETTINGS = "settings"
+    const val HELP = "help"
     const val BATTLE_WORD = "battle_word"
     const val BATTLE_MEMORY = "battle_memory"
     const val BATTLE_DICE = "battle_dice"
@@ -136,8 +138,13 @@ fun ArenaNavGraph(
             SettingsScreen(
                 userRepository = userRepo,
                 gameRepository = gameRepo,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHelp = { navController.navigate(ArenaDestinations.HELP) }
             )
+        }
+
+        composable(ArenaDestinations.HELP) {
+            HelpScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         // ═══════════════════════════════════════════════════════════════
