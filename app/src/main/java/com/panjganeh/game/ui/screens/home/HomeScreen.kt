@@ -209,7 +209,7 @@ fun HomeScreen(
             item {
                 ArenaHeroCard(
                     level = user?.level ?: 1,
-                    xp = user?.experience ?: 0,
+                    xp = user?.xp ?: 0,
                     lang = currentLang,
                     onPlayClick = {
                         challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) }
