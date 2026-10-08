@@ -345,7 +345,7 @@ fun BattleResultDialog(
         Card(
             Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
             shape=RoundedCornerShape(30.dp),
-            colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),
+            colors=CardDefaults.cardColors(containerColor=ArenaSurface),
             border=androidx.compose.foundation.BorderStroke(
                 1.5.dp,
                 if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
@@ -356,6 +356,8 @@ fun BattleResultDialog(
                     Icon(if(isWin) Icons.Default.EmojiEvents else Icons.Default.Close, null, tint=if(isWin) GoldPrimary else ArenaError, modifier=Modifier.size(46.dp))
                 }
                 Spacer(Modifier.height(14.dp))
+                Text(if(isWin) "VICTORY" else "BATTLE COMPLETE", color=if(isWin) GoldPrimary else ArenaError, fontSize=10.sp, fontWeight=FontWeight.Black, letterSpacing=2.2.sp)
+                Spacer(Modifier.height(4.dp))
                 Text(if(isWin) "پیروزی!" else "نبرد تمام شد", color=if(isWin) GoldLight else ArenaError, fontSize=26.sp, fontWeight=FontWeight.Black)
                 Text(if(isWin) "تو کنترل میدان را در دست گرفتی." else "این راند را از دست دادی؛ دوباره وارد میدان شو.", color=TextSecondary, fontSize=12.sp, textAlign=TextAlign.Center, modifier=Modifier.padding(top=5.dp))
                 Spacer(Modifier.height(18.dp))
@@ -378,7 +380,7 @@ fun BattleResultDialog(
                     OutlinedButton(onClick=onBackHome, Modifier.weight(1f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp)) {
                         Text("خروج", color=TextSecondary, fontWeight=FontWeight.Bold)
                     }
-                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=PurplePrimary)) {
+                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=GoldPrimary, contentColor=ArenaBackground)) {
                         Icon(Icons.Default.Replay, null, modifier=Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("نبرد دوباره", fontWeight=FontWeight.Black)
                     }
                 }
