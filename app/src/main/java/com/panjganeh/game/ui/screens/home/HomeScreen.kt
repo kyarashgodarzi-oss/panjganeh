@@ -109,7 +109,8 @@ fun HomeScreen(
     onNavigateToRewards: () -> Unit,
     onNavigateToLeaderboard: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToModes: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -172,15 +173,15 @@ fun HomeScreen(
                         level = user?.level ?: 1,
                         xp = user?.xp ?: 0,
                         lang = lang,
-                        onPlay = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } }
+                        onPlay = onNavigateToModes
                     )
                 }
                 item {
                     ReferenceModeRow(
                         lang = lang,
                         scale = fontScale,
-                        onOnline = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } },
-                        onOffline = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } },
+                        onOnline = onNavigateToModes,
+                        onOffline = onNavigateToModes,
                         onDaily = onNavigateToRewards
                     )
                 }
