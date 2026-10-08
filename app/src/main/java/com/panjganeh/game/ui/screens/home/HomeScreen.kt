@@ -136,16 +136,7 @@ fun HomeScreen(
 
     Scaffold(
         containerColor = ArenaBackground,
-        topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = if (lang == "en") "PANJGANEH" else "پنجگانه",
-                onCoinsClick = onNavigateToShop,
-                onTicketsClick = onNavigateToShop,
-                onProfileClick = onNavigateToProfile
-            )
-        },
+
         bottomBar = {
             ArenaBottomBar(lang, fontScale, onNavigateToShop, onNavigateToRewards, onNavigateToLeaderboard, onNavigateToProfile, onNavigateToSettings)
         }
@@ -162,87 +153,61 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 item {
-                    ArenaHeroCard(
+                    ReferenceHeader(
+                        username = user?.username ?: "Player_01",
                         level = user?.level ?: 1,
-                        xp = user?.xp ?: 0,
-                        wins = user?.wins ?: 0,
-                        tickets = user?.tickets ?: 0,
-                        lang = lang,
-                        accent = theme.primary,
-                        onPlay = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } }
-                    )
-                }
-                item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = if (lang == "en") "ARENA EDITION  •  v1.1.0" else "نسخه آرنا  •  ۱.۱.۰",
-                            color = WarmYellow.copy(alpha = 0.9f),
-                            fontSize = (9 * fontScale).sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
-                item {
-                    QuickStats(
                         coins = user?.coins ?: 0,
                         tickets = user?.tickets ?: 0,
-                        wins = user?.wins ?: 0,
-                        best = challenges.maxOfOrNull { it.highscore } ?: 0,
+                        onProfile = onNavigateToProfile,
+                        onSettings = onNavigateToSettings,
+                        onShop = onNavigateToShop,
                         lang = lang,
                         scale = fontScale
                     )
                 }
                 item {
-                    Box(
-                        Modifier.fillMaxWidth().height(118.dp).clip(RoundedCornerShape(22.dp))
+                    ReferenceHero(
+                        level = user?.level ?: 1,
+                        xp = user?.xp ?: 0,
+                        lang = lang,
+                        onPlay = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } }
+                    )
+                }
+                item {
+                    ReferenceModeRow(
+                        lang = lang,
+                        scale = fontScale,
+                        onOnline = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } },
+                        onOffline = { challenges.firstOrNull()?.let { onStartChallenge(it.challengeId) } },
+                        onDaily = onNavigateToRewards
+                    )
+                }
+                item {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Image(
-                            painter = painterResource(id = com.panjganeh.game.R.drawable.arena_clash_icon_1789948798958),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
                         Box(
-                            Modifier.fillMaxSize().background(
-                                Brush.horizontalGradient(
-                                    listOf(
-                                        Color(0xFF070B18).copy(alpha = 0.20f),
-                                        Color(0xFF070B18).copy(alpha = 0.72f),
-                                        Color(0xFF070B18).copy(alpha = 0.96f)
-                                    )
-                                )
-                            )
+                            Modifier.width(4.dp).height(22.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(TurquoiseSecondary)
                         )
-                        Column(Modifier.align(Alignment.CenterEnd).padding(16.dp)) {
-                            Text(
-                                if (lang == "en") "CHOOSE YOUR BATTLE" else "انتخاب نبرد",
-                                color = TurquoiseSecondary,
-                                fontSize = (10 * fontScale).sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 1.5.sp
-                            )
                         Text(
-                            if (lang == "en") "Five arenas. One champion." else "پنج میدان؛ یک قهرمان",
+                            if (lang == "en") "CHOOSE YOUR BATTLE" else "انتخاب حالت بازی",
                             color = TextPrimary,
-                            fontSize = (21 * fontScale).sp,
+                            fontSize = (18 * fontScale).sp,
                             fontWeight = FontWeight.Black,
-                            modifier = Modifier.padding(top = 3.dp)
+                            modifier = Modifier.weight(1f).padding(horizontal = 9.dp)
                         )
                         Text(
-                            if (lang == "en") "Pick a challenge and beat your best score." else "یک چالش را انتخاب کن و رکوردت را بشکن.",
-                            color = TextSecondary,
-                            fontSize = (11 * fontScale).sp,
-                            modifier = Modifier.padding(top = 3.dp)
+                            if (lang == "en") "ALL" else "همه",
+                            color = TurquoiseSecondary,
+                            fontSize = (10 * fontScale).sp,
+                            fontWeight = FontWeight.Black
                         )
-                        }
                     }
                 }
-                items(challenges, key = { it.challengeId }) { challenge ->
+                items(challenges.take(5), key = { it.challengeId }) { challenge ->
                     ArenaChallengeCard(challenge, lang, fontScale) {
                         scope.launch {
                             if (isVip || userRepository.deductTickets(1)) {
@@ -293,6 +258,165 @@ fun HomeScreen(
                 }
                 item { Spacer(Modifier.height(10.dp)) }
             }
+        }
+    }
+}
+
+@Composable
+private fun ReferenceHeader(
+    username: String,
+    level: Int,
+    coins: Int,
+    tickets: Int,
+    onProfile: () -> Unit,
+    onSettings: () -> Unit,
+    onShop: () -> Unit,
+    lang: String,
+    scale: Float
+) {
+    Row(Modifier.fillMaxWidth().padding(horizontal = 2.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier.size(50.dp)
+                .clip(CircleShape)
+                .background(Brush.linearGradient(listOf(TurquoiseSecondary, PurplePrimary)))
+                .border(2.dp, WarmYellow.copy(alpha = 0.8f), CircleShape)
+                .clickable(onClick = onProfile),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(29.dp))
+        }
+        Column(Modifier.weight(1f).padding(horizontal = 8.dp)) {
+            Text(username, color = TextPrimary, fontSize = (14 * scale).sp, fontWeight = FontWeight.Black)
+            Text(
+                if (lang == "en") "Level " + level + " • Ready to play" else "سطح " + level + " • آماده‌ی بازی",
+                color = TextSecondary,
+                fontSize = (9 * scale).sp
+            )
+        }
+        CurrencyChip(tickets.toString(), Icons.Default.ConfirmationNumber, TurquoiseSecondary, onShop)
+        Spacer(Modifier.width(5.dp))
+        CurrencyChip(coins.toString(), Icons.Default.Star, WarmYellow, onShop)
+        IconButton(onClick = onSettings, modifier = Modifier.size(38.dp)) {
+            Icon(Icons.Default.Settings, null, tint = TextSecondary, modifier = Modifier.size(20.dp))
+        }
+    }
+}
+
+@Composable
+private fun CurrencyChip(value: String, icon: ImageVector, color: Color, onClick: () -> Unit) {
+    Row(
+        Modifier.clip(RoundedCornerShape(14.dp))
+            .background(color.copy(alpha = 0.10f))
+            .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 7.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, null, tint = color, modifier = Modifier.size(15.dp))
+        Text(value, color = color, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 3.dp))
+    }
+}
+
+@Composable
+private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit) {
+    val progress = ((xp % 1000) / 1000f).coerceIn(0f, 1f)
+    Card(
+        Modifier.fillMaxWidth().testTag("reference_hero"),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = 0.5f))
+    ) {
+        Box(Modifier.fillMaxWidth().height(330.dp)) {
+            Image(
+                painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF07101E).copy(alpha = 0.12f),
+                            Color(0xFF07101E).copy(alpha = 0.45f),
+                            Color(0xFF07101E).copy(alpha = 0.94f)
+                        )
+                    )
+                )
+            )
+            Column(
+                Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(if (lang == "en") "PANJGANEH" else "پنجگانه", color = WarmYellow, fontSize = 12.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                Text(
+                    if (lang == "en") "FIVE CHALLENGES. ONE CHAMPION." else "پنج چالش؛ یک قهرمان",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Black,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+                Row(Modifier.padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(if (lang == "en") "LEVEL " + level else "سطح " + level, color = TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(9.dp))
+                    Box(Modifier.width(100.dp).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Color.White.copy(alpha = 0.15f))) {
+                        Box(Modifier.fillMaxWidth(progress).height(6.dp).clip(RoundedCornerShape(8.dp)).background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF8A00))))
+                    }
+                }
+                Box(
+                    Modifier.fillMaxWidth().padding(top = 12.dp).height(52.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Brush.horizontalGradient(listOf(WarmYellow, Color(0xFFFF9800))))
+                        .clickable(onClick = onPlay)
+                        .testTag("start_game_button"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(if (lang == "en") "START GAME" else "شروع بازی", color = Color(0xFF241407), fontSize = 16.sp, fontWeight = FontWeight.Black)
+                        Icon(Icons.Default.PlayArrow, null, tint = Color(0xFF241407), modifier = Modifier.padding(start = 5.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReferenceModeRow(
+    lang: String,
+    scale: Float,
+    onOnline: () -> Unit,
+    onOffline: () -> Unit,
+    onDaily: () -> Unit
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
+        ModeTile(if (lang == "en") "ONLINE" else "آنلاین", if (lang == "en") "Friends" else "دوستان", Icons.Default.SportsKabaddi, Color(0xFF35B7FF), scale, Modifier.weight(1f), onOnline)
+        ModeTile(if (lang == "en") "OFFLINE" else "آفلاین", if (lang == "en") "vs AI" else "با هوش مصنوعی", Icons.Default.Casino, TurquoiseSecondary, scale, Modifier.weight(1f), onOffline)
+        ModeTile(if (lang == "en") "DAILY" else "روزانه", if (lang == "en") "Rewards" else "جایزه", Icons.Default.CardGiftcard, Color(0xFFE83EAB), scale, Modifier.weight(1f), onDaily)
+    }
+}
+
+@Composable
+private fun ModeTile(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    color: Color,
+    scale: Float,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier.clickable(onClick = onClick),
+        shape = RoundedCornerShape(17.dp),
+        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.10f)),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.42f))
+    ) {
+        Column(Modifier.fillMaxWidth().padding(vertical = 11.dp, horizontal = 5.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, null, tint = color, modifier = Modifier.size(23.dp))
+            Text(title, color = Color.White, fontSize = (9 * scale).sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 4.dp))
+            Text(subtitle, color = TextMuted, fontSize = (7.5f * scale).sp, maxLines = 1)
         }
     }
 }
@@ -574,25 +698,27 @@ private fun ArenaBottomBar(
     settings: () -> Unit
 ) {
     Row(
-        Modifier.fillMaxWidth().background(Color(0xFF0A0F20)).border(1.dp, Color.White.copy(alpha = 0.06f)).padding(vertical = 7.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
+        Modifier.fillMaxWidth()
+            .background(Color(0xFF06101D))
+            .border(1.dp, Color.White.copy(alpha = 0.08f))
+            .padding(vertical = 7.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, WarmYellow, scale, shop)
         BottomItem(if (lang == "en") "Rewards" else "جوایز", Icons.Default.CardGiftcard, PinkTertiary, scale, rewards)
-        BottomItem(if (lang == "en") "Rank" else "رتبه‌ها", Icons.Default.EmojiEvents, TurquoiseSecondary, scale, rank)
-        BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, PurplePrimary, scale, profile)
-        BottomItem(if (lang == "en") "More" else "بیشتر", Icons.Default.Settings, SkyBlue, scale, settings)
+        BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, TurquoiseSecondary, scale, rank)
+        BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, SkyBlue, scale, profile)
     }
 }
 
 @Composable
 private fun BottomItem(title: String, icon: ImageVector, color: Color, scale: Float, onClick: () -> Unit) {
     Column(
-        Modifier.clip(RoundedCornerShape(13.dp)).clickable(onClick = onClick).padding(horizontal = 10.dp, vertical = 4.dp),
+        Modifier.clip(RoundedCornerShape(13.dp)).clickable(onClick = onClick).padding(horizontal = 13.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(icon, null, tint = color, modifier = Modifier.size(20.dp))
+        Icon(icon, null, tint = color, modifier = Modifier.size(22.dp))
         Text(title, color = TextMuted, fontSize = (8 * scale).sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 2.dp))
     }
 }
