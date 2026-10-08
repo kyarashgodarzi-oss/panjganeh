@@ -217,6 +217,16 @@ fun LeaderboardScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                if (player.isUser) Brush.horizontalGradient(
+                                    listOf(GoldPrimary.copy(alpha = 0.16f), ArenaSurface, ArenaSurface)
+                                ) else if (isTop3) Brush.horizontalGradient(
+                                    listOf(rankColor.copy(alpha = 0.09f), ArenaSurface, ArenaSurface)
+                                ) else Brush.horizontalGradient(
+                                    listOf(ArenaSurface.copy(alpha = 0.96f), ArenaSurface)
+                                ),
+                                RoundedCornerShape(16.dp)
+                            )
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
