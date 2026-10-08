@@ -102,27 +102,9 @@ fun ModeSelectionScreen(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 14.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 18.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        Modifier.size(42.dp).clip(CircleShape)
-                            .background(ArenaSurface)
-                            .border(1.dp, TurquoiseSecondary.copy(alpha = .35f), CircleShape)
-                            .clickable(onClick = onNavigateBack),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Default.ArrowBack, "بازگشت", tint = TextPrimary)
-                    }
-                    Column(Modifier.weight(1f).padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("انتخاب حالت بازی", color = TextPrimary, fontSize = 21.sp, fontWeight = FontWeight.Black)
-                        Text("پنجگانه • THE ARENA", color = TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.2.sp)
-                    }
-                    Box(Modifier.size(42.dp))
-                }
-            }
             item {
                 androidx.compose.material3.Card(
                     Modifier.fillMaxWidth(),
