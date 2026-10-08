@@ -60,6 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -121,37 +122,19 @@ fun WordBattleScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // هدر مطابق تصویر مرجع
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 7.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = onNavigateBack,
-                    modifier = Modifier.size(38.dp).clip(androidx.compose.foundation.shape.CircleShape)
-                        .background(Color(0xCC071326))
-                        .border(1.dp, SkySecondary.copy(alpha = .75f), androidx.compose.foundation.shape.CircleShape)
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = Color.White)
-                }
-                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("بازی کلمات", color = Color.White, fontSize = 17.sp, fontWeight = FontWeight.Black)
-                    Text("پنجگانه • ARENA", color = TextMuted, fontSize = 8.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.1.sp)
-                }
-                Box(
-                    Modifier.clip(RoundedCornerShape(12.dp))
-                        .background(GoldPrimary.copy(alpha = .14f))
-                        .border(1.dp, GoldPrimary.copy(alpha = .5f), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 9.dp, vertical = 6.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Timer, null, tint = GoldPrimary, modifier = Modifier.size(15.dp))
-                        Spacer(Modifier.width(4.dp))
-                        Text(state.remainingSeconds.toString(), color = GoldPrimary, fontSize = 12.sp, fontWeight = FontWeight.Black)
-                    }
-                }
-            }
+            BattleHeader(
+                challengeTitle = "نبرد کلمات",
+                userScore = state.userScore,
+                aiScore = state.aiScore,
+                remainingSeconds = state.remainingSeconds,
+                aiProfile = state.aiProfile,
+                onExitClick = onNavigateBack
+            )
 
+            BattleRoundStars(
+                userScore = state.userScore,
+                aiScore = state.aiScore
+            )
             Spacer(modifier = Modifier.height(4.dp))
 
             // حالت جاری چالش
