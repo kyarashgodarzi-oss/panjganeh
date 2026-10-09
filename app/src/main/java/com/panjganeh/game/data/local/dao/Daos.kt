@@ -11,6 +11,7 @@ import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.local.entity.UserProfileEntity
 import com.panjganeh.game.data.local.entity.VipStateEntity
+import com.panjganeh.game.data.local.entity.ProcessedPurchaseEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -101,4 +102,10 @@ interface SettingsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSettings(settings: GameSettingsEntity)
+}
+
+@Dao
+interface PurchaseDao {
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfAbsent(purchase: ProcessedPurchaseEntity): Long
 }
