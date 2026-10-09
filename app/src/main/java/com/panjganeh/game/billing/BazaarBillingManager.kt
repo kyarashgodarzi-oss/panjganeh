@@ -237,13 +237,19 @@ class BazaarBillingManager(
                 val json = JSONObject(purchaseData)
                 val productId = json.getString("productId")
                 val purchaseState = json.getInt("purchaseState")
+                val purchaseToken = json.optString("purchaseToken").trim()
 
                 if (purchaseState != 0) {
                     emitError("وضعیت خرید نامعتبر است")
                     return@launch
                 }
+                if (purchaseToken.isBlank()) {
+                    Log.e(TAG, "Verified purchase is missing purchaseToken")
+                    emitError("شناسه معتبر خرید از کافه‌بازار دریافت نشد")
+                    return@launch
+                }
 
-                deliverProduct(productId)
+                deliverProduct(productId, purchaseToken)
             } catch (e: Exception) {
                 Log.e(TAG, "Error parsing purchase: ${e.message}")
                 emitError("خطا در پردازش اطلاعات خرید")
@@ -251,16 +257,15 @@ class BazaarBillingManager(
         }
     }
 
-    private suspend fun deliverProduct(sku: String) {
+    private suspend fun deliverProduct(sku: String, purchaseToken: String) {
         try {
-            val token = "bazaar_" + System.currentTimeMillis()
             when (sku) {
                 BazaarConfig.SKU_VIP_MONTHLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 30, sku = sku, token = token)
+                    userRepository.setVip(isVip = true, durationDays = 30, sku = sku, token = purchaseToken)
                     userRepository.addCoins(500)
                 }
                 BazaarConfig.SKU_VIP_YEARLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 365, sku = sku, token = token)
+                    userRepository.setVip(isVip = true, durationDays = 365, sku = sku, token = purchaseToken)
                     userRepository.addCoins(5000)
                     userRepository.addTickets(10)
                 }
