@@ -107,7 +107,7 @@ fun ProfileScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ReferenceSimpleTopBar(title = "مشخصات و آمار نبردها", onBackClick = onNavigateBack)
+            ReferenceSimpleTopBar(title = "پروفایل", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
