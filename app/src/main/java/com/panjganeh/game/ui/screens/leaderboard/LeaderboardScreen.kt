@@ -104,7 +104,7 @@ fun LeaderboardScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ReferenceSimpleTopBar(title = "جدول برترین‌های پنجگانه", onBackClick = onNavigateBack)
+            ReferenceSimpleTopBar(title = "رتبه‌بندی", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
