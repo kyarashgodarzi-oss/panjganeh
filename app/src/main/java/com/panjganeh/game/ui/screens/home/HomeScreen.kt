@@ -121,7 +121,6 @@ fun HomeScreen(
     val lang = LocalAppLanguage.current
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
-    val challenges by gameRepository.allChallenges.collectAsStateWithLifecycle(initialValue = emptyList())
     val appSettings by settingsDataStore.appSettingsFlow.collectAsStateWithLifecycle(initialValue = null)
 
     val isVip = vip?.isVip == true &&
@@ -158,6 +157,19 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(13.dp)
             ) {
                 item {
+                    ReferenceHeader(
+                        username = user?.username ?: if (lang == "en") "Panjganeh Player" else "قهرمان پنجگانه",
+                        level = user?.level ?: 1,
+                        coins = user?.coins ?: 0,
+                        tickets = user?.tickets ?: 0,
+                        onProfile = onNavigateToProfile,
+                        onSettings = onNavigateToSettings,
+                        onShop = onNavigateToShop,
+                        lang = lang,
+                        scale = fontScale
+                    )
+                }
+                item {
                     ReferenceHero(
                         level = user?.level ?: 1,
                         xp = user?.xp ?: 0,
@@ -173,47 +185,6 @@ fun HomeScreen(
                         onOffline = onNavigateToModes,
                         onDaily = onNavigateToRewards
                     )
-                }
-                item {
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            Modifier.width(4.dp).height(22.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(TurquoiseSecondary)
-                        )
-                        Text(
-                            if (lang == "en") "CHOOSE YOUR BATTLE" else "انتخاب حالت بازی",
-                            color = TextPrimary,
-                            fontSize = (18 * fontScale).sp,
-                            fontWeight = FontWeight.Black,
-                            modifier = Modifier.weight(1f).padding(horizontal = 9.dp)
-                        )
-                        Text(
-                            if (lang == "en") "ALL" else "همه",
-                            color = TurquoiseSecondary,
-                            fontSize = (10 * fontScale).sp,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-                }
-                items(challenges.take(5), key = { it.challengeId }) { challenge ->
-                    ArenaChallengeCard(challenge, lang, fontScale) {
-                        scope.launch {
-                            if (isVip || userRepository.deductTickets(1)) {
-                                onStartChallenge(challenge.challengeId)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    if (lang == "en") "No tickets left. Visit the shop." else "بلیطت تمام شده؛ از فروشگاه بلیط بگیر.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                                onNavigateToShop()
-                            }
-                        }
-                    }
                 }
                 if (!isVip) {
                     item {
