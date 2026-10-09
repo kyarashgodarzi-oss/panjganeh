@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,12 +49,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.panjganeh.game.R
 import com.panjganeh.game.ai.AiProfile
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -379,10 +383,20 @@ fun BattleResultDialog(
                 if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
             )
         ) {
-            Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment=Alignment.CenterHorizontally) {
+                Image(
+                    painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(112.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
+                Spacer(Modifier.height(12.dp))
                 Box(
                     Modifier
-                        .size(82.dp)
+                        .size(70.dp)
                         .scale(resultPulse.value)
                         .clip(CircleShape)
                         .background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f))
@@ -393,7 +407,7 @@ fun BattleResultDialog(
                         if (isWin) Icons.Default.EmojiEvents else Icons.Default.Close,
                         null,
                         tint = if (isWin) GoldPrimary else ArenaError,
-                        modifier = Modifier.size(46.dp)
+                        modifier = Modifier.size(40.dp)
                     )
                 }
                 Spacer(Modifier.height(14.dp))
