@@ -95,12 +95,8 @@ fun LeaderboardScreen(
     ).sortedByDescending { it.trophies }
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
     val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
-    var selectedFilter by remember { mutableStateOf(0) }
-    val visiblePlayers = when (selectedFilter) {
-        1 -> leaderboard.filter { it.isVip }
-        2 -> leaderboard.filter { it.isUser }
-        else -> leaderboard
-    }
+    var selectedFilter by remember { mutableStateOf(2) }
+    val visiblePlayers = if (selectedFilter == 0) leaderboard.take(5) else leaderboard
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -125,7 +121,7 @@ fun LeaderboardScreen(
                         .padding(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    listOf("کل", "VIP", "شما").forEachIndexed { index, label ->
+                    listOf("هفتگی", "دوستان", "کل").forEachIndexed { index, label ->
                         Box(
                             Modifier.weight(1f)
                                 .clip(RoundedCornerShape(11.dp))
