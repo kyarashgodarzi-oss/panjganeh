@@ -110,71 +110,23 @@ fun LeaderboardScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().testTag("your_rank_summary"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = GoldPrimary.copy(alpha = .10f)),
-                    border = CardDefaults.outlinedCardBorder().copy(
-                        width = 1.5.dp,
-                        brush = Brush.horizontalGradient(listOf(GoldPrimary.copy(alpha = .75f), TurquoiseSecondary.copy(alpha = .55f)))
-                    )
+                Row(
+                    Modifier.fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color(0xFF071A34))
+                        .border(1.dp, Color(0xFF163B66), RoundedCornerShape(15.dp))
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 13.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier.size(40.dp).clip(CircleShape).background(GoldPrimary.copy(alpha = .16f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Default.Person, null, tint = GoldPrimary, modifier = Modifier.size(22.dp))
-                            }
-                            Spacer(Modifier.width(10.dp))
-                            Column {
-                                Text("رتبه فعلی شما", color = GoldLight, fontSize = 12.sp, fontWeight = FontWeight.Black)
-                                Text("بر اساس امتیاز نبردها", color = TextMuted, fontSize = 9.sp)
-                            }
-                        }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(if (currentUserRank > 0) "#$currentUserRank" else "—", color = GoldPrimary, fontSize = 22.sp, fontWeight = FontWeight.Black)
-                            Text("${user?.wins ?: 0} برد", color = TextSecondary, fontSize = 9.sp)
-                        }
-                    }
-                }
-            }
-
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth().testTag("leaderboard_banner"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                    border = CardDefaults.outlinedCardBorder().copy(
-                        width = 1.5.dp,
-                        brush = Brush.horizontalGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF)))
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(GoldPrimary.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(imageVector = Icons.Default.EmojiEvents, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(28.dp))
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(text = "لیگ هفتگی جنگجویان", color = GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(text = "با پیروزی در نبردها جام کسب کنید و رتبه خود را ارتقا دهید", color = TextSecondary, fontSize = 11.sp)
-                            }
+                    listOf("کل", "دوستان", "برترها").forEachIndexed { index, label ->
+                        Box(
+                            Modifier.weight(1f)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(if (index == 0) Color(0xFF1687FF) else Color.Transparent)
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
