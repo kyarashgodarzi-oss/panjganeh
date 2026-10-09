@@ -83,12 +83,13 @@ class UserRepository(private val database: AppDatabase) {
     suspend fun setVip(isVip: Boolean, durationDays: Int, sku: String, token: String) {
         val now = System.currentTimeMillis()
         val currentVip = if (isVip) getVipStateOnce() else null
-        val extensionBase = currentVip
-            ?.takeIf { it.isVip && it.expireTimestamp > now }
-            ?.expireTimestamp
-            ?: now
         val expireTime = if (isVip) {
-            extensionBase + (durationDays.toLong() * 24 * 3600 * 1000)
+            VipExpiryPolicy.calculateExpiry(
+                now = now,
+                currentExpiry = currentVip?.expireTimestamp ?: 0L,
+                currentVipActive = currentVip?.isVip == true,
+                durationDays = durationDays
+            )
         } else {
             0L
         }
