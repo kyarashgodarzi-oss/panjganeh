@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.panjganeh.game.R
 import com.panjganeh.game.ai.AiProfile
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -373,24 +376,30 @@ fun BattleResultDialog(
         label = "result_pulse_scale"
     )
 
-    Dialog(onDismissRequest = {}) {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Card(
-            Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
-            shape=RoundedCornerShape(30.dp),
+            Modifier.fillMaxSize().testTag("battle_result_dialog"),
+            shape=RoundedCornerShape(0.dp),
             colors=CardDefaults.cardColors(containerColor=ArenaSurface),
             border=androidx.compose.foundation.BorderStroke(
                 1.5.dp,
                 if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
             )
         ) {
-            Column(Modifier.fillMaxWidth().padding(18.dp), horizontalAlignment=Alignment.CenterHorizontally) {
+            Column(
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Image(
                     painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(112.dp)
+                        .height(160.dp)
                         .clip(RoundedCornerShape(20.dp))
                 )
                 Spacer(Modifier.height(12.dp))
