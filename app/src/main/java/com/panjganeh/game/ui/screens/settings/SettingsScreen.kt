@@ -75,7 +75,6 @@ import com.panjganeh.game.data.local.entity.GameSettingsEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
-import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.AvailableThemes
 import com.panjganeh.game.ui.theme.CreatorCardBorderGradient
@@ -131,14 +130,6 @@ fun SettingsScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                ReferencePageHeader(
-                    kicker = "SETTINGS",
-                    title = "تنظیمات میدان",
-                    subtitle = "ظاهر و تجربه‌ی بازی را مطابق سلیقه‌ات تنظیم کن."
-                )
-            }
-
             // ==========================================
             // ۵.۱: تم رنگی بازی (Theme)
             // ==========================================
