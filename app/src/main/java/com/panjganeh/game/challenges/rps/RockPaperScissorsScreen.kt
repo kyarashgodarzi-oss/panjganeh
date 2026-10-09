@@ -129,26 +129,26 @@ fun RockPaperScissorsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 38.dp),
+                        .padding(horizontal = 16.dp, vertical = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(180.dp)
+                            .size(58.dp)
                             .clip(CircleShape)
                             .background(GoldPrimary.copy(alpha = 0.18f))
-                            .border(4.dp, GoldPrimary, CircleShape),
+                            .border(2.dp, GoldPrimary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = state.countdownSeconds.coerceAtLeast(0).toString(),
-                            fontSize = 58.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Black,
                             color = GoldPrimary
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = if (state.isCountingDown) {
@@ -239,17 +239,22 @@ private fun RpsReferenceChoice(
         RpsChoice.PAPER -> "✋"
         RpsChoice.SCISSORS -> "✌️"
     }
+    val accent = when (choice) {
+        RpsChoice.ROCK -> SkySecondary
+        RpsChoice.PAPER -> EmeraldTertiary
+        RpsChoice.SCISSORS -> Color(0xFFB46CFF)
+    }
     Box(
         modifier = modifier
             .height(118.dp)
             .clip(RoundedCornerShape(22.dp))
             .background(
-                if (selected) GoldPrimary.copy(alpha = 0.16f)
-                else Color(0xFF070B17).copy(alpha = 0.84f)
+                if (selected) accent.copy(alpha = 0.26f)
+                else accent.copy(alpha = 0.10f)
             )
             .border(
-                if (selected) 2.dp else 1.dp,
-                if (selected) GoldPrimary else ArenaSurfaceBorder,
+                if (selected) 2.dp else 1.2.dp,
+                if (selected) GoldPrimary else accent.copy(alpha = 0.8f),
                 RoundedCornerShape(22.dp)
             )
             .clickable(enabled = enabled, onClick = onClick)
