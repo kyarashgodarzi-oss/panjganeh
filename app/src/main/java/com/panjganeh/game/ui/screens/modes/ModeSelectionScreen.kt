@@ -137,14 +137,14 @@ fun ModeSelectionScreen(
             }
             if (!showOfflineChallenges) {
             item {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(11.dp)) {
                     ModeChoiceCard(
                         title = "بازی آنلاین",
                         subtitle = "رقابت با دوستان",
                         icon = Icons.Default.SportsKabaddi,
                         accent = TurquoiseSecondary,
                         onClick = onNavigateToOnline,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.fillMaxWidth()
                     )
                     ModeChoiceCard(
                         title = "بازی آفلاین",
@@ -152,7 +152,7 @@ fun ModeSelectionScreen(
                         icon = Icons.Default.Casino,
                         accent = SkyBlue,
                         onClick = { showOfflineChallenges = true },
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -208,7 +208,7 @@ private fun ModeChoiceCard(
     )
     Card(
         modifier = modifier
-            .height(156.dp)
+            .height(126.dp)
             .scale(cardScale)
             .then(
                 if (onClick != null) Modifier.clickable(
