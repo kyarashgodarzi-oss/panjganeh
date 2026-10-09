@@ -129,7 +129,7 @@ fun LeaderboardScreen(
                     ) {
                         Icon(Icons.Default.EmojiEvents, null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
                         Text(
-                            "رتبه‌های این صفحه نمونه‌اند و هنوز از سرور دریافت نمی‌شوند.",
+                            "نام‌ها، رتبه‌ها، جام‌ها و تعداد پیروزی‌ها نمونه‌اند و از سرور دریافت نمی‌شوند.",
                             color = TextSecondary,
                             fontSize = 11.sp,
                             modifier = Modifier.padding(start = 8.dp)
