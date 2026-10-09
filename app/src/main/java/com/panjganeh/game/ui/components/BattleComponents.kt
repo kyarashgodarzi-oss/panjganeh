@@ -398,8 +398,8 @@ fun BattleResultDialog(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
+                        .width(176.dp)
+                        .height(190.dp)
                         .clip(RoundedCornerShape(20.dp))
                 )
                 Spacer(Modifier.height(12.dp))
