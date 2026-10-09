@@ -139,8 +139,8 @@ fun ModeSelectionScreen(
             item {
                 Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(11.dp)) {
                     ModeChoiceCard(
-                        title = "بازی آنلاین",
-                        subtitle = "رقابت با دوستان",
+                        title = "بازی آنلاین (به‌زودی)",
+                        subtitle = "اتصال آنلاین هنوز فعال نیست",
                         icon = Icons.Default.SportsKabaddi,
                         accent = TurquoiseSecondary,
                         onClick = onNavigateToOnline,
