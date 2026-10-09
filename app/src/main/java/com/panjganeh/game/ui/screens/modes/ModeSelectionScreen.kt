@@ -233,7 +233,7 @@ private fun ModeChoiceCard(
                 Modifier.fillMaxSize().background(
                     Brush.verticalGradient(
                         listOf(
-                            Color(0xFF06142B).copy(alpha = .35f),
+                            accent.copy(alpha = .20f),
                             Color(0xFF06142B).copy(alpha = .78f),
                             Color(0xFF06142B).copy(alpha = .97f)
                         )
