@@ -112,6 +112,7 @@ fun HomeScreen(
     onNavigateToLeaderboard: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToOnline: () -> Unit,
     onNavigateToModes: () -> Unit
 ) {
     val context = LocalContext.current
@@ -181,7 +182,7 @@ fun HomeScreen(
                     ReferenceModeRow(
                         lang = lang,
                         scale = fontScale,
-                        onOnline = onNavigateToModes,
+                        onOnline = onNavigateToOnline,
                         onOffline = onNavigateToModes,
                         onDaily = onNavigateToRewards
                     )
