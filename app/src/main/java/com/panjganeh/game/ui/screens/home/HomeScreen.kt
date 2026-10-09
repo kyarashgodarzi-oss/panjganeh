@@ -123,6 +123,7 @@ fun HomeScreen(
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
     val appSettings by settingsDataStore.appSettingsFlow.collectAsStateWithLifecycle(initialValue = null)
+    val challenges by gameRepository.allChallenges.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val isVip = vip?.isVip == true &&
         (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
@@ -187,40 +188,30 @@ fun HomeScreen(
                         onDaily = onNavigateToRewards
                     )
                 }
-                if (!isVip) {
-                    item {
-                        RewardStrip(
-                            ready = rewardReady,
-                            remaining = remaining,
-                            lang = lang,
-                            onClick = {
-                                val activity = context as? Activity ?: return@RewardStrip
-                                tapsellManager.showRewardedVideo(
-                                    activity = activity,
-                                    rewardCoins = if (rewardReady) 200 else 150,
-                                    onRewarded = { coins ->
-                                        scope.launch {
-                                            userRepository.addCoins(coins)
-                                            if (rewardReady) {
-                                                settingsDataStore.setLastTwoHourRewardClaim(System.currentTimeMillis())
-                                                now = System.currentTimeMillis()
-                                            }
-                                            Toast.makeText(
-                                                context,
-                                                if (lang == "en") "+" + coins + " coins added!" else "+" + coins + " سکه به موجودی اضافه شد!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    },
-                                    onError = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
-                                )
+                item {
+                    Card(
+                        Modifier.fillMaxWidth().testTag("daily_challenge_card").clickable {
+                            val daily = challenges.firstOrNull { it.challengeId == "memory" } ?: challenges.firstOrNull()
+                            if (daily != null) onStartChallenge(daily.challengeId) else onNavigateToRewards()
+                        },
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF0A2140)),
+                        border = BorderStroke(1.dp, Color(0xFFFFC928).copy(alpha = 0.8f))
+                    ) {
+                        Row(
+                            Modifier.fillMaxWidth().padding(horizontal = 13.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(Icons.Default.CardGiftcard, null, tint = WarmYellow, modifier = Modifier.size(27.dp))
+                            Column(Modifier.weight(1f).padding(horizontal = 11.dp)) {
+                                Text(if (lang == "en") "DAILY CHALLENGE" else "چالش روزانه", color = WarmYellow, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                                Text(if (lang == "en") "Play today and claim your reward" else "امروز بازی کن و جایزه‌ات را بگیر", color = TextSecondary, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
                             }
-                        )
+                            Icon(Icons.Default.PlayArrow, null, tint = WarmYellow)
+                        }
                     }
-                    item { VipCard(onClick = onNavigateToShop, lang = lang) }
-                    item { TapsellBanner(tapsellManager = tapsellManager) }
                 }
-                item { Spacer(Modifier.height(10.dp)) }
+                item { Spacer(Modifier.height(8.dp)) }
             }
         }
     }
@@ -290,7 +281,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = 0.5f))
     ) {
-        Box(Modifier.fillMaxWidth().height(170.dp)) {
+        Box(Modifier.fillMaxWidth().height(205.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
@@ -347,10 +338,9 @@ private fun ReferenceModeRow(
     onOffline: () -> Unit,
     onDaily: () -> Unit
 ) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-        ModeTile(if (lang == "en") "ONLINE" else "آنلاین", if (lang == "en") "Friends" else "دوستان", Icons.Default.SportsKabaddi, Color(0xFF35B7FF), scale, Modifier.weight(1f), onOnline)
-        ModeTile(if (lang == "en") "OFFLINE" else "آفلاین", if (lang == "en") "vs AI" else "با هوش مصنوعی", Icons.Default.Casino, TurquoiseSecondary, scale, Modifier.weight(1f), onOffline)
-        ModeTile(if (lang == "en") "DAILY" else "روزانه", if (lang == "en") "Rewards" else "جایزه", Icons.Default.CardGiftcard, Color(0xFFE83EAB), scale, Modifier.weight(1f), onDaily)
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        ModeTile(if (lang == "en") "ONLINE" else "بازی آنلاین", if (lang == "en") "Play with friends" else "رقابت با دوستان", Icons.Default.SportsKabaddi, Color(0xFF35B7FF), scale, Modifier.weight(1f), onOnline)
+        ModeTile(if (lang == "en") "OFFLINE" else "بازی آفلاین", if (lang == "en") "Play vs AI" else "پنج چالش با هوش مصنوعی", Icons.Default.Casino, TurquoiseSecondary, scale, Modifier.weight(1f), onOffline)
     }
 }
 
