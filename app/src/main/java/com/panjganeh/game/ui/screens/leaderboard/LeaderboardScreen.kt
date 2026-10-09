@@ -42,7 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
-import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -110,14 +109,6 @@ fun LeaderboardScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            item {
-                ReferencePageHeader(
-                    kicker = "LEADERBOARD",
-                    title = "جدول قهرمانان",
-                    subtitle = "رتبه‌ات را بالا ببر و به صدر میدان برس."
-                )
-            }
-
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("your_rank_summary"),
