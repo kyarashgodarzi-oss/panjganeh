@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Spellcheck
 import androidx.compose.material.icons.filled.SportsKabaddi
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
@@ -697,11 +698,11 @@ private fun ArenaBottomBar(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, SkyBlue, scale, profile)
-        BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, WarmYellow, scale, rank)
-        BottomItem(if (lang == "en") "Game" else "مسابقه", Icons.Default.SportsKabaddi, TurquoiseSecondary, scale, game)
-        BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, WarmYellow, scale, shop)
         BottomItem(if (lang == "en") "Home" else "خانه", Icons.Default.Home, WarmYellow, scale) { }
+        BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, WarmYellow, scale, shop)
+        BottomItem(if (lang == "en") "Game" else "مسابقه", Icons.Default.SportsEsports, TurquoiseSecondary, scale, game)
+        BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, WarmYellow, scale, rank)
+        BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, SkyBlue, scale, profile)
     }
 }
 
