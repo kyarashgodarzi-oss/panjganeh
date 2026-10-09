@@ -438,10 +438,13 @@ private fun ArenaHeroCard(
     ) {
         Box(Modifier.fillMaxWidth().height(390.dp)) {
             Image(
-                painter = painterResource(id = com.panjganeh.game.R.drawable.arena_hero_banner_1789948811846),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                painter = painterResource(R.drawable.panjganeh_hero_character),
+                contentDescription = if (lang == "en") "Animated human champion character" else "شخصیت انسانی انیمیشنی قهرمان پنجگانه",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(270.dp)
+                    .align(Alignment.TopCenter),
+                contentScale = ContentScale.Fit
             )
             Box(
                 Modifier.fillMaxSize().background(
