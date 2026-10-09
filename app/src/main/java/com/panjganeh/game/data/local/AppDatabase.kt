@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.migration.Migration
+import com.panjganeh.game.data.local.dao.PurchaseDao
 import com.panjganeh.game.data.local.dao.ChallengeDao
 import com.panjganeh.game.data.local.dao.MatchHistoryDao
 import com.panjganeh.game.data.local.dao.RewardDao
