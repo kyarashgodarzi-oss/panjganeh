@@ -124,7 +124,6 @@ fun HomeScreen(
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
     val appSettings by settingsDataStore.appSettingsFlow.collectAsStateWithLifecycle(initialValue = null)
-    val challenges by gameRepository.allChallenges.collectAsStateWithLifecycle(initialValue = emptyList())
 
     val isVip = vip?.isVip == true &&
         (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
@@ -192,8 +191,7 @@ fun HomeScreen(
                 item {
                     Card(
                         Modifier.fillMaxWidth().testTag("daily_challenge_card").clickable {
-                            val daily = challenges.firstOrNull { it.challengeId == "memory" } ?: challenges.firstOrNull()
-                            if (daily != null) onStartChallenge(daily.challengeId) else onNavigateToRewards()
+                            onNavigateToRewards()
                         },
                         shape = RoundedCornerShape(18.dp),
                         colors = CardDefaults.cardColors(containerColor = Color(0xFF0A2140)),
