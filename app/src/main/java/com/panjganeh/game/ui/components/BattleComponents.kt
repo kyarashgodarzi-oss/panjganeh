@@ -390,40 +390,64 @@ fun BattleResultDialog(
             )
         ) {
             Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 24.dp),
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onBackHome, modifier = Modifier.size(42.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "بازگشت", tint = TextSecondary)
+                    }
+                    Text("نتیجه مرحله", color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+                Spacer(Modifier.height(4.dp))
                 Image(
                     painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .width(176.dp)
-                        .height(190.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .width(220.dp)
+                        .height(240.dp)
+                        .border(2.dp, if (isWin) GoldPrimary else ArenaError, RoundedCornerShape(22.dp))
+                        .clip(RoundedCornerShape(22.dp))
                 )
                 Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(14.dp))
                 Box(
                     Modifier
-                        .size(70.dp)
-                        .scale(resultPulse.value)
-                        .clip(CircleShape)
-                        .background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f))
-                        .border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape),
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(
+                            if (isWin) Brush.horizontalGradient(listOf(GoldPrimary, Color(0xFFFF8A00)))
+                            else Brush.horizontalGradient(listOf(ArenaError, Color(0xFF991B1B)))
+                        )
+                        .padding(horizontal = 34.dp, vertical = 7.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        if (isWin) Icons.Default.EmojiEvents else Icons.Default.Close,
-                        null,
-                        tint = if (isWin) GoldPrimary else ArenaError,
-                        modifier = Modifier.size(40.dp)
+                    Text(
+                        if (isWin) "برد!" else "باخت!",
+                        color = if (isWin) ArenaBackground else Color.White,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Black
                     )
                 }
-                Spacer(Modifier.height(14.dp))
-                Text(if(isWin) "VICTORY" else "BATTLE COMPLETE", color=if(isWin) GoldPrimary else ArenaError, fontSize=10.sp, fontWeight=FontWeight.Black, letterSpacing=2.2.sp)
-                Spacer(Modifier.height(4.dp))
-                Text(if(isWin) "پیروزی!" else "نبرد تمام شد", color=if(isWin) GoldLight else ArenaError, fontSize=26.sp, fontWeight=FontWeight.Black)
-                Text(if(isWin) "تو کنترل میدان را در دست گرفتی." else "این راند را از دست دادی؛ دوباره وارد میدان شو.", color=TextSecondary, fontSize=12.sp, textAlign=TextAlign.Center, modifier=Modifier.padding(top=5.dp))
+                Spacer(Modifier.height(9.dp))
+                Text(
+                    if (isWin) "شما در این مرحله پیروز شدید!" else "حریف این مرحله را برد!",
+                    color = TextSecondary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(13.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    ScoreColumn("شما", userScore, GoldPrimary)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("VS", color = TextMuted, fontWeight = FontWeight.Black)
+                    }
+                    ScoreColumn("حریف AI", aiScore, SkySecondary)
+                }
                 Spacer(Modifier.height(18.dp))
                 Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(16.dp), horizontalArrangement=Arrangement.SpaceEvenly) {
                     ScoreColumn("شما", userScore, GoldPrimary)
@@ -441,11 +465,13 @@ fun BattleResultDialog(
                 }
                 Spacer(Modifier.height(18.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-                    OutlinedButton(onClick=onBackHome, Modifier.weight(1f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp)) {
-                        Text("خروج", color=TextSecondary, fontWeight=FontWeight.Bold)
+                    OutlinedButton(onClick=onPlayAgain, Modifier.weight(1f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp)) {
+                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("دوباره بازی کن", color=TextSecondary, fontWeight=FontWeight.Bold)
                     }
-                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=GoldPrimary, contentColor=ArenaBackground)) {
-                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("نبرد دوباره", fontWeight=FontWeight.Black)
+                    Button(onClick=onBackHome, Modifier.weight(1.25f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=GoldPrimary, contentColor=ArenaBackground)) {
+                        Text("ادامه", fontWeight=FontWeight.Black)
                     }
                 }
             }
