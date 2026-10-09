@@ -141,7 +141,7 @@ fun ShopScreen(
                         Modifier.fillMaxWidth().padding(18.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("ایجاد بازی", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                        Text("اتاق آنلاین (نمایشی)", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
                         Box(
                             Modifier.fillMaxWidth(0.72f).padding(top = 12.dp)
                                 .clip(RoundedCornerShape(16.dp))
@@ -156,7 +156,7 @@ fun ShopScreen(
                             onClick = {
                                 val sendIntent = Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
-                                    putExtra(Intent.EXTRA_TEXT, "به بازی پنجگانه با کد $roomCode ملحق شو!")
+                                    putExtra(Intent.EXTRA_TEXT, "کد نمایشی اتاق پنجگانه: $roomCode — اتصال واقعی آنلاین هنوز فعال نیست.")
                                 }
                                 context.startActivity(Intent.createChooser(sendIntent, "اشتراک‌گذاری کد بازی"))
                             },
@@ -202,7 +202,7 @@ fun ShopScreen(
                             shape = RoundedCornerShape(17.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = EmeraldTertiary, contentColor = Color(0xFF05251B))
                         ) {
-                            Text("پیوستن", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                            Text("اتصال آنلاین فعال نیست", fontWeight = FontWeight.Black, fontSize = 16.sp)
                         }
                     }
                 }
