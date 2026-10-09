@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.Migration
 import com.panjganeh.game.data.local.dao.ChallengeDao
 import com.panjganeh.game.data.local.dao.MatchHistoryDao
 import com.panjganeh.game.data.local.dao.RewardDao
@@ -17,6 +18,7 @@ import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.local.entity.UserProfileEntity
 import com.panjganeh.game.data.local.entity.VipStateEntity
+import com.panjganeh.game.data.local.entity.ProcessedPurchaseEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,9 +30,10 @@ import kotlinx.coroutines.launch
         RewardItemEntity::class,
         ChallengeItemEntity::class,
         MatchHistoryEntity::class,
-        GameSettingsEntity::class
+        GameSettingsEntity::class,
+        ProcessedPurchaseEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -41,8 +44,17 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun challengeDao(): ChallengeDao
     abstract fun matchHistoryDao(): MatchHistoryDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun purchaseDao(): PurchaseDao
 
     companion object {
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    \"CREATE TABLE IF NOT EXISTS processed_purchases (purchaseToken TEXT NOT NULL, sku TEXT NOT NULL, processedAt INTEGER NOT NULL, PRIMARY KEY(purchaseToken))\"
+                )
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -53,6 +65,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "panjganeh_database.db"
                 )
+                    .addMigrations(MIGRATION_1_2)
                     .fallbackToDestructiveMigration(true)
                     .addCallback(DatabaseCallback())
                     .build()
