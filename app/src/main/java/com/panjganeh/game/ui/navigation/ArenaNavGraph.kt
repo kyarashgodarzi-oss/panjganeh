@@ -99,7 +99,8 @@ fun ArenaNavGraph(
         ArenaDestinations.LEADERBOARD,
         ArenaDestinations.PROFILE,
         ArenaDestinations.SETTINGS,
-        ArenaDestinations.HELP
+        ArenaDestinations.HELP,
+        ArenaDestinations.MODES
     )
 
     Scaffold(
