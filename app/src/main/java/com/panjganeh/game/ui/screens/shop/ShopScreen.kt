@@ -158,14 +158,14 @@ fun ShopScreen(
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_TEXT, "کد نمایشی اتاق پنجگانه: $roomCode — اتصال واقعی آنلاین هنوز فعال نیست.")
                                 }
-                                context.startActivity(Intent.createChooser(sendIntent, "اشتراک‌گذاری کد بازی"))
+                                context.startActivity(Intent.createChooser(sendIntent, "اشتراک‌گذاری کد نمایشی اتاق"))
                             },
                             modifier = Modifier.fillMaxWidth(0.76f).padding(top = 12.dp).height(48.dp),
                             shape = RoundedCornerShape(16.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color(0xFF1B1404))
                         ) {
                             Icon(Icons.Default.Share, null)
-                            Text("اشتراک‌گذاری کد", fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
+                            Text("اشتراک‌گذاری کد نمایشی", fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
                         }
                         Row(
                             Modifier.fillMaxWidth(0.82f).padding(top = 16.dp),
