@@ -277,7 +277,7 @@ fun DiceVisual(
 ) {
     Box(
         modifier = modifier
-            .size(if (compact) 42.dp else 90.dp)
+            .size(if (compact) 30.dp else 124.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(ArenaBackground)
             .border(2.5.dp, color, RoundedCornerShape(18.dp))
