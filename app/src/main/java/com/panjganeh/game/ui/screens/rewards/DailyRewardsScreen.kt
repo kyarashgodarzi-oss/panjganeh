@@ -53,7 +53,6 @@ import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
-import com.panjganeh.game.ui.components.ReferencePageHeader
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -103,11 +102,6 @@ fun DailyRewardsScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ReferencePageHeader(
-                kicker = "DAILY REWARDS",
-                title = "جوایز روزانه",
-                subtitle = "هر روز وارد شو، پاداش بگیر و برای نبرد بعدی آماده شو."
-            )
             Spacer(modifier = Modifier.height(10.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
