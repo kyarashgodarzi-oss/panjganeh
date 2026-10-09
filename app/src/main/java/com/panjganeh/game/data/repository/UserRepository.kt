@@ -118,7 +118,8 @@ class UserRepository(private val database: AppDatabase) {
                     database.userDao().addTickets(10)
                 }
                 BazaarConfig.SKU_COINS_1000 -> database.userDao().addCoins(1000)
-                BazaarConfig.SKU_COINS_5000 -> database.userDao().addCoins(5000)
+                // The store description promises a 1,000-coin bonus with this 5,000-coin pack.
+                BazaarConfig.SKU_COINS_5000 -> database.userDao().addCoins(6000)
                 BazaarConfig.SKU_TICKETS_10 -> database.userDao().addTickets(10)
                 else -> return@withTransaction false
             }
