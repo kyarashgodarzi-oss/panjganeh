@@ -157,7 +157,7 @@ fun MemoryCardsScreen(
 
             // جدول 4x4 کارت‌های حافظه
             LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 33.dp)
