@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +18,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
@@ -55,13 +59,23 @@ fun ReferencePageHeader(
                 .height(174.dp)
                 .testTag("reference_page_header_artwork")
         ) {
+            Image(
+                painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth().height(174.dp)
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(174.dp)
                     .background(
                         Brush.linearGradient(
-                            listOf(Color(0xFF101B38), Color(0xFF18284A), Color(0xFF5B3A74))
+                            listOf(
+                                Color(0xFF07101E).copy(alpha = .42f),
+                                Color(0xFF18284A).copy(alpha = .55f),
+                                Color(0xFF5B3A74).copy(alpha = .46f)
+                            )
                         )
                     )
             )
