@@ -215,6 +215,30 @@ fun HomeScreen(
                             Box(
                                 Modifier.clip(RoundedCornerShape(12.dp))
                                     .border(1.dp, WarmYellow.copy(alpha = 0.75f), RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        val activity = context as? Activity
+                                        if (activity != null) {
+                                            tapsellManager.showRewardedVideo(
+                                                activity = activity,
+                                                rewardCoins = if (rewardReady) 200 else 150,
+                                                onRewarded = { coins ->
+                                                    scope.launch {
+                                                        userRepository.addCoins(coins)
+                                                        if (rewardReady) {
+                                                            settingsDataStore.setLastTwoHourRewardClaim(System.currentTimeMillis())
+                                                            now = System.currentTimeMillis()
+                                                        }
+                                                        Toast.makeText(
+                                                            context,
+                                                            if (lang == "en") "+$coins coins added!" else "+$coins سکه به موجودی اضافه شد!",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                                },
+                                                onError = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
+                                            )
+                                        }
+                                    }
                                     .padding(horizontal = 12.dp, vertical = 8.dp),
                                 contentAlignment = Alignment.Center
                             ) {
