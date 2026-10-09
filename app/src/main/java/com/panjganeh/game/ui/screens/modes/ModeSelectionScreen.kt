@@ -131,7 +131,7 @@ fun ModeSelectionScreen(
                     }
                     Column(Modifier.weight(1f).padding(start = 4.dp)) {
                         Text(if (showOfflineChallenges) "پنج چالش آفلاین" else "انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
-                        Text("وارد میدان شو؛ قهرمانی منتظر توست", color = TextSecondary, fontSize = 10.sp)
+                        Text(if (showOfflineChallenges) "یک چالش را برای شروع انتخاب کن" else "وارد میدان شو؛ قهرمانی منتظر توست", color = TextSecondary, fontSize = 10.sp)
                     }
                 }
             }
@@ -178,15 +178,6 @@ fun ModeSelectionScreen(
             }
             }
             if (showOfflineChallenges) {
-            item {
-                Text(
-                    "پنج چالش آفلاین",
-                    color = TextPrimary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(top = 2.dp, start = 4.dp)
-                )
-            }
             items(challenges.take(5), key = { it.challengeId }) { challenge ->
                 SelectionCard(challenge, ::play)
             }
