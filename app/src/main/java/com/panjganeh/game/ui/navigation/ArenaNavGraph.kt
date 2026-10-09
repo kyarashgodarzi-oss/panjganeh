@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Gamepad
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -331,7 +332,7 @@ private fun ReferenceBottomNavigation(
     ) {
         ReferenceNavItem("خانه", Icons.Default.Home, currentRoute == ArenaDestinations.HOME, onHome)
         ReferenceNavItem("فروشگاه", Icons.Default.ShoppingCart, currentRoute == ArenaDestinations.SHOP, onShop)
-        ReferenceNavItem("مسابقه", Icons.Default.Gamepad, currentRoute == ArenaDestinations.MODES, onGame)
+        ReferenceNavItem("مسابقه", Icons.Default.SportsEsports, currentRoute == ArenaDestinations.MODES, onGame)
         ReferenceNavItem("رتبه‌بندی", Icons.Default.EmojiEvents, currentRoute == ArenaDestinations.LEADERBOARD, onLeaderboard)
         ReferenceNavItem("پروفایل", Icons.Default.Person, currentRoute == ArenaDestinations.PROFILE, onProfile)
     }
