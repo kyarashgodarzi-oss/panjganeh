@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,6 +50,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -311,6 +317,15 @@ private fun CurrencyChip(value: String, icon: ImageVector, color: Color, onClick
 
 @Composable
 private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit) {
+    val heroBob by rememberInfiniteTransition(label = "reference_hero_motion").animateFloat(
+        initialValue = -4f,
+        targetValue = 4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "reference_hero_bob"
+    )
     val progress = ((xp % 1000) / 1000f).coerceIn(0f, 1f)
     Card(
         Modifier.fillMaxWidth().testTag("reference_hero"),
@@ -326,6 +341,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                     .fillMaxWidth()
                     .height(205.dp)
                     .align(Alignment.TopCenter)
+                    .offset(y = heroBob.dp)
                     .padding(top = 2.dp),
                 contentScale = ContentScale.Fit
             )
@@ -429,6 +445,15 @@ private fun ArenaHeroCard(
     accent: Color,
     onPlay: () -> Unit
 ) {
+    val heroBob by rememberInfiniteTransition(label = "arena_hero_motion").animateFloat(
+        initialValue = -5f,
+        targetValue = 5f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "arena_hero_bob"
+    )
     val progress = ((xp % 1000) / 1000f).coerceIn(0f, 1f)
     Card(
         Modifier.fillMaxWidth().testTag("arena_hero_card"),
@@ -443,7 +468,8 @@ private fun ArenaHeroCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(270.dp)
-                    .align(Alignment.TopCenter),
+                    .align(Alignment.TopCenter)
+                    .offset(y = heroBob.dp),
                 contentScale = ContentScale.Fit
             )
             Box(
