@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -45,6 +48,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -86,10 +90,12 @@ fun ProfileScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
     tapsellManager: TapsellManager,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
@@ -111,6 +117,7 @@ fun ProfileScreen(
         }
     ) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
@@ -242,6 +249,32 @@ fun ProfileScreen(
             }
 
             item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("profile_actions"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary.copy(alpha = .45f), Color(0xFF173C68)))
+                    )
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        ProfileActionRow(Icons.Default.Person, "آواتار", SkySecondary) {
+                            Toast.makeText(context, user?.username ?: "پروفایل", Toast.LENGTH_SHORT).show()
+                        }
+                        ProfileActionRow(Icons.Default.Edit, "تغییر نام", Color(0xFF2DD4BF)) {
+                            newNameText = user?.username ?: ""
+                            showEditNameDialog = true
+                        }
+                        ProfileActionRow(Icons.Default.EmojiEvents, "آمار بازی", GoldPrimary) {
+                            scope.launch { listState.animateScrollToItem(4) }
+                        }
+                        ProfileActionRow(Icons.Default.Settings, "تنظیمات حساب", SkySecondary, onNavigateToSettings)
+                    }
+                }
+            }
+
+            item {
                 Text(
                     text = "تاریخچه مسابقات اخیر",
                     color = GoldLight,
@@ -333,6 +366,24 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileActionRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    tint: Color,
+    onClick: () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+        Text(label, color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f).padding(horizontal = 10.dp))
+        Icon(Icons.Default.ChevronLeft, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(19.dp))
     }
 }
 
