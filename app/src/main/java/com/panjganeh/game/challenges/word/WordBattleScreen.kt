@@ -191,7 +191,7 @@ fun WordBattleScreen(
 
                         Spacer(modifier = Modifier.height(22.dp))
 
-                        val targetLength = current.word.length.coerceIn(1, 8)
+                        val targetLength = current.word.length.coerceAtLeast(1)
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -220,13 +220,13 @@ fun WordBattleScreen(
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        val letterTiles = (current.scrambled.filterNot { it.isWhitespace() }.toList() + listOf('ب', 'ت', 'ک', 'م')).take(10)
+                        val letterTiles = (current.scrambled.filterNot { it.isWhitespace() }.toList() + listOf('ب', 'ت', 'ک', 'م')).take(maxOf(10, targetLength))
                         Column(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(9.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            listOf(letterTiles.take(5), letterTiles.drop(5).take(5)).forEach { rowLetters ->
+                            letterTiles.chunked(5).forEach { rowLetters ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
