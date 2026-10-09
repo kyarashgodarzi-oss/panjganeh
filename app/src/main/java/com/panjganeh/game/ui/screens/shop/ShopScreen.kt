@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.screens.shop
 
 import android.app.Activity
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.OndemandVideo
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,9 +35,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -79,6 +87,8 @@ fun ShopScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val scope = rememberCoroutineScope()
+    var roomCode by remember { mutableStateOf("۲۶۷ ۴۹۱") }
+    var inputRoomCode by remember { mutableStateOf("") }
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
@@ -108,7 +118,7 @@ fun ShopScreen(
             ArenaTopBar(
                 user = user,
                 vip = vip,
-                title = "فروشگاه پنجگانه",
+                title = "فروشگاه و آنلاین",
                 onBackClick = onNavigateBack
             )
         }
@@ -121,6 +131,111 @@ fun ShopScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("online_room_card"),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.4.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary, Color(0xFF173F6C)))
+                    )
+                ) {
+                    Column(
+                        Modifier.fillMaxWidth().padding(18.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("ایجاد بازی", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                        Box(
+                            Modifier.fillMaxWidth(0.72f).padding(top = 12.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0xFF0C2548))
+                                .border(1.5.dp, SkySecondary.copy(alpha = 0.65f), RoundedCornerShape(16.dp))
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(roomCode, color = GoldPrimary, fontWeight = FontWeight.Black, fontSize = 24.sp, letterSpacing = 2.sp)
+                        }
+                        Button(
+                            onClick = {
+                                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, "به بازی پنجگانه با کد $roomCode ملحق شو!")
+                                }
+                                context.startActivity(Intent.createChooser(sendIntent, "اشتراک‌گذاری کد بازی"))
+                            },
+                            modifier = Modifier.fillMaxWidth(0.76f).padding(top = 12.dp).height(48.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color(0xFF1B1404))
+                        ) {
+                            Icon(Icons.Default.Share, null)
+                            Text("اشتراک‌گذاری کد", fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
+                        }
+                        Row(
+                            Modifier.fillMaxWidth(0.82f).padding(top = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(Modifier.weight(1f).height(1.dp).background(SkySecondary.copy(alpha = 0.45f)))
+                            Text("یا", color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 10.dp))
+                            Box(Modifier.weight(1f).height(1.dp).background(SkySecondary.copy(alpha = 0.45f)))
+                        }
+                        Text("پیوستن به بازی", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 15.dp))
+                        OutlinedTextField(
+                            value = inputRoomCode,
+                            onValueChange = { inputRoomCode = it },
+                            placeholder = { Text("کد بازی را وارد کنید", color = TextMuted, fontSize = 13.sp) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = SkySecondary,
+                                unfocusedBorderColor = Color(0xFF173F6C),
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary
+                            ),
+                            shape = RoundedCornerShape(15.dp),
+                            modifier = Modifier.fillMaxWidth(0.88f).padding(top = 8.dp)
+                        )
+                        Button(
+                            onClick = {
+                                Toast.makeText(
+                                    context,
+                                    if (inputRoomCode.isBlank()) "لطفاً کد بازی را وارد نمایید." else "اتصال آنلاین به سرویس بازی نیاز دارد.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            },
+                            modifier = Modifier.fillMaxWidth(0.88f).padding(top = 10.dp).height(48.dp),
+                            shape = RoundedCornerShape(17.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldTertiary, contentColor = Color(0xFF05251B))
+                        ) {
+                            Text("پیوستن", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = "محصولات پرداخت درون‌برنامه‌ای کافه‌بازار",
+                    color = GoldLight,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            // لیست محصولات بازار
+            items(BazaarConfig.ALL_PRODUCTS, key = { it.sku }) { product ->
+                ProductCard(
+                    product = product,
+                    onBuyClick = {
+                        billingManager.launchPurchaseFlow(
+                            activityLauncher = purchaseLauncher,
+                            productId = product.sku
+                        )
+                    }
+                )
+            }
+
+            // ═══════════════════════════════════════════════════════════
             // بخش دریافت سکه رایگان با ویدیوی تپسل
             item {
                 Card(
@@ -206,30 +321,6 @@ fun ShopScreen(
                 }
             }
 
-            item {
-                Text(
-                    text = "محصولات پرداخت درون‌برنامه‌ای کافه‌بازار",
-                    color = GoldLight,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // لیست محصولات بازار
-            items(BazaarConfig.ALL_PRODUCTS, key = { it.sku }) { product ->
-                ProductCard(
-                    product = product,
-                    onBuyClick = {
-                        billingManager.launchPurchaseFlow(
-                            activityLauncher = purchaseLauncher,
-                            productId = product.sku
-                        )
-                    }
-                )
-            }
-
-            // ═══════════════════════════════════════════════════════════
             // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
             // ═══════════════════════════════════════════════════════════
             item {
