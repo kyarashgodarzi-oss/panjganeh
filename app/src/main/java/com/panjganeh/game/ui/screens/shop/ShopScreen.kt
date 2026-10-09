@@ -62,6 +62,7 @@ import com.panjganeh.game.billing.BazaarConfig
 import com.panjganeh.game.billing.PurchaseResult
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -115,12 +116,7 @@ fun ShopScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "فروشگاه و آنلاین",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "فروشگاه و آنلاین", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
