@@ -4,6 +4,9 @@ import com.panjganeh.game.data.local.AppDatabase
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.local.entity.UserProfileEntity
 import com.panjganeh.game.data.local.entity.VipStateEntity
+import com.panjganeh.game.data.local.entity.ProcessedPurchaseEntity
+import androidx.room.withTransaction
+import com.panjganeh.game.billing.BazaarConfig
 import kotlinx.coroutines.flow.Flow
 
 class UserRepository(private val database: AppDatabase) {
@@ -87,6 +90,40 @@ class UserRepository(private val database: AppDatabase) {
             purchaseToken = token
         )
         database.vipDao().setVipState(vip)
+    }
+
+
+    /**
+     * اعتبارسنجی و تحویل پاداش در یک تراکنش؛ توکن تکراری هرگز دوباره پاداش نمی‌گیرد.
+     * @return true فقط وقتی این توکن برای اولین بار پردازش و پاداش تحویل شد.
+     */
+    suspend fun deliverPurchaseOnce(sku: String, purchaseToken: String): Boolean {
+        if (purchaseToken.isBlank()) return false
+        if (sku !in BazaarConfig.ALL_PRODUCTS.map { it.sku }) return false
+
+        return database.withTransaction {
+            val inserted = database.purchaseDao().insertIfAbsent(
+                ProcessedPurchaseEntity(purchaseToken = purchaseToken, sku = sku)
+            )
+            if (inserted == -1L) return@withTransaction false
+
+            when (sku) {
+                BazaarConfig.SKU_VIP_MONTHLY -> {
+                    setVip(true, 30, sku, purchaseToken)
+                    database.userDao().addCoins(500)
+                }
+                BazaarConfig.SKU_VIP_YEARLY -> {
+                    setVip(true, 365, sku, purchaseToken)
+                    database.userDao().addCoins(5000)
+                    database.userDao().addTickets(10)
+                }
+                BazaarConfig.SKU_COINS_1000 -> database.userDao().addCoins(1000)
+                BazaarConfig.SKU_COINS_5000 -> database.userDao().addCoins(5000)
+                BazaarConfig.SKU_TICKETS_10 -> database.userDao().addTickets(10)
+                else -> return@withTransaction false
+            }
+            true
+        }
     }
 
     suspend fun claimDailyReward(day: Int): Boolean {
