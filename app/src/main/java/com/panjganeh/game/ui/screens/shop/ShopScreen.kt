@@ -179,7 +179,8 @@ fun ShopScreen(
                         OutlinedTextField(
                             value = inputRoomCode,
                             onValueChange = { inputRoomCode = it },
-                            placeholder = { Text("کد بازی را وارد کنید", color = TextMuted, fontSize = 13.sp) },
+                            enabled = false,
+                            placeholder = { Text("ورود کد تا فعال‌شدن آنلاین غیرفعال است", color = TextMuted, fontSize = 13.sp) },
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = SkySecondary,
