@@ -53,6 +53,14 @@ abstract class AppDatabase : RoomDatabase() {
                 db.execSQL(
                     "CREATE TABLE IF NOT EXISTS processed_purchases (purchaseToken TEXT NOT NULL, sku TEXT NOT NULL, processedAt INTEGER NOT NULL, PRIMARY KEY(purchaseToken))"
                 )
+                // Preserve the last VIP purchase token recorded by the previous app version.
+                // This prevents a replay of that already-delivered purchase from granting rewards again.
+                db.execSQL(
+                    "INSERT OR IGNORE INTO processed_purchases (purchaseToken, sku, processedAt) " +
+                        "SELECT purchaseToken, sku, CAST(strftime('%s', 'now') AS INTEGER) * 1000 " +
+                        "FROM vip_state WHERE TRIM(purchaseToken) != '' " +
+                        "AND sku IN ('challenge_arena_vip_monthly', 'challenge_arena_vip_yearly')"
+                )
             }
         }
 
