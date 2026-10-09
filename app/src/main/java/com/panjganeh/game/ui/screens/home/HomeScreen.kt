@@ -320,10 +320,14 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
     ) {
         Box(Modifier.fillMaxWidth().height(260.dp)) {
             Image(
-                painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
-                contentDescription = if (lang == "en") "Panjganeh hero artwork" else "تصویر قهرمان پنجگانه",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                painter = painterResource(R.drawable.panjganeh_hero_character),
+                contentDescription = if (lang == "en") "Animated human champion character" else "شخصیت انسانی انیمیشنی قهرمان پنجگانه",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(205.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(top = 2.dp),
+                contentScale = ContentScale.Fit
             )
             Box(
                 Modifier.fillMaxSize().background(
