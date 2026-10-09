@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,8 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +54,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.panjganeh.game.R
 import com.panjganeh.game.ai.AiProfile
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -83,56 +79,40 @@ fun BattleArenaBackground(
     challenge: String,
     modifier: Modifier = Modifier
 ) {
-    val (resource, challengeAccent) = when {
-        challenge.contains("تاس") ->
-            R.drawable.arena_hero_banner_1789948811846 to DiceChallengeColor
-        challenge.contains("کلمات") ->
-            R.drawable.arena_clash_icon_1789948798958 to WordChallengeColor
-        challenge.contains("حافظه") ->
-            R.drawable.arena_hero_banner_1789948811846 to MemoryChallengeColor
-        challenge.contains("قیچی") ->
-            R.drawable.arena_clash_icon_1789948798958 to RpsChallengeColor
-        challenge.contains("جملات") || challenge.contains("جمله") ->
-            R.drawable.arena_hero_banner_1789948811846 to SentenceChallengeColor
-        else -> R.drawable.arena_hero_banner_1789948811846 to TurquoiseSecondary
+    val challengeAccent = when {
+        challenge.contains("تاس") -> DiceChallengeColor
+        challenge.contains("کلمات") -> WordChallengeColor
+        challenge.contains("حافظه") -> MemoryChallengeColor
+        challenge.contains("قیچی") -> RpsChallengeColor
+        challenge.contains("جملات") || challenge.contains("جمله") -> SentenceChallengeColor
+        else -> TurquoiseSecondary
     }
-    Box(modifier.background(ArenaBackground)) {
-        Image(
-            painter = painterResource(resource),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            alpha = 0.34f
-        )
-        Box(
-            Modifier.fillMaxSize().background(
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(
                 Brush.verticalGradient(
-                    listOf(
-                        ArenaBackground.copy(alpha = 0.48f),
-                        ArenaBackground.copy(alpha = 0.78f),
-                        ArenaBackground
-                    )
+                    listOf(Color(0xFF030916), Color(0xFF06142B), ArenaBackground)
                 )
             )
-        )
-        // Soft ambient glows reproduce the reference arena's layered, illuminated backdrop.
+    ) {
         Box(
             Modifier
                 .align(Alignment.TopStart)
-                .size(260.dp)
+                .size(240.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(challengeAccent.copy(alpha = 0.25f), Color.Transparent)
+                        listOf(challengeAccent.copy(alpha = 0.14f), Color.Transparent)
                     )
                 )
         )
         Box(
             Modifier
                 .align(Alignment.BottomEnd)
-                .size(300.dp)
+                .size(280.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(challengeAccent.copy(alpha = 0.17f), Color.Transparent)
+                        listOf(challengeAccent.copy(alpha = 0.09f), Color.Transparent)
                     )
                 )
         )
