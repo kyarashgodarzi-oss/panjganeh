@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.screens.online
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,10 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.PurplePrimary
@@ -50,10 +54,21 @@ fun OnlineConnectionScreen(
     onNavigateBack: () -> Unit
 ) {
     Box(Modifier.fillMaxSize().background(ArenaBackground)) {
+        Image(
+            painter = painterResource(R.drawable.arena_clash_icon_1789948798958),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            alpha = 0.20f
+        )
         Box(
             Modifier.fillMaxSize().background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF0B1930), Color(0xFF07101E), ArenaBackground)
+                    listOf(
+                        Color(0xFF0B1930).copy(alpha = .76f),
+                        Color(0xFF07101E).copy(alpha = .90f),
+                        ArenaBackground.copy(alpha = .98f)
+                    )
                 )
             )
         )
