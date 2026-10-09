@@ -143,9 +143,9 @@ fun BattleHeader(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 10.dp)
+            .padding(horizontal = 14.dp, vertical = 4.dp)
             .testTag("battle_header"),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.88f)),
         border = androidx.compose.foundation.BorderStroke(
             1.5.dp,
@@ -161,7 +161,7 @@ fun BattleHeader(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp)
+                .padding(horizontal = 10.dp, vertical = 8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -169,8 +169,8 @@ fun BattleHeader(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(58.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(13.dp))
                         .background(
                             if (urgent) ArenaError.copy(alpha = .14f)
                             else GoldPrimary.copy(alpha = .12f)
@@ -179,7 +179,7 @@ fun BattleHeader(
                             1.dp,
                             if (urgent) ArenaError.copy(alpha = .60f)
                             else GoldPrimary.copy(alpha = .60f),
-                            RoundedCornerShape(16.dp)
+                            RoundedCornerShape(13.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -217,10 +217,10 @@ fun BattleHeader(
                     Text(
                         challengeTitle,
                         color = TextPrimary,
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Black,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 3.dp)
+                        modifier = Modifier.padding(top = 2.dp)
                     )
                 }
 
@@ -242,8 +242,8 @@ fun BattleHeader(
             Box(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 3.dp, vertical = 8.dp)
-                    .height(3.dp)
+                    .padding(horizontal = 3.dp, vertical = 4.dp)
+                    .height(2.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(
                         Brush.horizontalGradient(
@@ -256,7 +256,7 @@ fun BattleHeader(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .padding(top = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FighterBadge(
@@ -269,7 +269,7 @@ fun BattleHeader(
 
                 Box(
                     modifier = Modifier
-                        .size(42.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
                         .background(ArenaBackground)
                         .border(1.dp, ArenaSurfaceBorder, CircleShape),
