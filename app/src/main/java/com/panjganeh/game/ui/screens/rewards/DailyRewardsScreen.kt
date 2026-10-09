@@ -61,6 +61,7 @@ import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
 import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
+import com.panjganeh.game.ui.theme.VipGold
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
