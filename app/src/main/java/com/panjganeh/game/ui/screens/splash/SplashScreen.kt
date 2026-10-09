@@ -8,6 +8,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +64,7 @@ import com.panjganeh.game.ui.theme.CreatorCardBorderGradient
 import com.panjganeh.game.ui.theme.LocalFontScale
 import com.panjganeh.game.ui.theme.PanjganehBgDark
 import com.panjganeh.game.ui.theme.PinkTertiary
+import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.PurplePrimary
 import com.panjganeh.game.ui.theme.SkyBlue
 import com.panjganeh.game.ui.theme.SplashGradient
@@ -111,6 +115,24 @@ fun SplashScreen(
             .testTag("splash_screen"),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            alpha = 0.28f
+        )
+        Box(
+            Modifier.fillMaxSize().background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(
+                        Color(0xFF030916).copy(alpha = .55f),
+                        Color(0xFF030916).copy(alpha = .82f),
+                        Color(0xFF030916).copy(alpha = .96f)
+                    )
+                )
+            )
+        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
