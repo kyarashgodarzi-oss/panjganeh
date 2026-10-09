@@ -51,7 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
-                    \"CREATE TABLE IF NOT EXISTS processed_purchases (purchaseToken TEXT NOT NULL, sku TEXT NOT NULL, processedAt INTEGER NOT NULL, PRIMARY KEY(purchaseToken))\"
+                    "CREATE TABLE IF NOT EXISTS processed_purchases (purchaseToken TEXT NOT NULL, sku TEXT NOT NULL, processedAt INTEGER NOT NULL, PRIMARY KEY(purchaseToken))"
                 )
             }
         }
