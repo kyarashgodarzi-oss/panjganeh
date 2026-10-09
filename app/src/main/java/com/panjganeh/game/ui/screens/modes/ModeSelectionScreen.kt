@@ -26,7 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Memory
@@ -127,7 +127,7 @@ fun ModeSelectionScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { if (showOfflineChallenges) showOfflineChallenges = false else onNavigateBack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
                     }
                     Column(Modifier.weight(1f).padding(start = 4.dp)) {
                         Text(if (showOfflineChallenges) "پنج چالش آفلاین" else "انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
