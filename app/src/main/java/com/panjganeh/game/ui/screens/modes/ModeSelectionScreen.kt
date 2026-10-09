@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -108,71 +109,71 @@ fun ModeSelectionScreen(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 18.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Card(
-                    Modifier.fillMaxWidth().testTag("mode_reference_hero"),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                    border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = .45f))
+                Row(
+                    Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(Modifier.fillMaxWidth().height(188.dp)) {
-                        Image(
-                            painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                        Box(
-                            Modifier.fillMaxSize().background(
-                                Brush.verticalGradient(
-                                    listOf(
-                                        Color(0xFF07101E).copy(alpha = .10f),
-                                        Color(0xFF07101E).copy(alpha = .52f),
-                                        ArenaBackground.copy(alpha = .96f)
-                                    )
-                                )
-                            )
-                        )
-                        Column(
-                            Modifier.fillMaxSize().padding(18.dp),
-                            verticalArrangement = Arrangement.Bottom,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text("ARENA MODE", color = WarmYellow, fontSize = 10.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
-                            Text("پنج نبرد؛ یک مسیر قهرمانی", color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
-                            Text("حالت بازی خودت را انتخاب کن و وارد میدان شو.", color = TextSecondary, fontSize = 10.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 4.dp))
-                            ArenaReferencePrimaryButton(
-                                text = "انتخاب نبرد",
-                                onClick = { challenges.firstOrNull()?.let { play(it.challengeId) } },
-                                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
-                                testTag = "mode_start_button"
-                            )
-                        }
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
+                    }
+                    Column(Modifier.weight(1f).padding(start = 4.dp)) {
+                        Text("انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
+                        Text("وارد میدان شو؛ قهرمانی منتظر توست", color = TextSecondary, fontSize = 10.sp)
                     }
                 }
             }
-
             item {
-                androidx.compose.material3.Card(
-                    Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(22.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .78f)),
-                    border = BorderStroke(1.dp, PurplePrimary.copy(alpha = .40f))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ModeChoiceCard(
+                        title = "بازی آنلاین",
+                        subtitle = "رقابت با دوستان",
+                        icon = Icons.Default.SportsKabaddi,
+                        accent = TurquoiseSecondary,
+                        onClick = onNavigateToOnline,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ModeChoiceCard(
+                        title = "بازی آفلاین",
+                        subtitle = "پنج چالش با هوش مصنوعی",
+                        icon = Icons.Default.Casino,
+                        accent = SkyBlue,
+                        onClick = null,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            item {
+                Card(
+                    Modifier.fillMaxWidth().clickable(onClick = onNavigateToRewards).testTag("mode_daily_rewards"),
+                    shape = RoundedCornerShape(17.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF092345)),
+                    border = BorderStroke(1.dp, WarmYellow.copy(alpha = .52f))
                 ) {
-                    Column(Modifier.fillMaxWidth().padding(18.dp)) {
-                        Text("CHOOSE YOUR BATTLE", color = WarmYellow, fontSize = 11.sp, fontWeight = FontWeight.Black, letterSpacing = 1.3.sp)
-                        Text("یک میدان را انتخاب کن و وارد نبرد شو.", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 4.dp))
-                        Text("هر نبرد یک امتیاز و یک مسیر برای قهرمانی دارد.", color = TextSecondary, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
-                        Row(Modifier.fillMaxWidth().padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                            ModePill("آنلاین", "دوستان", TurquoiseSecondary, onNavigateToOnline, Modifier.weight(1f))
-                            ModePill("آفلاین", "حریف AI", SkyBlue, null, Modifier.weight(1f))
-                            ModePill("روزانه", "جایزه", PinkTertiary, onNavigateToRewards, Modifier.weight(1f))
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CardGiftcard, contentDescription = null, tint = WarmYellow, modifier = Modifier.size(28.dp))
+                        Column(Modifier.weight(1f).padding(horizontal = 11.dp)) {
+                            Text("جایزه‌های روزانه", color = WarmYellow, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                            Text("هر روز جایزه بگیر و برای نبرد بعدی آماده شو", color = TextSecondary, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
                         }
+                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = WarmYellow)
                     }
                 }
+            }
+            item {
+                Text(
+                    "پنج چالش آفلاین",
+                    color = TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(top = 2.dp, start = 4.dp)
+                )
             }
             items(challenges.take(5), key = { it.challengeId }) { challenge ->
                 SelectionCard(challenge, ::play)
@@ -180,6 +181,60 @@ fun ModeSelectionScreen(
             item {
                 Spacer(Modifier.height(8.dp))
                 Text("هر نبرد با یک بلیط شروع می‌شود • VIP بدون محدودیت", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModeChoiceCard(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    accent: Color,
+    onClick: (() -> Unit)?,
+    modifier: Modifier
+) {
+    Card(
+        modifier = modifier
+            .height(156.dp)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+            .testTag("mode_choice_" + title),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+        border = BorderStroke(1.2.dp, accent.copy(alpha = .65f))
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(R.drawable.arena_hero_banner_1789948811846),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(
+                        listOf(
+                            Color(0xFF06142B).copy(alpha = .35f),
+                            Color(0xFF06142B).copy(alpha = .78f),
+                            Color(0xFF06142B).copy(alpha = .97f)
+                        )
+                    )
+                )
+            )
+            Column(
+                Modifier.fillMaxSize().padding(12.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(26.dp))
+                Text(title, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 7.dp))
+                Text(subtitle, color = TextSecondary, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 3.dp))
+                if (onClick != null) {
+                    Text("ورود به میدان  ›", color = WarmYellow, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 7.dp))
+                } else {
+                    Text("یک بازی را از پایین انتخاب کن", color = SkyBlue, fontSize = 9.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 7.dp))
+                }
             }
         }
     }
