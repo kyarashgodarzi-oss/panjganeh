@@ -145,7 +145,7 @@ fun HomeScreen(
         containerColor = ArenaBackground,
 
         bottomBar = {
-            ArenaBottomBar(lang, fontScale, onNavigateToShop, onNavigateToRewards, onNavigateToLeaderboard, onNavigateToProfile, onNavigateToSettings)
+            ArenaBottomBar(lang, fontScale, onNavigateToShop, onNavigateToLeaderboard, onNavigateToProfile, onNavigateToModes)
         }
     ) { padding ->
         Box(
@@ -640,23 +640,22 @@ private fun ArenaBottomBar(
     lang: String,
     scale: Float,
     shop: () -> Unit,
-    rewards: () -> Unit,
     rank: () -> Unit,
     profile: () -> Unit,
-    settings: () -> Unit
+    game: () -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth()
-            .background(Color(0xFF06101D))
-            .border(1.dp, Color.White.copy(alpha = 0.08f))
-            .padding(vertical = 7.dp),
+            .background(Color(0xFF030812))
+            .border(1.dp, Color(0xFF12233B))
+            .padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, WarmYellow, scale, shop)
-        BottomItem(if (lang == "en") "Rewards" else "جوایز", Icons.Default.CardGiftcard, PinkTertiary, scale, rewards)
-        BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, TurquoiseSecondary, scale, rank)
         BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, SkyBlue, scale, profile)
+        BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, WarmYellow, scale, rank)
+        BottomItem(if (lang == "en") "Game" else "مسابقه", Icons.Default.SportsKabaddi, TurquoiseSecondary, scale, game)
+        BottomItem(if (lang == "en") "Shop" else "فروشگاه", Icons.Default.ShoppingCart, WarmYellow, scale, shop)
         BottomItem(if (lang == "en") "Home" else "خانه", Icons.Default.Home, WarmYellow, scale) { }
     }
 }
