@@ -96,11 +96,9 @@ fun LeaderboardScreen(
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
     val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
     var selectedFilter by remember { mutableStateOf(0) }
-    val visiblePlayers = if (selectedFilter == 1) {
-        leaderboard.filter { it.isUser }
-    } else {
-        leaderboard
-    }
+    // The production model does not yet expose a friends leaderboard.
+    // Keep the reference tab, but don't misrepresent the current user as their own friends list.
+    val visiblePlayers = if (selectedFilter == 1) emptyList() else leaderboard
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -135,6 +133,39 @@ fun LeaderboardScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            if (visiblePlayers.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp, horizontal = 18.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Person, null, tint = TextMuted, modifier = Modifier.size(28.dp))
+                            Text(
+                                "فهرست دوستان هنوز در دسترس نیست",
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                            Text(
+                                "با فعال شدن قابلیت دوستان، رتبه‌ی آن‌ها اینجا نمایش داده می‌شود.",
+                                color = TextSecondary,
+                                fontSize = 11.sp,
+                                modifier = Modifier.padding(top = 5.dp)
+                            )
                         }
                     }
                 }
