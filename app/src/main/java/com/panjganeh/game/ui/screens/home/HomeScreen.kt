@@ -376,7 +376,7 @@ private fun ReferenceModeRow(
     onDaily: () -> Unit
 ) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        ModeTile(if (lang == "en") "ONLINE" else "بازی آنلاین", if (lang == "en") "Play with friends" else "رقابت با دوستان", Icons.Default.SportsKabaddi, Color(0xFF35B7FF), scale, Modifier.weight(1f), onOnline)
+        ModeTile(if (lang == "en") "ONLINE · SOON" else "بازی آنلاین · به‌زودی", if (lang == "en") "Online play is not active yet" else "اتصال آنلاین هنوز فعال نیست", Icons.Default.SportsKabaddi, Color(0xFF35B7FF), scale, Modifier.weight(1f), onOnline)
         ModeTile(if (lang == "en") "OFFLINE" else "بازی آفلاین", if (lang == "en") "Play vs AI" else "پنج چالش با هوش مصنوعی", Icons.Default.Casino, TurquoiseSecondary, scale, Modifier.weight(1f), onOffline)
     }
 }
