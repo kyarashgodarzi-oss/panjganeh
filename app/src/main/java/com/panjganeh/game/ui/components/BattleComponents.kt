@@ -66,18 +66,29 @@ import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.TurquoiseSecondary
+import com.panjganeh.game.ui.theme.WordChallengeColor
+import com.panjganeh.game.ui.theme.MemoryChallengeColor
+import com.panjganeh.game.ui.theme.DiceChallengeColor
+import com.panjganeh.game.ui.theme.RpsChallengeColor
+import com.panjganeh.game.ui.theme.SentenceChallengeColor
 
 @Composable
 fun BattleArenaBackground(
     challenge: String,
     modifier: Modifier = Modifier
 ) {
-    val resource = when {
-        challenge.contains("تاس") -> R.drawable.arena_hero_banner_1789948811846
-        challenge.contains("کلمات") -> R.drawable.arena_clash_icon_1789948798958
-        challenge.contains("حافظه") -> R.drawable.arena_hero_banner_1789948811846
-        challenge.contains("قیچی") -> R.drawable.arena_clash_icon_1789948798958
-        else -> R.drawable.arena_hero_banner_1789948811846
+    val (resource, challengeAccent) = when {
+        challenge.contains("تاس") ->
+            R.drawable.arena_hero_banner_1789948811846 to DiceChallengeColor
+        challenge.contains("کلمات") ->
+            R.drawable.arena_clash_icon_1789948798958 to WordChallengeColor
+        challenge.contains("حافظه") ->
+            R.drawable.arena_hero_banner_1789948811846 to MemoryChallengeColor
+        challenge.contains("قیچی") ->
+            R.drawable.arena_clash_icon_1789948798958 to RpsChallengeColor
+        challenge.contains("جملات") || challenge.contains("جمله") ->
+            R.drawable.arena_hero_banner_1789948811846 to SentenceChallengeColor
+        else -> R.drawable.arena_hero_banner_1789948811846 to TurquoiseSecondary
     }
     Box(modifier.background(ArenaBackground)) {
         Image(
@@ -105,7 +116,7 @@ fun BattleArenaBackground(
                 .size(260.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(PurplePrimary.copy(alpha = 0.22f), Color.Transparent)
+                        listOf(challengeAccent.copy(alpha = 0.25f), Color.Transparent)
                     )
                 )
         )
@@ -115,7 +126,7 @@ fun BattleArenaBackground(
                 .size(300.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(TurquoiseSecondary.copy(alpha = 0.15f), Color.Transparent)
+                        listOf(challengeAccent.copy(alpha = 0.17f), Color.Transparent)
                     )
                 )
         )
