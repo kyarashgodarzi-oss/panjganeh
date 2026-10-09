@@ -192,15 +192,15 @@ fun ShopScreen(
                         )
                         Button(
                             onClick = {
-                                Toast.makeText(
-                                    context,
-                                    if (inputRoomCode.isBlank()) "لطفاً کد بازی را وارد نمایید." else "اتصال آنلاین به سرویس بازی نیاز دارد.",
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(context, "اتصال آنلاین هنوز فعال نیست؛ این کدها نمایشی هستند.", Toast.LENGTH_LONG).show()
                             },
+                            enabled = false,
                             modifier = Modifier.fillMaxWidth(0.88f).padding(top = 10.dp).height(48.dp),
                             shape = RoundedCornerShape(17.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = EmeraldTertiary, contentColor = Color(0xFF05251B))
+                            colors = ButtonDefaults.buttonColors(
+                                disabledContainerColor = EmeraldTertiary.copy(alpha = 0.20f),
+                                disabledContentColor = TextMuted
+                            )
                         ) {
                             Text("اتصال آنلاین فعال نیست", fontWeight = FontWeight.Black, fontSize = 16.sp)
                         }
