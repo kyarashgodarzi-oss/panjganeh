@@ -42,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -93,12 +94,7 @@ fun LeaderboardScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "جدول برترین‌های پنجگانه",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "جدول برترین‌های پنجگانه", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
