@@ -267,6 +267,11 @@ class BazaarBillingManager(
                 BazaarConfig.SKU_COINS_1000 -> userRepository.addCoins(1000)
                 BazaarConfig.SKU_COINS_5000 -> userRepository.addCoins(5000)
                 BazaarConfig.SKU_TICKETS_10 -> userRepository.addTickets(10)
+                else -> {
+                    Log.e(TAG, "Verified purchase has an unknown product ID: $sku")
+                    _purchaseEvents.emit(PurchaseResult.Error("محصول خریداری‌شده در برنامه تعریف نشده است"))
+                    return
+                }
             }
 
             _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
