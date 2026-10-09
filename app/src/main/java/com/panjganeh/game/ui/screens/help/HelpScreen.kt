@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.PanjganehApplication
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
@@ -54,12 +55,7 @@ fun HelpScreen(onNavigateBack: () -> Unit) {
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "راهنمای بازی",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "راهنمای بازی", onBackClick = onNavigateBack)
         }
     ) { padding ->
         LazyColumn(
