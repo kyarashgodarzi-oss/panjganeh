@@ -71,6 +71,7 @@ import com.panjganeh.game.ui.theme.GoldDark
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
+import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.VipGold
