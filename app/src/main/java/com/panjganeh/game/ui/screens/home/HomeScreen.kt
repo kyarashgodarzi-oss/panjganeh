@@ -201,12 +201,25 @@ fun HomeScreen(
                             Modifier.fillMaxWidth().padding(horizontal = 13.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Default.CardGiftcard, null, tint = WarmYellow, modifier = Modifier.size(27.dp))
+                            Box(
+                                Modifier.size(44.dp).clip(RoundedCornerShape(14.dp))
+                                    .background(Brush.linearGradient(listOf(WarmYellow, Color(0xFFE64AD4)))),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.CardGiftcard, null, tint = Color(0xFF07101E), modifier = Modifier.size(25.dp))
+                            }
                             Column(Modifier.weight(1f).padding(horizontal = 11.dp)) {
                                 Text(if (lang == "en") "DAILY CHALLENGE" else "چالش روزانه", color = WarmYellow, fontSize = 13.sp, fontWeight = FontWeight.Black)
                                 Text(if (lang == "en") "Play today and claim your reward" else "امروز بازی کن و جایزه‌ات را بگیر", color = TextSecondary, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
                             }
-                            Icon(Icons.Default.PlayArrow, null, tint = WarmYellow)
+                            Box(
+                                Modifier.clip(RoundedCornerShape(12.dp))
+                                    .border(1.dp, WarmYellow.copy(alpha = 0.75f), RoundedCornerShape(12.dp))
+                                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(if (lang == "en") "CLAIM" else "دریافت", color = WarmYellow, fontSize = 10.sp, fontWeight = FontWeight.Black)
+                            }
                         }
                     }
                 }
