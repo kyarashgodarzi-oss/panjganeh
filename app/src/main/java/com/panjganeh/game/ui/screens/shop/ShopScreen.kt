@@ -94,7 +94,8 @@ fun ShopScreen(
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
 
-    val isVip = vip?.isVip == true
+    val isVip = vip?.isVip == true &&
+        (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
 
     // Launcher برای دریافت نتیجه خرید کافه‌بازار
     val purchaseLauncher = rememberLauncherForActivityResult(
