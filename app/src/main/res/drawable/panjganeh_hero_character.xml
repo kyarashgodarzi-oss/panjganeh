@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="512dp"
+    android:height="512dp"
+    android:viewportWidth="512"
+    android:viewportHeight="512">
+    <!-- Soft arena glow behind the mascot -->
+    <path android:fillColor="#2439BFFF" android:pathData="M256,20 C379,20 474,115 474,238 C474,361 379,456 256,456 C133,456 38,361 38,238 C38,115 133,20 256,20 Z" />
+    <path android:fillColor="#1837D8F2" android:pathData="M256,47 C363,47 447,131 447,238 C447,345 363,429 256,429 C149,429 65,345 65,238 C65,131 149,47 256,47 Z" />
+    <path android:fillColor="#FF16345A" android:pathData="M100,500 C103,393 151,328 211,315 L301,315 C361,328 409,393 412,500 Z" />
+    <!-- Neck -->
+    <path android:fillColor="#FFC987" android:pathData="M220,267 L220,329 C220,355 292,355 292,329 L292,267 Z" />
+    <path android:fillColor="#FFE0AD" android:pathData="M224,286 C237,307 276,307 288,286 L288,326 C275,344 237,344 224,326 Z" />
+    <!-- Hair silhouette -->
+    <path android:fillColor="#10182D" android:pathData="M164,166 C149,120 160,73 198,49 C229,28 280,30 310,49 C353,76 369,122 350,173 L332,211 L174,211 Z" />
+    <!-- Ears -->
+    <path android:fillColor="#EBA96F" android:pathData="M174,168 C155,157 151,181 164,198 C171,207 181,205 185,194 Z" />
+    <path android:fillColor="#EBA96F" android:pathData="M338,168 C357,157 361,181 348,198 C341,207 331,205 327,194 Z" />
+    <!-- Face -->
+    <path android:fillColor="#FFD09A" android:pathData="M184,112 C184,70 216,54 256,54 C296,54 328,70 328,112 L324,183 C320,233 291,268 256,268 C221,268 192,233 188,183 Z" />
+    <!-- Face shadow -->
+    <path android:fillColor="#1AEBAD6F" android:pathData="M256,64 C293,64 320,82 322,117 L319,182 C316,218 290,250 256,259 Z" />
+    <!-- Hair fringe -->
+    <path android:fillColor="#10182D" android:pathData="M177,142 C165,111 174,76 202,57 C228,39 269,40 297,52 C331,67 344,96 337,132 C321,124 307,107 301,89 C279,111 245,119 211,113 C202,126 190,137 177,142 Z" />
+    <path android:fillColor="#24304D" android:pathData="M202,70 C222,52 244,50 264,55 C240,60 223,72 211,91 Z" />
+    <!-- Eyebrows -->
+    <path android:fillColor="#10182D" android:pathData="M201,153 C214,143 231,143 242,151 L238,159 C226,154 214,155 204,162 Z" />
+    <path android:fillColor="#10182D" android:pathData="M270,151 C282,143 299,143 311,153 L308,162 C298,155 285,154 274,159 Z" />
+    <!-- Eyes -->
+    <path android:fillColor="#FFFFFFFF" android:pathData="M203,166 C213,158 229,158 239,166 C231,181 212,181 203,166 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M273,166 C283,158 299,158 309,166 C300,181 281,181 273,166 Z" />
+    <path android:fillColor="#FF24395B" android:pathData="M215,164 C221,164 225,169 225,175 C225,180 221,183 216,181 C210,179 209,169 215,164 Z" />
+    <path android:fillColor="#FF24395B" android:pathData="M286,164 C292,164 296,169 296,175 C296,180 292,183 287,181 C281,179 280,169 286,164 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M216,166 C219,166 220,168 220,170 C220,172 218,173 216,172 C214,171 214,168 216,166 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M287,166 C290,166 291,168 291,170 C291,172 289,173 287,172 C285,171 285,168 287,166 Z" />
+    <!-- Nose and smile -->
+    <path android:fillColor="#FFE8B8" android:pathData="M249,171 C246,185 242,195 248,199 C252,202 260,202 264,198 C258,195 257,190 259,181 L260,171 Z" />
+    <path android:fillColor="#FFB96F" android:pathData="M247,198 C253,201 259,201 264,198 L260,204 C255,207 249,205 247,198 Z" />
+    <path android:fillColor="#FF9B5864" android:pathData="M218,207 C230,201 242,205 256,207 C270,205 282,201 294,207 C287,228 273,238 256,238 C239,238 225,228 218,207 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M225,209 C236,212 246,213 256,213 C266,213 276,212 287,209 C280,220 269,224 256,224 C243,224 232,220 225,209 Z" />
+    <path android:fillColor="#FFFFB7B0" android:pathData="M193,198 C205,192 216,196 221,204 C214,214 201,216 193,208 Z" />
+    <path android:fillColor="#FFFFB7B0" android:pathData="M319,198 C307,192 296,196 291,204 C298,214 311,216 319,208 Z" />
+    <!-- Hoodie body -->
+    <path android:fillColor="#FF1677FF" android:pathData="M211,321 L211,305 C226,321 240,329 256,329 C272,329 286,321 301,305 L301,321 C355,335 389,383 398,500 L114,500 C123,383 157,335 211,321 Z" />
+    <path android:fillColor="#FF0B3C83" android:pathData="M211,321 L256,366 L301,321 C344,333 372,365 385,420 L350,500 L162,500 L127,420 C140,365 168,333 211,321 Z" />
+    <path android:fillColor="#FF22D3EE" android:pathData="M211,321 L256,366 L301,321 L285,311 L256,340 L227,311 Z" />
+    <!-- Hoodie drawstrings -->
+    <path android:fillColor="#FFFFD21F" android:pathData="M237,350 L244,350 L241,405 L235,405 Z" />
+    <path android:fillColor="#FFFFD21F" android:pathData="M268,350 L275,350 L278,405 L272,405 Z" />
+    <path android:fillColor="#FFFFD21F" android:pathData="M235,402 C235,396 243,396 243,402 L243,415 C243,422 235,422 235,415 Z" />
+    <path android:fillColor="#FFFFD21F" android:pathData="M270,402 C270,396 278,396 278,402 L278,415 C278,422 270,422 270,415 Z" />
+    <!-- Jacket shoulders and seams -->
+    <path android:fillColor="#FF42A5FF" android:pathData="M145,365 C163,341 183,330 211,321 L232,343 L202,378 L174,500 L114,500 C120,438 128,395 145,365 Z" />
+    <path android:fillColor="#FF42A5FF" android:pathData="M367,365 C349,341 329,330 301,321 L280,343 L310,378 L338,500 L398,500 C392,438 384,395 367,365 Z" />
+    <path android:fillColor="#FF0A2B60" android:pathData="M202,378 L232,343 L256,366 L280,343 L310,378 L292,500 L220,500 Z" />
+    <path android:fillColor="#FF22D3EE" android:pathData="M202,378 L211,384 L190,500 L174,500 Z" />
+    <path android:fillColor="#FF22D3EE" android:pathData="M310,378 L301,384 L322,500 L338,500 Z" />
+    <!-- Small champion emblem -->
+    <path android:fillColor="#FFFFD21F" android:pathData="M256,430 L263,445 L280,447 L268,459 L271,476 L256,468 L241,476 L244,459 L232,447 L249,445 Z" />
+</vector>
