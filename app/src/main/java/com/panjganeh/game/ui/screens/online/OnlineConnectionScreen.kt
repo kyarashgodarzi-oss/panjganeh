@@ -118,15 +118,19 @@ fun OnlineConnectionScreen(
 
             Button(
                 onClick = { },
+                enabled = false,
                 modifier = Modifier.fillMaxWidth().height(54.dp).padding(top = 10.dp),
                 shape = RoundedCornerShape(17.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = WarmYellow)
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = WarmYellow.copy(alpha = 0.24f),
+                    disabledContentColor = TextMuted
+                )
             ) {
-                Icon(Icons.Default.Wifi, null, tint = Color(0xFF241407))
-                Text("جستجوی حریف", color = Color(0xFF241407), fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.padding(start = 7.dp))
+                Icon(Icons.Default.Wifi, null, tint = TextMuted)
+                Text("سرویس آنلاین فعال نیست", color = TextMuted, fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.padding(start = 7.dp))
             }
 
-            Text("اتصال آنلاین در این نسخه به زیرساخت سرویس آنلاین بازی وابسته است.", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
+            Text("تا زمان اتصال زیرساخت آنلاین، جستجوی حریف غیرفعال است؛ بازی آفلاین همچنان در دسترس است.", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
         }
     }
 }
