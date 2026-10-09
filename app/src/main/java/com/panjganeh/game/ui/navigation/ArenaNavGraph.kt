@@ -101,6 +101,7 @@ fun ArenaNavGraph(
                 onNavigateToLeaderboard = { navController.navigate(ArenaDestinations.LEADERBOARD) },
                 onNavigateToProfile = { navController.navigate(ArenaDestinations.PROFILE) },
                 onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.ONLINE) },
                 onNavigateToModes = { navController.navigate(ArenaDestinations.MODES) }
             )
         }
