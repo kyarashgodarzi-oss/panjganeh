@@ -147,7 +147,7 @@ fun LeaderboardScreen(
                         .padding(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    listOf("هفتگی", "دوستان", "کل").forEachIndexed { index, label ->
+                    listOf("هفتگی · نمونه", "دوستان", "کل · نمونه").forEachIndexed { index, label ->
                         Box(
                             Modifier.weight(1f)
                                 .clip(RoundedCornerShape(11.dp))
