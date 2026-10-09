@@ -22,6 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -81,9 +82,19 @@ class BazaarBillingManager(
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isBinding = false
+            if (service == null) {
+                Log.e(TAG, "Bazaar billing service returned a null binder")
+                billingService = null
+                val failure = pendingOnFailed
+                pendingOnConnected = null
+                pendingOnFailed = null
+                failure?.invoke(Exception("اتصال به سرویس پرداخت کافه‌بازار ناموفق بود"))
+                return
+            }
+
             Log.d(TAG, "Connected to Bazaar billing service")
             billingService = service
-            isBinding = false
             val callback = pendingOnConnected
             pendingOnConnected = null
             pendingOnFailed = null
@@ -203,7 +214,9 @@ class BazaarBillingManager(
                 }
 
                 val request = IntentSenderRequest.Builder(pendingIntent.intentSender).build()
-                activityLauncher.launch(request)
+                withContext(Dispatchers.Main) {
+                    activityLauncher.launch(request)
+                }
             } catch (e: RemoteException) {
                 isPurchaseInProgress.set(false)
                 Log.e(TAG, "RemoteException: ${e.message}")
@@ -341,5 +354,8 @@ class BazaarBillingManager(
             Log.w(TAG, "Error unbinding: ${e.message}")
         }
         billingService = null
+        isBinding = false
+        pendingOnConnected = null
+        pendingOnFailed = null
     }
 }
