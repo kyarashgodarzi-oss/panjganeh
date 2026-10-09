@@ -46,6 +46,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
@@ -403,7 +404,7 @@ fun BattleResultDialog(
                     )
                     IconButton(
                         onClick = onBackHome,
-                        modifier = Modifier.align(Alignment.CenterEnd).size(42.dp)
+                        modifier = Modifier.align(AbsoluteAlignment.CenterRight).size(42.dp)
                     ) {
                         Icon(Icons.Default.Close, contentDescription = "بازگشت", tint = TextSecondary)
                     }
