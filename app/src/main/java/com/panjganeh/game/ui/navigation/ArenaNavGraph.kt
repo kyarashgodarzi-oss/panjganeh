@@ -153,7 +153,7 @@ fun ArenaNavGraph(
                 onNavigateToLeaderboard = { navController.navigate(ArenaDestinations.LEADERBOARD) },
                 onNavigateToProfile = { navController.navigate(ArenaDestinations.PROFILE) },
                 onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) },
-                onNavigateToOnline = { navController.navigate(ArenaDestinations.ONLINE) },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.SHOP) },
                 onNavigateToModes = { navController.navigate(ArenaDestinations.MODES) }
             )
         }
@@ -173,7 +173,7 @@ fun ArenaNavGraph(
                     }
                     navController.navigate(destination)
                 },
-                onNavigateToOnline = { navController.navigate(ArenaDestinations.ONLINE) },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.SHOP) },
                 onNavigateToRewards = { navController.navigate(ArenaDestinations.REWARDS) },
                 onNavigateBack = { navController.popBackStack() }
             )
