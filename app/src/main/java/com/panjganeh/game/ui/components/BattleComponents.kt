@@ -393,14 +393,20 @@ fun BattleResultDialog(
                 Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onBackHome, modifier = Modifier.size(42.dp)) {
+                Box(Modifier.fillMaxWidth().height(42.dp)) {
+                    Text(
+                        "نتیجه مرحله",
+                        color = TextPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    IconButton(
+                        onClick = onBackHome,
+                        modifier = Modifier.align(Alignment.CenterEnd).size(42.dp)
+                    ) {
                         Icon(Icons.Default.Close, contentDescription = "بازگشت", tint = TextSecondary)
                     }
-                    Text("نتیجه مرحله", color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(Modifier.height(4.dp))
                 Image(
