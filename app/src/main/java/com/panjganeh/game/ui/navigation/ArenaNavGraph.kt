@@ -213,7 +213,8 @@ fun ArenaNavGraph(
                 userRepository = userRepo,
                 gameRepository = gameRepo,
                 tapsellManager = tapsellManager,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) }
             )
         }
 
