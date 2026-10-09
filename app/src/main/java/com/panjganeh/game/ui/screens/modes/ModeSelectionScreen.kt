@@ -41,6 +41,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.collectAsState
@@ -90,6 +92,7 @@ fun ModeSelectionScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var showOfflineChallenges by remember { mutableStateOf(false) }
     val challenges by gameRepository.allChallenges.collectAsState(initial = emptyList())
     val vip by userRepository.vipState.collectAsState(initial = null)
     val isVip = vip?.isVip == true &&
@@ -123,7 +126,7 @@ fun ModeSelectionScreen(
                     Modifier.fillMaxWidth().padding(bottom = 2.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = onNavigateBack) {
+                    IconButton(onClick = { if (showOfflineChallenges) showOfflineChallenges = false else onNavigateBack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
                     }
                     Column(Modifier.weight(1f).padding(start = 4.dp)) {
@@ -147,7 +150,7 @@ fun ModeSelectionScreen(
                         subtitle = "پنج چالش با هوش مصنوعی",
                         icon = Icons.Default.Casino,
                         accent = SkyBlue,
-                        onClick = null,
+                        onClick = { showOfflineChallenges = true },
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -172,6 +175,7 @@ fun ModeSelectionScreen(
                     }
                 }
             }
+            if (showOfflineChallenges) {
             item {
                 Text(
                     "پنج چالش آفلاین",
@@ -183,6 +187,7 @@ fun ModeSelectionScreen(
             }
             items(challenges.take(5), key = { it.challengeId }) { challenge ->
                 SelectionCard(challenge, ::play)
+            }
             }
             item {
                 Spacer(Modifier.height(8.dp))
