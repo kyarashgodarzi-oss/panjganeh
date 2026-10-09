@@ -296,27 +296,19 @@ class BazaarBillingManager(
 
     private suspend fun deliverProduct(sku: String, purchaseToken: String) {
         try {
-            when (sku) {
-                BazaarConfig.SKU_VIP_MONTHLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 30, sku = sku, token = purchaseToken)
-                    userRepository.addCoins(500)
-                }
-                BazaarConfig.SKU_VIP_YEARLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 365, sku = sku, token = purchaseToken)
-                    userRepository.addCoins(5000)
-                    userRepository.addTickets(10)
-                }
-                BazaarConfig.SKU_COINS_1000 -> userRepository.addCoins(1000)
-                BazaarConfig.SKU_COINS_5000 -> userRepository.addCoins(5000)
-                BazaarConfig.SKU_TICKETS_10 -> userRepository.addTickets(10)
-                else -> {
-                    Log.e(TAG, "Verified purchase has an unknown product ID: $sku")
-                    _purchaseEvents.emit(PurchaseResult.Error("محصول خریداری‌شده در برنامه تعریف نشده است"))
-                    return
-                }
+            if (sku !in BazaarConfig.ALL_PRODUCTS.map { it.sku }) {
+                Log.e(TAG, "Verified purchase has an unknown product ID: $sku")
+                _purchaseEvents.emit(PurchaseResult.Error("محصول خریداری‌شده در برنامه تعریف نشده است"))
+                return
             }
 
-            _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
+            val delivered = userRepository.deliverPurchaseOnce(sku, purchaseToken)
+            if (delivered) {
+                _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
+            } else {
+                Log.w(TAG, "Purchase token was already processed; duplicate reward ignored")
+                _purchaseEvents.emit(PurchaseResult.Error("این خرید قبلاً ثبت شده و پاداش آن دوباره تحویل نمی‌شود"))
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error delivering product: ${e.message}")
             _purchaseEvents.emit(PurchaseResult.Error("خطا در تحویل محصول"))
