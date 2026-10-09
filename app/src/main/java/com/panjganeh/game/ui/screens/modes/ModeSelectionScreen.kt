@@ -2,6 +2,7 @@ package com.panjganeh.game.ui.screens.modes
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,12 +44,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
@@ -115,12 +119,11 @@ fun ModeSelectionScreen(
                     border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = .45f))
                 ) {
                     Box(Modifier.fillMaxWidth().height(188.dp)) {
-                        Box(
-                            Modifier.fillMaxSize().background(
-                                Brush.linearGradient(
-                                    listOf(Color(0xFF101B38), Color(0xFF18284A), Color(0xFF5B3A74))
-                                )
-                            )
+                        Image(
+                            painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
                         )
                         Box(
                             Modifier.fillMaxSize().background(
