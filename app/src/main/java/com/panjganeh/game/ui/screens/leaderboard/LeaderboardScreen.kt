@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.screens.leaderboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,6 +95,12 @@ fun LeaderboardScreen(
     ).sortedByDescending { it.trophies }
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
     val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
+    var selectedFilter by remember { mutableStateOf(0) }
+    val visiblePlayers = when (selectedFilter) {
+        1 -> leaderboard.filter { it.isVip }
+        2 -> leaderboard.filter { it.isUser }
+        else -> leaderboard
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -114,11 +125,12 @@ fun LeaderboardScreen(
                         .padding(5.dp),
                     horizontalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    listOf("کل", "دوستان", "برترها").forEachIndexed { index, label ->
+                    listOf("کل", "VIP", "شما").forEachIndexed { index, label ->
                         Box(
                             Modifier.weight(1f)
                                 .clip(RoundedCornerShape(11.dp))
-                                .background(if (index == 0) Color(0xFF1687FF) else Color.Transparent)
+                                .background(if (index == selectedFilter) Color(0xFF1687FF) else Color.Transparent)
+                                .clickable { selectedFilter = index }
                                 .padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -128,7 +140,7 @@ fun LeaderboardScreen(
                 }
             }
 
-            itemsIndexed(leaderboard) { _, player ->
+            itemsIndexed(visiblePlayers) { _, player ->
                 val isTop3 = player.rank <= 3
                 val rankColor = when (player.rank) {
                     1 -> GoldPrimary
