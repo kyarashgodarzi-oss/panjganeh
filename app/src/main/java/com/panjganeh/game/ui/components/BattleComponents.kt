@@ -1,5 +1,10 @@
 package com.panjganeh.game.ui.components
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,6 +46,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -373,6 +379,16 @@ fun BattleResultDialog(
     onPlayAgain: () -> Unit,
     onBackHome: () -> Unit
 ) {
+    val resultPulse = rememberInfiniteTransition(label = "result_pulse").animateFloat(
+        initialValue = 0.96f,
+        targetValue = 1.04f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 900),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "result_pulse_scale"
+    )
+
     Dialog(onDismissRequest = {}) {
         Card(
             Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
@@ -384,8 +400,21 @@ fun BattleResultDialog(
             )
         ) {
             Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally) {
-                Box(Modifier.size(82.dp).clip(CircleShape).background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f)).border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape), contentAlignment=Alignment.Center) {
-                    Icon(if(isWin) Icons.Default.EmojiEvents else Icons.Default.Close, null, tint=if(isWin) GoldPrimary else ArenaError, modifier=Modifier.size(46.dp))
+                Box(
+                    Modifier
+                        .size(82.dp)
+                        .scale(resultPulse.value)
+                        .clip(CircleShape)
+                        .background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f))
+                        .border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        if (isWin) Icons.Default.EmojiEvents else Icons.Default.Close,
+                        null,
+                        tint = if (isWin) GoldPrimary else ArenaError,
+                        modifier = Modifier.size(46.dp)
+                    )
                 }
                 Spacer(Modifier.height(14.dp))
                 Text(if(isWin) "VICTORY" else "BATTLE COMPLETE", color=if(isWin) GoldPrimary else ArenaError, fontSize=10.sp, fontWeight=FontWeight.Black, letterSpacing=2.2.sp)
