@@ -1,7 +1,6 @@
 package com.panjganeh.game.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,14 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.TextPrimary
@@ -46,13 +42,15 @@ fun ReferencePageHeader(
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.4.dp, Brush.horizontalGradient(listOf(WarmYellow.copy(alpha = .72f), Color(0xFF2DD4BF).copy(alpha = .50f), WarmYellow.copy(alpha = .30f))))
     ) {
-        Box(Modifier.fillMaxWidth().height(174.dp).testTag("reference_page_header_artwork")) {
-            Image(
-                painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(174.dp),
-                contentScale = ContentScale.Crop
-            )
+        Box(
+            Modifier.fillMaxWidth().height(174.dp)
+                .background(
+                    Brush.linearGradient(
+                        listOf(Color(0xFF101B38), Color(0xFF18284A), Color(0xFF5B3A74))
+                    )
+                )
+                .testTag("reference_page_header_artwork")
+        )
             Box(
                 Modifier.fillMaxWidth().height(174.dp).background(
                     Brush.verticalGradient(
