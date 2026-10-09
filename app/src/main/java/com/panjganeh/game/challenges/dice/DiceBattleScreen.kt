@@ -274,27 +274,28 @@ fun DiceVisual(
     color: Color,
     modifier: Modifier = Modifier,
     compact: Boolean = false
-) {
+ ) {
+    val pipSize = if (compact) 5.dp else 18.dp
     Box(
         modifier = modifier
             .size(if (compact) 30.dp else 124.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(ArenaBackground)
             .border(2.5.dp, color, RoundedCornerShape(18.dp))
-            .padding(12.dp),
+            .padding(if (compact) 4.dp else 18.dp),
         contentAlignment = Alignment.Center
     ) {
         when (value) {
-            1 -> Box(modifier = Modifier.size(16.dp).clip(CircleShape).background(color))
+            1 -> Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
             2 -> Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             3 -> Column(
@@ -302,13 +303,13 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             4 -> Column(
@@ -316,12 +317,12 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             5 -> Column(
@@ -329,15 +330,15 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             else -> Column(
@@ -345,16 +346,16 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
         }
