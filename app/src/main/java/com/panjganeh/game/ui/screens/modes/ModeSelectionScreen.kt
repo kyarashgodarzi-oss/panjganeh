@@ -130,11 +130,12 @@ fun ModeSelectionScreen(
                         Icon(Icons.Default.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
                     }
                     Column(Modifier.weight(1f).padding(start = 4.dp)) {
-                        Text("انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
+                        Text(if (showOfflineChallenges) "پنج چالش آفلاین" else "انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
                         Text("وارد میدان شو؛ قهرمانی منتظر توست", color = TextSecondary, fontSize = 10.sp)
                     }
                 }
             }
+            if (!showOfflineChallenges) {
             item {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ModeChoiceCard(
@@ -174,6 +175,7 @@ fun ModeSelectionScreen(
                         Icon(Icons.Default.PlayArrow, contentDescription = null, tint = WarmYellow)
                     }
                 }
+            }
             }
             if (showOfflineChallenges) {
             item {
