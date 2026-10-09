@@ -329,11 +329,11 @@ private fun ReferenceBottomNavigation(
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ReferenceNavItem("پروفایل", Icons.Default.Person, currentRoute == ArenaDestinations.PROFILE, onProfile)
-        ReferenceNavItem("رتبه‌بندی", Icons.Default.EmojiEvents, currentRoute == ArenaDestinations.LEADERBOARD, onLeaderboard)
-        ReferenceNavItem("مسابقه", Icons.Default.Gamepad, currentRoute == ArenaDestinations.MODES, onGame)
-        ReferenceNavItem("فروشگاه", Icons.Default.ShoppingCart, currentRoute == ArenaDestinations.SHOP, onShop)
         ReferenceNavItem("خانه", Icons.Default.Home, currentRoute == ArenaDestinations.HOME, onHome)
+        ReferenceNavItem("فروشگاه", Icons.Default.ShoppingCart, currentRoute == ArenaDestinations.SHOP, onShop)
+        ReferenceNavItem("مسابقه", Icons.Default.Gamepad, currentRoute == ArenaDestinations.MODES, onGame)
+        ReferenceNavItem("رتبه‌بندی", Icons.Default.EmojiEvents, currentRoute == ArenaDestinations.LEADERBOARD, onLeaderboard)
+        ReferenceNavItem("پروفایل", Icons.Default.Person, currentRoute == ArenaDestinations.PROFILE, onProfile)
     }
 }
 
