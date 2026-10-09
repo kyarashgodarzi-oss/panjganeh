@@ -6,7 +6,7 @@ on:
       - redesign/reference-ai-integration
   pull_request:
     branches:
-      - redesign/reference-ai-integration
+      - redesign/premium-game-ui
   workflow_dispatch:
 
 permissions:
