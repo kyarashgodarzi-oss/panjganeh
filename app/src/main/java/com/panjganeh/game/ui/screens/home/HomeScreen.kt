@@ -280,7 +280,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.5.dp, WarmYellow.copy(alpha = 0.5f))
     ) {
-        Box(Modifier.fillMaxWidth().height(205.dp)) {
+        Box(Modifier.fillMaxWidth().height(260.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
                 contentDescription = null,
@@ -302,9 +302,9 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
                 Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(if (lang == "en") "PANJGANEH" else "پنجگانه", color = WarmYellow, fontSize = 12.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
+                Text(if (lang == "en") "PANJGANEH" else "پنجگانه", color = WarmYellow, fontSize = 19.sp, fontWeight = FontWeight.Black, letterSpacing = 2.sp)
                 Text(
-                    if (lang == "en") "FIVE CHALLENGES. ONE CHAMPION." else "پنج چالش؛ یک قهرمان",
+                    if (lang == "en") "FIVE CHALLENGES. ONE CHAMPION." else "۵ چالش؛ یک قهرمان",
                     color = Color.White,
                     fontSize = 21.sp,
                     fontWeight = FontWeight.Black,
@@ -355,14 +355,24 @@ private fun ModeTile(
 ) {
     Card(
         modifier.clickable(onClick = onClick),
-        shape = RoundedCornerShape(17.dp),
-        colors = CardDefaults.cardColors(containerColor = color.copy(alpha = 0.10f)),
-        border = BorderStroke(1.dp, color.copy(alpha = 0.42f))
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.8f))
     ) {
-        Column(Modifier.fillMaxWidth().padding(vertical = 11.dp, horizontal = 5.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(icon, null, tint = color, modifier = Modifier.size(23.dp))
-            Text(title, color = Color.White, fontSize = (9 * scale).sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 4.dp))
-            Text(subtitle, color = TextMuted, fontSize = (7.5f * scale).sp, maxLines = 1)
+        Column(
+            Modifier.fillMaxWidth()
+                .background(Brush.horizontalGradient(listOf(color.copy(alpha = 0.98f), color.copy(alpha = 0.72f))))
+                .padding(vertical = 12.dp, horizontal = 7.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                Modifier.size(36.dp).clip(CircleShape).background(Color.White.copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, null, tint = Color.White, modifier = Modifier.size(22.dp))
+            }
+            Text(title, color = Color.White, fontSize = (12 * scale).sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 5.dp))
+            Text(subtitle, color = Color.White.copy(alpha = 0.88f), fontSize = (8 * scale).sp, maxLines = 1)
         }
     }
 }
