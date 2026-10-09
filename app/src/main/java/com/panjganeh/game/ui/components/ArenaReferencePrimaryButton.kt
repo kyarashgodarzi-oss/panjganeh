@@ -1,5 +1,10 @@
 package com.panjganeh.game.ui.components
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,13 +42,23 @@ fun ArenaReferencePrimaryButton(
     modifier: Modifier = Modifier,
     testTag: String = "arena_reference_primary_button"
 ) {
+    val borderGlow = rememberInfiniteTransition(label = "primary_button_glow").animateFloat(
+        initialValue = 0.58f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1100),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "primary_button_border_alpha"
+    )
+
     Card(
         modifier = modifier
             .height(48.dp)
             .testTag(testTag),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.2.dp, GoldDark.copy(alpha = 0.85f))
+        border = BorderStroke(1.2.dp, GoldDark.copy(alpha = borderGlow.value))
     ) {
         Box(
             modifier = Modifier
