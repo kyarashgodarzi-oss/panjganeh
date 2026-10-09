@@ -179,23 +179,31 @@ fun RockPaperScissorsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        listOf(
-                            RpsChoice.ROCK,
-                            RpsChoice.PAPER,
-                            RpsChoice.SCISSORS
-                        ).forEach { choice ->
-                            val isSelected = state.userChoice == choice
-                            RpsReferenceChoice(
-                                choice = choice,
-                                selected = isSelected,
-                                enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
-                                onClick = { viewModel.onUserSelect(choice) },
-                                modifier = Modifier.weight(1f)
-                            )
+                        RpsReferenceChoice(
+                            choice = RpsChoice.PAPER,
+                            selected = state.userChoice == RpsChoice.PAPER,
+                            enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
+                            onClick = { viewModel.onUserSelect(RpsChoice.PAPER) },
+                            modifier = Modifier.fillMaxWidth(0.56f)
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            listOf(RpsChoice.SCISSORS, RpsChoice.ROCK).forEach { choice ->
+                                RpsReferenceChoice(
+                                    choice = choice,
+                                    selected = state.userChoice == choice,
+                                    enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
+                                    onClick = { viewModel.onUserSelect(choice) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                     }
                 }
@@ -233,7 +241,7 @@ private fun RpsReferenceChoice(
     }
     Box(
         modifier = modifier
-            .height(194.dp)
+            .height(118.dp)
             .clip(RoundedCornerShape(22.dp))
             .background(
                 if (selected) GoldPrimary.copy(alpha = 0.16f)
@@ -249,7 +257,7 @@ private fun RpsReferenceChoice(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(emoji, fontSize = 54.sp)
+            Text(emoji, fontSize = 40.sp)
             Spacer(Modifier.height(10.dp))
             Text(
                 choice.titleFa,
