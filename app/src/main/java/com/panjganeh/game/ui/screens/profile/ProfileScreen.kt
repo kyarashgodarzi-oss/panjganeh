@@ -60,6 +60,7 @@ import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -102,12 +103,7 @@ fun ProfileScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "مشخصات و آمار نبردها",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "مشخصات و آمار نبردها", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
