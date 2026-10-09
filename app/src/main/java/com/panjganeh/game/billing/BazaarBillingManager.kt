@@ -64,6 +64,9 @@ class BazaarBillingManager(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var billingService: IBinder? = null
+    private var isBinding = false
+    private var pendingOnConnected: (() -> Unit)? = null
+    private var pendingOnFailed: ((Throwable) -> Unit)? = null
     private val isPurchaseInProgress = AtomicBoolean(false)
 
     private val _purchaseEvents = MutableSharedFlow<PurchaseResult>()
@@ -80,11 +83,17 @@ class BazaarBillingManager(
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Log.d(TAG, "Connected to Bazaar billing service")
             billingService = service
+            isBinding = false
+            val callback = pendingOnConnected
+            pendingOnConnected = null
+            pendingOnFailed = null
+            callback?.invoke()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.w(TAG, "Disconnected from Bazaar billing service")
             billingService = null
+            isBinding = false
         }
     }
 
@@ -93,7 +102,15 @@ class BazaarBillingManager(
             onConnected?.invoke()
             return
         }
+        if (isBinding) {
+            if (onConnected != null) pendingOnConnected = onConnected
+            if (onFailed != null) pendingOnFailed = onFailed
+            return
+        }
 
+        isBinding = true
+        pendingOnConnected = onConnected
+        pendingOnFailed = onFailed
         val serviceIntent = Intent(BAZAAR_BILLING_ACTION).apply {
             setPackage(BAZAAR_PACKAGE)
         }
@@ -102,12 +119,19 @@ class BazaarBillingManager(
             val bound = context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             if (!bound) {
                 Log.e(TAG, "Could not bind to Bazaar billing service")
-                onFailed?.invoke(Exception("کافه بازار نصب نیست یا اتصال برقرار نشد"))
-            } else {
-                onConnected?.invoke()
+                isBinding = false
+                val failure = pendingOnFailed
+                pendingOnConnected = null
+                pendingOnFailed = null
+                failure?.invoke(Exception("کافه بازار نصب نیست یا اتصال برقرار نشد"))
             }
+            // bindService(true) فقط شروع اتصال را تأیید می‌کند؛ callback
+            // واقعی باید پس از onServiceConnected اجرا شود.
         } catch (e: Exception) {
             Log.e(TAG, "Error binding: ${e.message}")
+            isBinding = false
+            pendingOnConnected = null
+            pendingOnFailed = null
             onFailed?.invoke(e)
         }
     }
