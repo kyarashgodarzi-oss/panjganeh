@@ -17,7 +17,7 @@ data class PanjganehThemePreset(
 )
 
 val AvailableThemes = listOf(
-    PanjganehThemePreset(0, "آرنا (پیشنهادی)", "Arena", Color(0xFF7C5CFF), Color(0xFF2DD4BF), Color(0xFFFBBF24), Color(0xFF0F172A), Color(0xFFFFFFFF), Color(0xFF070B18), Color(0xFFF4F6FB)),
+    PanjganehThemePreset(0, "آرنا (پیشنهادی)", "Arena", Color(0xFF1677FF), Color(0xFF22D3EE), Color(0xFFFFD21F), Color(0xFF071B37), Color(0xFFFFFFFF), Color(0xFF030916), Color(0xFFF4F7FC)),
     PanjganehThemePreset(1, "بنفش سلطنتی", "Royal Purple", Color(0xFF9B7CFF), Color(0xFF6366F1), Color(0xFFFBBF24), Color(0xFF15132C), Color(0xFFFFFFFF), Color(0xFF090817), Color(0xFFF5F3FF)),
     PanjganehThemePreset(2, "اقیانوس نئون", "Neon Ocean", Color(0xFF38BDF8), Color(0xFF2DD4BF), Color(0xFF818CF8), Color(0xFF0D1B2A), Color(0xFFFFFFFF), Color(0xFF06111D), Color(0xFFF0F9FF)),
     PanjganehThemePreset(3, "زمرد تاکتیکی", "Tactical Emerald", Color(0xFF34D399), Color(0xFF14B8A6), Color(0xFFFBBF24), Color(0xFF0D201B), Color(0xFFFFFFFF), Color(0xFF06120F), Color(0xFFF0FDF9)),
