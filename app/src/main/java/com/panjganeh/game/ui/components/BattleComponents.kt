@@ -300,7 +300,7 @@ fun BattleRoundStars(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -310,7 +310,7 @@ fun BattleRoundStars(
                     Icons.Default.Star,
                     contentDescription = null,
                     tint = if (userScore > index) GoldPrimary else ArenaSurfaceBorder,
-                    modifier = Modifier.size(27.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -318,7 +318,7 @@ fun BattleRoundStars(
         Text(
             "اولین به ۳ برد برنده است",
             color = TextMuted,
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             fontWeight = FontWeight.Medium
         )
 
