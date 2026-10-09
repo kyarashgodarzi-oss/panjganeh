@@ -46,6 +46,7 @@ class BazaarBillingManager(
         private const val BAZAAR_BILLING_ACTION = "ir.cafebazaar.pardakht.InAppBillingService.BIND"
         private const val BILLING_API_VERSION = 3
         private const val ITEM_TYPE_INAPP = "inapp"
+        private const val TRANSACTION_CONSUME_PURCHASE = IBinder.FIRST_CALL_TRANSACTION + 4
 
         // Response keys
         private const val RESPONSE_CODE = "RESPONSE_CODE"
@@ -303,6 +304,14 @@ class BazaarBillingManager(
             }
 
             val delivered = userRepository.deliverPurchaseOnce(sku, purchaseToken)
+
+            // Coins and tickets are consumable products. Consume even when the
+            // token was already delivered so a prior consume failure can recover
+            // without granting the reward twice.
+            if (isConsumable(sku) && !consumePurchase(purchaseToken)) {
+                Log.w(TAG, "Purchase was delivered=$delivered but Bazaar consumption failed for $sku")
+            }
+
             if (delivered) {
                 _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
             } else {
@@ -312,6 +321,44 @@ class BazaarBillingManager(
         } catch (e: Exception) {
             Log.e(TAG, "Error delivering product: ${e.message}")
             _purchaseEvents.emit(PurchaseResult.Error("خطا در تحویل محصول"))
+        }
+    }
+
+    private fun isConsumable(sku: String): Boolean =
+        sku == BazaarConfig.SKU_COINS_1000 ||
+            sku == BazaarConfig.SKU_COINS_5000 ||
+            sku == BazaarConfig.SKU_TICKETS_10
+
+    /**
+     * Consumes a successfully delivered one-time product so it can be purchased again.
+     * VIP products are non-consumable and must never be consumed.
+     */
+    private suspend fun consumePurchase(purchaseToken: String): Boolean {
+        val service = billingService ?: return false
+        return try {
+            val data = android.os.Parcel.obtain()
+            val reply = android.os.Parcel.obtain()
+            try {
+                data.writeInterfaceToken("com.android.vending.billing.IInAppBillingService")
+                data.writeInt(BILLING_API_VERSION)
+                data.writeString(context.packageName)
+                data.writeString(purchaseToken)
+                service.transact(TRANSACTION_CONSUME_PURCHASE, data, reply, 0)
+                reply.readException()
+                val responseCode = reply.readInt()
+                if (responseCode == BILLING_RESPONSE_RESULT_OK) {
+                    true
+                } else {
+                    Log.w(TAG, "Bazaar consumePurchase returned response code $responseCode")
+                    false
+                }
+            } finally {
+                data.recycle()
+                reply.recycle()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to consume purchase token: ${e.message}")
+            false
         }
     }
 
