@@ -328,7 +328,7 @@ fun BattleRoundStars(
                     Icons.Default.Star,
                     contentDescription = null,
                     tint = if (aiScore > index) SkySecondary else ArenaSurfaceBorder,
-                    modifier = Modifier.size(27.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
