@@ -36,7 +36,13 @@ jobs:
           packages: platform-tools
 
       - name: Prepare local-only configuration
-        run: printf 'TAPSELL_KEY=DEFAULT_TAPSELL_KEY\nBAZAAR_PUBLIC_KEY=DEFAULT_BAZAAR_PUBLIC_KEY\n' > local.properties
+        env:
+          TAPSELL_KEY: ${{ secrets.TAPSELL_KEY }}
+          BAZAAR_PUBLIC_KEY: ${{ secrets.BAZAAR_PUBLIC_KEY }}
+        run: |
+          printf 'TAPSELL_KEY=%s\nBAZAAR_PUBLIC_KEY=%s\n' \
+            "${TAPSELL_KEY:-DEFAULT_TAPSELL_KEY}" \
+            "${BAZAAR_PUBLIC_KEY:-DEFAULT_BAZAAR_PUBLIC_KEY}" > local.properties
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
