@@ -96,7 +96,11 @@ fun LeaderboardScreen(
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
     val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
     var selectedFilter by remember { mutableStateOf(2) }
-    val visiblePlayers = if (selectedFilter == 0) leaderboard.take(5) else leaderboard
+    val visiblePlayers = when (selectedFilter) {
+        0 -> leaderboard.filter { it.isVip }
+        1 -> leaderboard.filter { it.isUser }
+        else -> leaderboard
+    }
 
     Scaffold(
         containerColor = Color.Transparent,
