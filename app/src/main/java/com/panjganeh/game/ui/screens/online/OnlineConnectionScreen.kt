@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Public
@@ -84,7 +84,7 @@ fun OnlineConnectionScreen(
                         .clickable(onClick = onNavigateBack),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.ArrowBack, "بازگشت", tint = TextPrimary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = TextPrimary)
                 }
                 Column(Modifier.weight(1f).padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("اتصال آنلاین", color = TextPrimary, fontSize = 21.sp, fontWeight = FontWeight.Black)
