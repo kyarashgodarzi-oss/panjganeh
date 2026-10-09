@@ -115,6 +115,30 @@ fun LeaderboardScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF10233B)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF25496B))
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.EmojiEvents, null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
+                        Text(
+                            "رتبه‌های این صفحه نمونه‌اند و هنوز از سرور دریافت نمی‌شوند.",
+                            color = TextSecondary,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            item {
                 Row(
                     Modifier.fillMaxWidth()
                         .clip(RoundedCornerShape(15.dp))
