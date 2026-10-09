@@ -321,7 +321,7 @@ private fun ReferenceHero(level: Int, xp: Int, lang: String, onPlay: () -> Unit)
         Box(Modifier.fillMaxWidth().height(260.dp)) {
             Image(
                 painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
-                contentDescription = null,
+                contentDescription = if (lang == "en") "Panjganeh hero artwork" else "تصویر قهرمان پنجگانه",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
             )
