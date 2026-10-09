@@ -23,6 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -205,10 +209,35 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    StatBox(modifier = Modifier.weight(1f), title = "کل بازی‌ها", value = "$totalMatches", color = TextPrimary)
-                    StatBox(modifier = Modifier.weight(1f), title = "پیروزی‌ها", value = "${user?.wins ?: 0}", color = EmeraldTertiary)
-                    StatBox(modifier = Modifier.weight(1f), title = "شکست‌ها", value = "${user?.losses ?: 0}", color = ArenaError)
-                    StatBox(modifier = Modifier.weight(1f), title = "نرخ برد", value = "$winRate%", color = GoldPrimary)
+                    StatBox(modifier = Modifier.weight(1f), title = "امتیاز کل", value = "${user?.xp ?: 0}", color = SkySecondary)
+                    StatBox(modifier = Modifier.weight(1f), title = "باخت‌ها", value = "${user?.losses ?: 0}", color = GoldPrimary)
+                    StatBox(modifier = Modifier.weight(1f), title = "بردها", value = "${user?.wins ?: 0}", color = EmeraldTertiary)
+                }
+            }
+
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("profile_achievements"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary.copy(alpha = .55f), GoldPrimary.copy(alpha = .45f)))
+                    )
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 15.dp)) {
+                        Text("مدال‌ها", color = GoldPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Row(
+                            Modifier.fillMaxWidth().padding(top = 14.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AchievementBadge(Icons.Default.Shield, "برنز", Color(0xFF2DD4BF))
+                            AchievementBadge(Icons.Default.Star, "طلا", GoldPrimary)
+                            AchievementBadge(Icons.Default.EmojiEvents, "نقره", Color(0xFFCBD5E1))
+                            AchievementBadge(Icons.Default.MilitaryTech, "برتر", Color(0xFFEF8D32))
+                        }
+                    }
                 }
             }
 
@@ -304,6 +333,25 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AchievementBadge(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    tint: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier.size(44.dp).clip(CircleShape)
+                .background(tint.copy(alpha = .12f))
+                .border(1.5.dp, tint.copy(alpha = .85f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(24.dp))
+        }
+        Text(label, color = TextSecondary, fontSize = 9.sp, modifier = Modifier.padding(top = 6.dp))
     }
 }
 
