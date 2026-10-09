@@ -208,29 +208,6 @@ fun ShopScreen(
                 }
             }
 
-            item {
-                Text(
-                    text = "محصولات پرداخت درون‌برنامه‌ای کافه‌بازار",
-                    color = GoldLight,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-
-            // لیست محصولات بازار
-            items(BazaarConfig.ALL_PRODUCTS, key = { it.sku }) { product ->
-                ProductCard(
-                    product = product,
-                    onBuyClick = {
-                        billingManager.launchPurchaseFlow(
-                            activityLauncher = purchaseLauncher,
-                            productId = product.sku
-                        )
-                    }
-                )
-            }
-
             // ═══════════════════════════════════════════════════════════
             // بخش دریافت سکه رایگان با ویدیوی تپسل
             item {
@@ -315,6 +292,29 @@ fun ShopScreen(
                         }
                     }
                 }
+            }
+
+            item {
+                Text(
+                    text = "محصولات پرداخت درون‌برنامه‌ای کافه‌بازار",
+                    color = GoldLight,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            // لیست محصولات بازار
+            items(BazaarConfig.ALL_PRODUCTS, key = { it.sku }) { product ->
+                ProductCard(
+                    product = product,
+                    onBuyClick = {
+                        billingManager.launchPurchaseFlow(
+                            activityLauncher = purchaseLauncher,
+                            productId = product.sku
+                        )
+                    }
+                )
             }
 
             // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
