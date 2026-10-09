@@ -64,7 +64,6 @@ import com.panjganeh.game.ui.theme.CreatorCardBorderGradient
 import com.panjganeh.game.ui.theme.LocalFontScale
 import com.panjganeh.game.ui.theme.PanjganehBgDark
 import com.panjganeh.game.ui.theme.PinkTertiary
-import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.PurplePrimary
 import com.panjganeh.game.ui.theme.SkyBlue
 import com.panjganeh.game.ui.theme.SplashGradient
