@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
@@ -656,6 +657,7 @@ private fun ArenaBottomBar(
         BottomItem(if (lang == "en") "Rewards" else "جوایز", Icons.Default.CardGiftcard, PinkTertiary, scale, rewards)
         BottomItem(if (lang == "en") "Rank" else "رتبه‌بندی", Icons.Default.EmojiEvents, TurquoiseSecondary, scale, rank)
         BottomItem(if (lang == "en") "Profile" else "پروفایل", Icons.Default.Person, SkyBlue, scale, profile)
+        BottomItem(if (lang == "en") "Home" else "خانه", Icons.Default.Home, WarmYellow, scale) { }
     }
 }
 
