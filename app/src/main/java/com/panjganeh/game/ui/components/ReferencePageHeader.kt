@@ -2,7 +2,6 @@ package com.panjganeh.game.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +23,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.panjganeh.game.ui.theme.ArenaBackground
-import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.WarmYellow
@@ -40,35 +38,56 @@ fun ReferencePageHeader(
         modifier = modifier.fillMaxWidth().testTag("reference_page_header"),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.4.dp, Brush.horizontalGradient(listOf(WarmYellow.copy(alpha = .72f), Color(0xFF2DD4BF).copy(alpha = .50f), WarmYellow.copy(alpha = .30f))))
-    ) {
-        Box(
-            Modifier.fillMaxWidth().height(174.dp)
-                .background(
-                    Brush.linearGradient(
-                        listOf(Color(0xFF101B38), Color(0xFF18284A), Color(0xFF5B3A74))
-                    )
-                )
-                .testTag("reference_page_header_artwork")
-        )
-            Box(
-                Modifier.fillMaxWidth().height(174.dp).background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color(0xFF07101E).copy(alpha = .18f),
-                            Color(0xFF07101E).copy(alpha = .62f),
-                            ArenaBackground.copy(alpha = .97f)
-                        )
-                    )
+        border = BorderStroke(
+            1.4.dp,
+            Brush.horizontalGradient(
+                listOf(
+                    WarmYellow.copy(alpha = .72f),
+                    Color(0xFF2DD4BF).copy(alpha = .50f),
+                    WarmYellow.copy(alpha = .30f)
                 )
             )
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(174.dp)
+                .testTag("reference_page_header_artwork")
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(174.dp)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF101B38), Color(0xFF18284A), Color(0xFF5B3A74))
+                        )
+                    )
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(174.dp)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0xFF07101E).copy(alpha = .18f),
+                                Color(0xFF07101E).copy(alpha = .62f),
+                                ArenaBackground.copy(alpha = .97f)
+                            )
+                        )
+                    )
+            )
             Column(
-                Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 18.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 18.dp, vertical = 18.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Bottom
             ) {
                 Text(
-                    kicker,
+                    text = kicker,
                     color = WarmYellow,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Black,
@@ -76,7 +95,7 @@ fun ReferencePageHeader(
                     modifier = Modifier.testTag("reference_page_header_kicker")
                 )
                 Text(
-                    title,
+                    text = title,
                     color = TextPrimary,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
@@ -84,7 +103,7 @@ fun ReferencePageHeader(
                     modifier = Modifier.padding(top = 4.dp).testTag("reference_page_header_title")
                 )
                 Text(
-                    subtitle,
+                    text = subtitle,
                     color = TextSecondary,
                     fontSize = 10.sp,
                     textAlign = TextAlign.Center,
