@@ -1,6 +1,14 @@
 package com.panjganeh.game.ui.screens.home
 
+import android.app.Activity
 import android.widget.Toast
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,11 +21,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,25 +33,23 @@ import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.OndemandVideo
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Memory
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.filled.SmartToy
 import androidx.compose.material.icons.filled.Spellcheck
 import androidx.compose.material.icons.filled.SportsKabaddi
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Style
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.WorkspacePremium
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,19 +65,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.panjganeh.game.R
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.datastore.AppSettingsDataStore
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
-import com.panjganeh.game.ui.components.ArenaTopBar
-import com.panjganeh.game.ui.components.TapsellBanner
+import com.panjganeh.game.ui.components.ArenaReferencePrimaryButton
+import com.panjganeh.game.ui.theme.ArenaBackground
+import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.DiceChallengeColor
 import com.panjganeh.game.ui.theme.LocalAppLanguage
 import com.panjganeh.game.ui.theme.LocalFontScale
@@ -82,8 +93,11 @@ import com.panjganeh.game.ui.theme.PurplePrimary
 import com.panjganeh.game.ui.theme.RpsChallengeColor
 import com.panjganeh.game.ui.theme.SentenceChallengeColor
 import com.panjganeh.game.ui.theme.SkyBlue
+import com.panjganeh.game.ui.theme.TextMuted
+import com.panjganeh.game.ui.theme.TextPrimary
+import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.TurquoiseSecondary
-import com.panjganeh.game.ui.theme.VipCrownGradient
+import com.panjganeh.game.ui.theme.VipGold
 import com.panjganeh.game.ui.theme.WarmYellow
 import com.panjganeh.game.ui.theme.WordChallengeColor
 import kotlinx.coroutines.delay
@@ -95,741 +109,1357 @@ fun HomeScreen(
     gameRepository: GameRepository,
     tapsellManager: TapsellManager,
     settingsDataStore: AppSettingsDataStore,
-    onStartChallenge: (challengeId: String) -> Unit,
+    onStartChallenge: (String) -> Unit,
     onNavigateToShop: () -> Unit,
     onNavigateToRewards: () -> Unit,
     onNavigateToLeaderboard: () -> Unit,
     onNavigateToProfile: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToOnline: () -> Unit,
+    onNavigateToModes: () -> Unit
 ) {
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+
     val fontScale = LocalFontScale.current
-    val currentTheme = LocalPanjganehTheme.current
-    val currentLang = LocalAppLanguage.current
+    val lang = LocalAppLanguage.current
+    LocalPanjganehTheme.current
 
-    val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
-    val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
-    val challenges by gameRepository.allChallenges.collectAsStateWithLifecycle(initialValue = emptyList())
-    val settings by gameRepository.settings.collectAsStateWithLifecycle(initialValue = null)
+    val user by userRepository.userProfile
+        .collectAsStateWithLifecycle(initialValue = null)
 
-    val isVip = vip?.isVip == true && (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
+    val vip by userRepository.vipState
+        .collectAsStateWithLifecycle(initialValue = null)
 
-    // ═══════════════════════════════════════════════════════════════
-    // State های مربوط به تبلیغ ۲ ساعتی
-    // ═══════════════════════════════════════════════════════════════
-    val appSettings by settingsDataStore.appSettingsFlow.collectAsStateWithLifecycle(initialValue = null)
-    var currentTime by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val settings by settingsDataStore.appSettingsFlow
+        .collectAsStateWithLifecycle(initialValue = null)
 
-    // هر ۳۰ ثانیه زمان رو آپدیت کن (برای شمارش معکوس)
+
+    var now by remember {
+        mutableLongStateOf(System.currentTimeMillis())
+    }
+
     LaunchedEffect(Unit) {
         while (true) {
-            delay(30_000L)
-            currentTime = System.currentTimeMillis()
+            delay(30000)
+            now = System.currentTimeMillis()
         }
     }
 
-    val lastClaim = appSettings?.lastTwoHourRewardClaim ?: 0L
-    val twoHoursMillis = 2 * 60 * 60 * 1000L
-    val elapsed = currentTime - lastClaim
-    val isTwoHourRewardReady = lastClaim == 0L || elapsed >= twoHoursMillis
-    val remainingMillis = if (isTwoHourRewardReady) 0L else (twoHoursMillis - elapsed)
+
+    val lastReward = settings?.lastTwoHourRewardClaim ?: 0L
+
+    val remaining =
+        (7200000L - (now - lastReward))
+            .coerceAtLeast(0)
+
+    val rewardReady =
+        lastReward == 0L || remaining == 0L
+
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = if (currentLang == "en") "Panjganeh" else "پنجگانه",
-                onCoinsClick = onNavigateToShop,
-                onTicketsClick = onNavigateToShop,
-                onProfileClick = onNavigateToProfile
-            )
-        },
+        containerColor = ArenaBackground,
         bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HomeNavButton(
-                    title = if (currentLang == "en") "Shop" else "فروشگاه",
-                    icon = Icons.Default.ShoppingCart,
-                    tint = WarmYellow,
-                    fontScale = fontScale,
-                    onClick = onNavigateToShop,
-                    tag = "nav_shop"
-                )
-                HomeNavButton(
-                    title = if (currentLang == "en") "Rewards" else "جوایز",
-                    icon = Icons.Default.CardGiftcard,
-                    tint = PinkTertiary,
-                    fontScale = fontScale,
-                    onClick = onNavigateToRewards,
-                    tag = "nav_rewards"
-                )
-                HomeNavButton(
-                    title = if (currentLang == "en") "Leaderboard" else "برترین‌ها",
-                    icon = Icons.Default.EmojiEvents,
-                    tint = TurquoiseSecondary,
-                    fontScale = fontScale,
-                    onClick = onNavigateToLeaderboard,
-                    tag = "nav_leaderboard"
-                )
-                HomeNavButton(
-                    title = if (currentLang == "en") "Profile" else "پروفایل",
-                    icon = Icons.Default.Person,
-                    tint = PurplePrimary,
-                    fontScale = fontScale,
-                    onClick = onNavigateToProfile,
-                    tag = "nav_profile"
-                )
-                HomeNavButton(
-                    title = if (currentLang == "en") "Settings" else "تنظیمات",
-                    icon = Icons.Default.Settings,
-                    tint = SkyBlue,
-                    fontScale = fontScale,
-                    onClick = onNavigateToSettings,
-                    tag = "nav_settings"
-                )
-            }
+            ArenaBottomBar(
+                lang = lang,
+                scale = fontScale,
+                shop = onNavigateToShop,
+                rank = onNavigateToLeaderboard,
+                profile = onNavigateToProfile,
+                game = onNavigateToModes
+            )
         }
-    ) { paddingValues ->
-        LazyColumn(
+    ) { padding ->
+
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            // ═══════════════════════════════════════════════════════════
-            // کارت تبلیغ جایزه‌دار تپسل (Rewarded Video)
-            // ═══════════════════════════════════════════════════════════
-            item {
-                if (!isVip) {
-                    RewardedAdCard(
-                        fontScale = fontScale,
-                        currentLang = currentLang,
-                        onWatchClick = {
-                            val activity = context as? android.app.Activity
-                            if (activity != null) {
-                                tapsellManager.showRewardedVideo(
-                                    activity = activity,
-                                    rewardCoins = 150,
-                                    onRewarded = { coins ->
-                                        scope.launch {
-                                            userRepository.addCoins(coins)
-                                            Toast.makeText(
-                                                context,
-                                                if (currentLang == "en") "+$coins coins added!" else "+$coins سکه به حساب شما اضافه شد!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    },
-                                    onError = { error ->
-                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                                    }
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-
-            // ═══════════════════════════════════════════════════════════
-            // کارت تبلیغ ۲ ساعتی (صندوق ویژه)
-            // ═══════════════════════════════════════════════════════════
-            item {
-                if (!isVip) {
-                    TwoHourRewardCard(
-                        isReady = isTwoHourRewardReady,
-                        remainingMillis = remainingMillis,
-                        fontScale = fontScale,
-                        currentLang = currentLang,
-                        onWatchClick = {
-                            val activity = context as? android.app.Activity
-                            if (activity != null) {
-                                tapsellManager.showRewardedVideo(
-                                    activity = activity,
-                                    rewardCoins = 0,
-                                    onRewarded = {
-                                        scope.launch {
-                                            userRepository.addCoins(200)
-                                            settingsDataStore.setLastTwoHourRewardClaim(System.currentTimeMillis())
-                                            currentTime = System.currentTimeMillis()
-                                            Toast.makeText(
-                                                context,
-                                                if (currentLang == "en") "+200 coins added!" else "+۲۰۰ سکه به حساب شما اضافه شد!",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    },
-                                    onError = { error ->
-                                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                                    }
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-
-            // بنر ترویجی VIP
-            item {
-                if (!isVip) {
-                    VipPromoBannerPanjganeh(fontScale = fontScale, onClick = onNavigateToShop)
-                }
-            }
-
-            // کارت وضعیت هوش مصنوعی حریف
-            item {
-                CurrentOpponentBannerPanjganeh(
-                    difficulty = settings?.aiDifficulty ?: "متوسط",
-                    fontScale = fontScale,
-                    lang = currentLang,
-                    onSettingsClick = onNavigateToSettings
-                )
-            }
-
-            // تیتر چالش‌ها
-            item {
-                Column(modifier = Modifier.padding(vertical = 4.dp)) {
-                    Text(
-                        text = if (currentLang == "en") "5 Arena Challenges" else "چالش‌های پنجگانه بازی",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Black),
-                        color = currentTheme.primary,
-                        fontSize = (16 * fontScale).sp
-                    )
-                    Text(
-                        text = if (currentLang == "en") "Five Challenges, Five Battles, One Champion" else "پنج چالش، پنج نبرد، یک قهرمان",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = (11 * fontScale).sp
-                    )
-                }
-            }
-
-            // لیست چالش‌ها
-            items(challenges, key = { it.challengeId }) { challenge ->
-                ChallengeCardPanjganeh(
-                    challenge = challenge,
-                    fontScale = fontScale,
-                    lang = currentLang,
-                    onPlayClick = {
-                        scope.launch {
-                            if (isVip) {
-                                onStartChallenge(challenge.challengeId)
-                            } else {
-                                val hasTicket = userRepository.deductTickets(1)
-                                if (hasTicket) {
-                                    onStartChallenge(challenge.challengeId)
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        if (currentLang == "en") "Out of tickets! Visit the shop." else "بلیط شما تمام شده! می‌توانید از فروشگاه بلیط تهیه کنید.",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    onNavigateToShop()
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-
-            // ═══════════════════════════════════════════════════════════
-            // بنر تبلیغاتی استاندارد تپسل (پایین صفحه)
-            // ═══════════════════════════════════════════════════════════
-            item {
-                if (!isVip) {
-                    TapsellBanner(tapsellManager = tapsellManager)
-                }
-            }
-
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
-    }
-}
-
-/**
- * کارت تبلیغ جایزه‌دار تپسل
- */
-@Composable
-fun RewardedAdCard(
-    fontScale: Float,
-    currentLang: String,
-    onWatchClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("rewarded_ad_card"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0x2610B981)),
-        border = CardDefaults.outlinedCardBorder().copy(
-            width = 1.5.dp,
-            brush = Brush.horizontalGradient(listOf(Color(0xFF10B981), Color(0xFF34D399)))
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                Box(
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(CircleShape)
-                        .background(Color(0x3310B981)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.OndemandVideo,
-                        contentDescription = null,
-                        tint = Color(0xFF10B981),
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = if (currentLang == "en") "Free Coins!" else "سکه طلا رایگان!",
-                        color = Color(0xFF10B981),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = (14 * fontScale).sp
-                    )
-                    Text(
-                        text = if (currentLang == "en") "Watch a video and get +150 coins" else "تماشای ویدیو و دریافت +۱۵۰ سکه",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = (11 * fontScale).sp
-                    )
-                }
-            }
-
-            Button(
-                onClick = onWatchClick,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF10B981),
-                    contentColor = Color.Black
-                ),
-                modifier = Modifier.testTag("watch_ad_btn")
-            ) {
-                Text(
-                    text = if (currentLang == "en") "Watch" else "تماشا",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = (12 * fontScale).sp
-                )
-            }
-        }
-    }
-}
-
-/**
- * کارت تبلیغ ۲ ساعتی
- * کاربر هر ۲ ساعت می‌تونه یه بار تبلیغ ببینه و ۲۰۰ سکه بگیره
- */
-@Composable
-fun TwoHourRewardCard(
-    isReady: Boolean,
-    remainingMillis: Long,
-    fontScale: Float,
-    currentLang: String,
-    onWatchClick: () -> Unit
-) {
-    val hours = remainingMillis / (60 * 60 * 1000L)
-    val minutes = (remainingMillis % (60 * 60 * 1000L)) / (60 * 1000L)
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("two_hour_reward_card"),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isReady) Color(0x26F59E0B) else Color(0x1A6C5CE7)
-        ),
-        border = CardDefaults.outlinedCardBorder().copy(
-            width = 1.5.dp,
-            brush = Brush.horizontalGradient(
-                if (isReady) listOf(Color(0xFFF59E0B), Color(0xFFFBBF24))
-                else listOf(Color(0xFF6C5CE7), Color(0xFF74B9FF))
-            )
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                Box(
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isReady) Color(0x33F59E0B) else Color(0x336C5CE7)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isReady) Icons.Default.CardGiftcard else Icons.Default.Timer,
-                        contentDescription = null,
-                        tint = if (isReady) Color(0xFFF59E0B) else Color(0xFF6C5CE7),
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = if (currentLang == "en") "2-Hour Bonus" else "صندوق ۲ ساعتی",
-                        color = if (isReady) Color(0xFFF59E0B) else Color(0xFF6C5CE7),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = (14 * fontScale).sp
-                    )
-                    Text(
-                        text = if (isReady) {
-                            if (currentLang == "en") "Watch a video and get +200 coins"
-                            else "تماشای ویدیو و دریافت +۲۰۰ سکه"
-                        } else {
-                            if (currentLang == "en") "Available in ${hours}h ${minutes}m"
-                            else "آماده در $hours ساعت و $minutes دقیقه"
-                        },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = (11 * fontScale).sp
-                    )
-                }
-            }
-
-            Button(
-                onClick = onWatchClick,
-                enabled = isReady,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isReady) Color(0xFFF59E0B) else Color(0xFF6C5CE7).copy(alpha = 0.5f),
-                    contentColor = if (isReady) Color.Black else Color.White,
-                    disabledContainerColor = Color(0xFF6C5CE7).copy(alpha = 0.3f),
-                    disabledContentColor = Color.White.copy(alpha = 0.5f)
-                ),
-                modifier = Modifier.testTag("two_hour_watch_btn")
-            ) {
-                Text(
-                    text = if (isReady) {
-                        if (currentLang == "en") "Watch" else "تماشا"
-                    } else {
-                        "$hours:${minutes.toString().padStart(2, '0')}"
-                    },
-                    fontWeight = FontWeight.Bold,
-                    fontSize = (12 * fontScale).sp
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ChallengeCardPanjganeh(
-    challenge: ChallengeItemEntity,
-    fontScale: Float,
-    lang: String,
-    onPlayClick: () -> Unit
-) {
-    val iconVector: ImageVector = when (challenge.challengeId) {
-        "word" -> Icons.Default.Spellcheck
-        "memory" -> Icons.Default.Style
-        "dice" -> Icons.Default.Casino
-        "rps" -> Icons.Default.SportsKabaddi
-        else -> Icons.Default.TextFields
-    }
-
-    val accentColor = when (challenge.challengeId) {
-        "word" -> WordChallengeColor
-        "memory" -> MemoryChallengeColor
-        "dice" -> DiceChallengeColor
-        "rps" -> RpsChallengeColor
-        else -> SentenceChallengeColor
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("challenge_card_${challenge.challengeId}"),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = CardDefaults.outlinedCardBorder().copy(
-            width = 1.5.dp,
-            brush = Brush.horizontalGradient(
-                listOf(accentColor, accentColor.copy(alpha = 0.4f))
-            )
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
                 .background(
                     Brush.verticalGradient(
-                        listOf(accentColor.copy(alpha = 0.08f), Color.Transparent)
+                        listOf(
+                            ArenaBackground,
+                            Color(0xFF0A1022),
+                            Color(0xFF080B17)
+                        )
                     )
                 )
-                .padding(18.dp)
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(accentColor.copy(alpha = 0.18f))
-                                .border(2.dp, accentColor, RoundedCornerShape(16.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = iconVector,
-                                contentDescription = null,
-                                tint = accentColor,
-                                modifier = Modifier.size(30.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(14.dp))
-                        Column {
-                            Text(
-                                text = challenge.nameFa,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = (16 * fontScale).sp
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(top = 3.dp)
-                            ) {
-                                for (i in 1..3) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = null,
-                                        tint = if (challenge.stars >= i) WarmYellow else Color(0x33FFFFFF),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = if (lang == "en") "Record: ${challenge.highscore}" else "رکورد: ${challenge.highscore}",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = (11 * fontScale).sp
+
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+
+                contentPadding = PaddingValues(
+                    horizontal = 12.dp,
+                    vertical = 10.dp
+                ),
+
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+
+
+                item {
+                    ReferenceHeader(
+                        username =
+                        user?.username
+                            ?: if (lang == "en")
+                                "Panjganeh Player"
+                            else
+                                "قهرمان پنجگانه",
+
+                        level = user?.level ?: 1,
+                        coins = user?.coins ?: 0,
+                        tickets = user?.tickets ?: 0,
+
+                        onProfile = onNavigateToProfile,
+                        onSettings = onNavigateToSettings,
+                        onShop = onNavigateToShop,
+
+                        lang = lang,
+                        scale = fontScale
+                    )
+                }
+
+
+                item {
+                    ReferenceHero(
+                        level = user?.level ?: 1,
+                        xp = user?.xp ?: 0,
+                        lang = lang,
+                        onPlay = onNavigateToModes
+                    )
+                }
+
+
+                item {
+                    ReferenceModeRow(
+                        lang = lang,
+                        scale = fontScale,
+                        onOnline = onNavigateToOnline,
+                        onOffline = onNavigateToModes
+                    )
+                }
+
+
+                item {
+
+                    RewardCard(
+                        lang = lang,
+                        rewardReady = rewardReady,
+                        onClick = {
+
+                            val activity =
+                                context as? Activity
+
+                            activity?.let {
+
+                                tapsellManager.showRewardedVideo(
+                                    activity = it,
+                                    rewardCoins =
+                                    if (rewardReady)
+                                        200
+                                    else
+                                        150,
+
+                                    onRewarded = { coins ->
+
+                                        scope.launch {
+
+                                            userRepository.addCoins(coins)
+
+                                            if (rewardReady) {
+
+                                                settingsDataStore
+                                                    .setLastTwoHourRewardClaim(
+                                                        System.currentTimeMillis()
+                                                    )
+
+                                                now =
+                                                    System.currentTimeMillis()
+                                            }
+
+
+                                            Toast.makeText(
+                                                context,
+                                                "+$coins coins",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    },
+
+                                    onError = { msg ->
+
+                                        Toast.makeText(
+                                            context,
+                                            msg,
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 )
                             }
                         }
-                    }
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = challenge.descriptionFa,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = (12 * fontScale).sp,
-                    lineHeight = (18 * fontScale).sp
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.ConfirmationNumber,
-                            contentDescription = null,
-                            tint = TurquoiseSecondary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (lang == "en") "Entry: 1 Ticket" else "ورود: ۱ بلیط",
-                            color = TurquoiseSecondary,
-                            fontSize = (12 * fontScale).sp,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                    Button(
-                        onClick = onPlayClick,
-                        modifier = Modifier
-                            .height(42.dp)
-                            .testTag("play_btn_${challenge.challengeId}"),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = accentColor,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (lang == "en") "Start Battle" else "شروع نبرد",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = (13 * fontScale).sp
-                        )
-                    }
+                    )
                 }
             }
         }
     }
 }
-
 @Composable
-fun VipPromoBannerPanjganeh(fontScale: Float, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .testTag("vip_promo_banner"),
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = CardDefaults.outlinedCardBorder().copy(
-            width = 1.5.dp,
-            brush = VipCrownGradient
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Brush.horizontalGradient(listOf(Color(0x26FDCB6E), Color(0x13FD79A8))))
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(46.dp)
-                        .clip(CircleShape)
-                        .background(VipCrownGradient),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.WorkspacePremium,
-                        contentDescription = null,
-                        tint = Color(0xFF1E152A),
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = "عضویت در نخبگان ویژه پنجگانه",
-                        color = WarmYellow,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = (14 * fontScale).sp
-                    )
-                    Text(
-                        text = "حذف تبلیغات + پاداش ۲ برابری + بلیط نامحدود",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = (11 * fontScale).sp
-                    )
-                }
-            }
-            Text(
-                text = "ارتقا ›",
-                color = WarmYellow,
-                fontWeight = FontWeight.Bold,
-                fontSize = (13 * fontScale).sp
-            )
-        }
-    }
-}
-
-@Composable
-fun CurrentOpponentBannerPanjganeh(
-    difficulty: String,
-    fontScale: Float,
+private fun ReferenceHeader(
+    username: String,
+    level: Int,
+    coins: Int,
+    tickets: Int,
+    onProfile: () -> Unit,
+    onSettings: () -> Unit,
+    onShop: () -> Unit,
     lang: String,
-    onSettingsClick: () -> Unit
+    scale: Float
 ) {
-    Card(
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onSettingsClick() },
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)),
-        border = CardDefaults.outlinedCardBorder().copy(
-            width = 1.dp,
-            brush = Brush.horizontalGradient(listOf(PurplePrimary, TurquoiseSecondary))
-        )
+            .padding(vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.SmartToy,
-                    contentDescription = null,
-                    tint = TurquoiseSecondary,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = if (lang == "en") "AI Opponent Level: $difficulty" else "سطح هوش مصنوعی حریف: $difficulty",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = (12 * fontScale).sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            Text(
-                text = if (lang == "en") "Change Level ⚙️" else "تغییر سطح ⚙️",
-                color = TurquoiseSecondary,
-                fontSize = (11 * fontScale).sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
 
-@Composable
-fun HomeNavButton(
-    title: String,
-    icon: ImageVector,
-    tint: Color,
-    fontScale: Float,
-    onClick: () -> Unit,
-    tag: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .clip(RoundedCornerShape(10.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .testTag(tag)
-    ) {
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(50.dp)
                 .clip(CircleShape)
-                .background(tint.copy(alpha = 0.15f)),
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            TurquoiseSecondary,
+                            PurplePrimary
+                        )
+                    )
+                )
+                .border(
+                    2.dp,
+                    WarmYellow.copy(alpha = 0.8f),
+                    CircleShape
+                )
+                .clickable(onClick = onProfile),
+
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = title, tint = tint, modifier = Modifier.size(20.dp))
+
+            Icon(
+                Icons.Default.Person,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(28.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(3.dp))
-        Text(text = title, color = tint, fontSize = (10 * fontScale).sp, fontWeight = FontWeight.Bold)
+
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp)
+        ) {
+
+            Text(
+                text = username,
+                color = TextPrimary,
+                fontSize = (14 * scale).sp,
+                fontWeight = FontWeight.Black
+            )
+
+            Text(
+                text =
+                if (lang == "en")
+                    "Level $level • Ready to play"
+                else
+                    "سطح $level • آماده‌ی بازی",
+
+                color = TextSecondary,
+                fontSize = (9 * scale).sp
+            )
+        }
+
+
+        CurrencyChip(
+            value = tickets.toString(),
+            icon = Icons.Default.ConfirmationNumber,
+            color = TurquoiseSecondary,
+            onClick = onShop
+        )
+
+
+        Spacer(
+            modifier = Modifier.width(5.dp)
+        )
+
+
+        CurrencyChip(
+            value = coins.toString(),
+            icon = Icons.Default.Star,
+            color = WarmYellow,
+            onClick = onShop
+        )
+
+
+        IconButton(
+            onClick = onSettings,
+            modifier = Modifier.size(38.dp)
+        ) {
+
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = null,
+                tint = TextSecondary,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+
+
+@Composable
+private fun CurrencyChip(
+    value: String,
+    icon: ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .background(color.copy(alpha = 0.12f))
+            .border(
+                1.dp,
+                color.copy(alpha = 0.35f),
+                RoundedCornerShape(14.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = 7.dp,
+                vertical = 6.dp
+            ),
+
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = color,
+            modifier = Modifier.size(15.dp)
+        )
+
+
+        Text(
+            value,
+            color = color,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(start = 3.dp)
+        )
+    }
+}
+
+
+
+@Composable
+private fun ReferenceHero(
+    level: Int,
+    xp: Int,
+    lang: String,
+    onPlay: () -> Unit
+) {
+
+    val animation =
+        rememberInfiniteTransition(
+            label = "hero"
+        )
+
+
+    val offset by animation.animateFloat(
+        initialValue = -4f,
+        targetValue = 4f,
+
+        animationSpec =
+        infiniteRepeatable(
+            tween(1800),
+            RepeatMode.Reverse
+        ),
+
+        label = "hero_move"
+    )
+
+
+    val progress =
+        ((xp % 1000) / 1000f)
+            .coerceIn(0f, 1f)
+
+
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("reference_hero"),
+
+        shape = RoundedCornerShape(22.dp),
+
+        colors =
+        CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+
+        border =
+        BorderStroke(
+            1.dp,
+            WarmYellow.copy(alpha = 0.5f)
+        )
+    ) {
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(260.dp)
+        ) {
+
+
+            Image(
+
+                painter =
+                painterResource(
+                    R.drawable.panjganeh_hero_character
+                ),
+
+                contentDescription =
+                if (lang == "en")
+                    "Hero"
+                else
+                    "قهرمان",
+
+                modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(205.dp)
+                    .align(Alignment.TopCenter)
+                    .offset(y = offset.dp),
+
+                contentScale =
+                ContentScale.Fit
+            )
+
+
+
+            Box(
+                modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                Color(0xFF07101E)
+                            )
+                        )
+                    )
+            )
+
+
+
+            Column(
+                modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(18.dp),
+
+                horizontalAlignment =
+                Alignment.CenterHorizontally
+            ) {
+
+
+                Text(
+                    text =
+                    if (lang == "en")
+                        "PANJGANEH"
+                    else
+                        "پنجگانه",
+
+                    color = WarmYellow,
+
+                    fontSize = 19.sp,
+
+                    fontWeight =
+                    FontWeight.Black
+                )
+
+
+
+                Text(
+                    text =
+                    if (lang == "en")
+                        "FIVE CHALLENGES. ONE CHAMPION."
+                    else
+                        "۵ چالش؛ یک قهرمان",
+
+                    color = Color.White,
+
+                    fontSize = 21.sp,
+
+                    fontWeight =
+                    FontWeight.Black,
+
+                    textAlign =
+                    TextAlign.Center
+                )
+
+
+
+                Box(
+                    modifier =
+                    Modifier
+                        .padding(top = 8.dp)
+                        .width(120.dp)
+                        .height(7.dp)
+                        .clip(
+                            RoundedCornerShape(8.dp)
+                        )
+                        .background(
+                            Color.White.copy(alpha = .15f)
+                        )
+                ) {
+
+                    Box(
+                        modifier =
+                        Modifier
+                            .fillMaxWidth(progress)
+                            .height(7.dp)
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(
+                                        WarmYellow,
+                                        Color(0xFFFF8A00)
+                                    )
+                                )
+                            )
+                    )
+                }
+
+
+
+                ArenaReferencePrimaryButton(
+
+                    text =
+                    if (lang == "en")
+                        "START GAME"
+                    else
+                        "شروع بازی",
+
+                    onClick = onPlay,
+
+                    modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+
+                    testTag = "start_game_button"
+                )
+            }
+        }
+    }
+}
+@Composable
+private fun ReferenceModeRow(
+    lang: String,
+    scale: Float,
+    onOnline: () -> Unit,
+    onOffline: () -> Unit
+) {
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+
+        ModeTile(
+            title =
+            if (lang == "en")
+                "ONLINE"
+            else
+                "آنلاین",
+
+            subtitle =
+            if (lang == "en")
+                "Coming soon"
+            else
+                "به‌زودی",
+
+            icon = Icons.Default.SportsKabaddi,
+
+            color = Color(0xFF35B7FF),
+
+            scale = scale,
+
+            modifier = Modifier.weight(1f),
+
+            onClick = onOnline
+        )
+
+
+        ModeTile(
+            title =
+            if (lang == "en")
+                "OFFLINE"
+            else
+                "آفلاین",
+
+            subtitle =
+            if (lang == "en")
+                "Play vs AI"
+            else
+                "بازی با هوش مصنوعی",
+
+            icon = Icons.Default.Casino,
+
+            color = TurquoiseSecondary,
+
+            scale = scale,
+
+            modifier = Modifier.weight(1f),
+
+            onClick = onOffline
+        )
+    }
+}
+
+
+
+@Composable
+private fun ModeTile(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    color: Color,
+    scale: Float,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+
+    Card(
+
+        modifier =
+        modifier.clickable(onClick = onClick),
+
+        shape =
+        RoundedCornerShape(20.dp),
+
+        colors =
+        CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+
+        border =
+        BorderStroke(
+            1.dp,
+            color.copy(alpha = .7f)
+        )
+    ) {
+
+
+        Column(
+
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            color.copy(alpha = .95f),
+                            color.copy(alpha = .65f)
+                        )
+                    )
+                )
+                .padding(
+                    vertical = 12.dp,
+                    horizontal = 8.dp
+                ),
+
+            horizontalAlignment =
+            Alignment.CenterHorizontally
+        ) {
+
+
+            Box(
+
+                modifier =
+                Modifier
+                    .size(38.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Color.White.copy(alpha = .18f)
+                    ),
+
+                contentAlignment =
+                Alignment.Center
+            ) {
+
+                Icon(
+
+                    icon,
+
+                    contentDescription = null,
+
+                    tint = Color.White,
+
+                    modifier =
+                    Modifier.size(23.dp)
+                )
+            }
+
+
+
+            Text(
+
+                text = title,
+
+                color = Color.White,
+
+                fontSize = (12 * scale).sp,
+
+                fontWeight = FontWeight.Black,
+
+                modifier =
+                Modifier.padding(top = 5.dp)
+            )
+
+
+
+            Text(
+
+                text = subtitle,
+
+                color =
+                Color.White.copy(alpha = .85f),
+
+                fontSize = (8 * scale).sp,
+
+                maxLines = 1
+            )
+        }
+    }
+}
+
+
+
+
+@Composable
+private fun RewardCard(
+    lang: String,
+    rewardReady: Boolean,
+    onClick: () -> Unit
+) {
+
+    Card(
+
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .testTag("reward_card"),
+
+        shape =
+        RoundedCornerShape(18.dp),
+
+        colors =
+        CardDefaults.cardColors(
+            containerColor = Color(0xFF0A2140)
+        ),
+
+        border =
+        BorderStroke(
+            1.dp,
+            WarmYellow.copy(alpha = .7f)
+        )
+    ) {
+
+
+        Row(
+
+            modifier =
+            Modifier.padding(13.dp),
+
+            verticalAlignment =
+            Alignment.CenterVertically
+        ) {
+
+
+            Box(
+
+                modifier =
+                Modifier
+                    .size(45.dp)
+                    .clip(
+                        RoundedCornerShape(14.dp)
+                    )
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                WarmYellow,
+                                Color(0xFFE64AD4)
+                            )
+                        )
+                    ),
+
+                contentAlignment =
+                Alignment.Center
+            ) {
+
+                Icon(
+
+                    Icons.Default.CardGiftcard,
+
+                    contentDescription = null,
+
+                    tint = Color.Black
+                )
+            }
+
+
+
+            Column(
+
+                modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+
+            ) {
+
+                Text(
+
+                    text =
+                    if (rewardReady)
+
+                        if (lang == "en")
+                            "FREE REWARD READY"
+                        else
+                            "جایزه آماده است"
+
+                    else
+
+                        if (lang == "en")
+                            "NEXT REWARD"
+                        else
+                            "جایزه بعدی",
+
+                    color = WarmYellow,
+
+                    fontWeight = FontWeight.Black,
+
+                    fontSize = 12.sp
+                )
+
+
+
+                Text(
+
+                    text =
+                    if (lang == "en")
+                        "Watch video and earn coins"
+                    else
+                        "ویدئو ببین و سکه بگیر",
+
+                    color = TextSecondary,
+
+                    fontSize = 10.sp
+                )
+            }
+
+
+
+            Icon(
+
+                Icons.Default.PlayArrow,
+
+                contentDescription = null,
+
+                tint = WarmYellow
+            )
+        }
+    }
+}
+@Composable
+private fun ArenaChallengeCard(
+    challenge: ChallengeItemEntity,
+    lang: String,
+    scale: Float,
+    onPlay: () -> Unit
+) {
+
+    val meta =
+        challengeMeta(
+            challenge.challengeId,
+            lang
+        )
+
+
+    Card(
+
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onPlay)
+            .testTag(
+                "challenge_${challenge.challengeId}"
+            ),
+
+        shape =
+        RoundedCornerShape(17.dp),
+
+        colors =
+        CardDefaults.cardColors(
+            containerColor =
+            ArenaSurface.copy(alpha = .9f)
+        ),
+
+        border =
+        BorderStroke(
+            1.dp,
+            meta.color.copy(alpha = .35f)
+        )
+    ) {
+
+
+        Row(
+
+            modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+
+            verticalAlignment =
+            Alignment.CenterVertically
+        ) {
+
+
+            Box(
+
+                modifier =
+                Modifier
+                    .size(44.dp)
+                    .clip(
+                        RoundedCornerShape(14.dp)
+                    )
+                    .background(
+                        meta.color.copy(alpha = .15f)
+                    ),
+
+                contentAlignment =
+                Alignment.Center
+            ) {
+
+                Icon(
+
+                    meta.icon,
+
+                    contentDescription = null,
+
+                    tint = meta.color
+                )
+            }
+
+
+
+            Column(
+
+                modifier =
+                Modifier
+                    .weight(1f)
+                    .padding(horizontal = 12.dp)
+
+            ) {
+
+
+                Text(
+
+                    text = meta.title,
+
+                    color = TextPrimary,
+
+                    fontSize = (13 * scale).sp,
+
+                    fontWeight = FontWeight.Black
+                )
+
+
+
+                Text(
+
+                    text =
+                    if (lang == "en")
+                        meta.subtitle
+                    else
+                        challenge.descriptionFa,
+
+                    color = TextSecondary,
+
+                    fontSize = (9 * scale).sp,
+
+                    maxLines = 1
+                )
+
+
+
+                Row(
+
+                    modifier =
+                    Modifier.padding(top = 5.dp),
+
+                    verticalAlignment =
+                    Alignment.CenterVertically
+                ) {
+
+
+                    repeat(3) { index ->
+
+                        Icon(
+
+                            Icons.Default.Star,
+
+                            contentDescription = null,
+
+                            tint =
+                            if (index < challenge.stars)
+                                WarmYellow
+                            else
+                                TextMuted.copy(alpha = .3f),
+
+                            modifier =
+                            Modifier.size(12.dp)
+                        )
+                    }
+
+
+                    Text(
+
+                        text =
+                        "  ${challenge.highscore}",
+
+                        color = TextMuted,
+
+                        fontSize = 9.sp
+                    )
+                }
+            }
+
+
+
+            Icon(
+
+                Icons.Default.PlayArrow,
+
+                contentDescription = null,
+
+                tint = meta.color
+            )
+        }
+    }
+}
+
+
+
+
+private data class ChallengeMeta(
+    val title: String,
+    val subtitle: String,
+    val color: Color,
+    val icon: ImageVector
+)
+
+
+
+private fun challengeMeta(
+    id: String,
+    lang: String
+): ChallengeMeta {
+
+    return when(id) {
+
+
+        "memory" ->
+
+            ChallengeMeta(
+                if(lang=="en")
+                    "MEMORY"
+                else
+                    "حافظه",
+
+                if(lang=="en")
+                    "Match hidden pairs"
+                else
+                    "جفت‌ها را پیدا کن",
+
+                MemoryChallengeColor,
+
+                Icons.Default.Memory
+            )
+
+
+        "dice" ->
+
+            ChallengeMeta(
+                if(lang=="en")
+                    "DICE DUEL"
+                else
+                    "دوئل تاس",
+
+                if(lang=="en")
+                    "Beat the AI"
+                else
+                    "حریف را شکست بده",
+
+                DiceChallengeColor,
+
+                Icons.Default.Casino
+            )
+
+
+        "rps" ->
+
+            ChallengeMeta(
+                if(lang=="en")
+                    "RPS ARENA"
+                else
+                    "سنگ کاغذ قیچی",
+
+                if(lang=="en")
+                    "Read opponent"
+                else
+                    "حرکت حریف را بخوان",
+
+                RpsChallengeColor,
+
+                Icons.Default.SportsKabaddi
+            )
+
+
+        "sentence" ->
+
+            ChallengeMeta(
+                if(lang=="en")
+                    "SENTENCE"
+                else
+                    "جمله‌ساز",
+
+                if(lang=="en")
+                    "Build sentence"
+                else
+                    "جمله درست بساز",
+
+                SentenceChallengeColor,
+
+                Icons.Default.TextFields
+            )
+
+
+        else ->
+
+            ChallengeMeta(
+
+                if(lang=="en")
+                    "WORD BATTLE"
+                else
+                    "نبرد کلمات",
+
+                if(lang=="en")
+                    "Find answer"
+                else
+                    "جواب را پیدا کن",
+
+                WordChallengeColor,
+
+                Icons.Default.Spellcheck
+            )
+    }
+}
+
+
+
+
+@Composable
+private fun ArenaBottomBar(
+    lang: String,
+    scale: Float,
+    shop: () -> Unit,
+    rank: () -> Unit,
+    profile: () -> Unit,
+    game: () -> Unit
+) {
+
+    Row(
+
+        modifier =
+        Modifier
+            .fillMaxWidth()
+            .background(
+                Color(0xFF030812)
+            )
+            .border(
+                1.dp,
+                Color(0xFF12233B)
+            )
+            .padding(vertical = 6.dp),
+
+        horizontalArrangement =
+        Arrangement.SpaceEvenly,
+
+        verticalAlignment =
+        Alignment.CenterVertically
+    ) {
+
+
+        BottomItem(
+            if(lang=="en")
+                "Home"
+            else
+                "خانه",
+
+            Icons.Default.Home,
+
+            WarmYellow,
+
+            scale
+        )
+
+
+
+        BottomItem(
+            if(lang=="en")
+                "Shop"
+            else
+                "فروشگاه",
+
+            Icons.Default.ShoppingCart,
+
+            WarmYellow,
+
+            scale,
+
+            shop
+        )
+
+
+
+        BottomItem(
+            if(lang=="en")
+                "Game"
+            else
+                "بازی",
+
+            Icons.Default.SportsEsports,
+
+            TurquoiseSecondary,
+
+            scale,
+
+            game
+        )
+
+
+
+        BottomItem(
+            if(lang=="en")
+                "Rank"
+            else
+                "رتبه",
+
+            Icons.Default.EmojiEvents,
+
+            WarmYellow,
+
+            scale,
+
+            rank
+        )
+
+
+
+        BottomItem(
+            if(lang=="en")
+                "Profile"
+            else
+                "پروفایل",
+
+            Icons.Default.Person,
+
+            SkyBlue,
+
+            scale,
+
+            profile
+        )
+    }
+}
+
+
+
+
+@Composable
+private fun BottomItem(
+    title: String,
+    icon: ImageVector,
+    color: Color,
+    scale: Float,
+    onClick: () -> Unit = {}
+) {
+
+
+    Column(
+
+        modifier =
+        Modifier
+            .clip(
+                RoundedCornerShape(13.dp)
+            )
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = 13.dp,
+                vertical = 4.dp
+            ),
+
+        horizontalAlignment =
+        Alignment.CenterHorizontally
+    ) {
+
+
+        Icon(
+
+            icon,
+
+            contentDescription = null,
+
+            tint = color,
+
+            modifier =
+            Modifier.size(22.dp)
+        )
+
+
+        Text(
+
+            title,
+
+            color = TextMuted,
+
+            fontSize = (8 * scale).sp,
+
+            fontWeight = FontWeight.Bold
+        )
     }
 }
