@@ -6,6 +6,7 @@ on:
     branches:
       - "main"
       - "redesign/**"
+      - "integration/**"
   workflow_dispatch:
 
 jobs:
