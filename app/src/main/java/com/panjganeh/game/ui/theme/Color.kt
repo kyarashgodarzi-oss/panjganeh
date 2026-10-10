@@ -3,85 +3,67 @@ package com.panjganeh.game.ui.theme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-// ==========================================
-// 🎨 پالت رنگی شاد و پرانرژی بازی پنجگانه
-// ==========================================
+// Reference palette: deep navy surfaces, electric-blue panels, cyan highlights and
+// the warm yellow CTA treatment used throughout the supplied Panjganeh screens.
+val PurplePrimary = Color(0xFF1677FF)
+val TurquoiseSecondary = Color(0xFF22D3EE)
+val PinkTertiary = Color(0xFFB46CFF)
+val WarmYellow = Color(0xFFFFD21F)
+val CoralRed = Color(0xFFFF647C)
+val SkyBlue = Color(0xFF42A5FF)
 
-// رنگ‌های اصلی خواسته شده
-val PurplePrimary = Color(0xFF6C5CE7)
-val TurquoiseSecondary = Color(0xFF00D2D3)
-val PinkTertiary = Color(0xFFFD79A8)
-val WarmYellow = Color(0xFFFDCB6E)
-val CoralRed = Color(0xFFFF7675)
-val SkyBlue = Color(0xFF74B9FF)
+val WordChallengeColor = Color(0xFF42A5FF)
+val MemoryChallengeColor = Color(0xFF20C8E8)
+val DiceChallengeColor = Color(0xFFFFD21F)
+val RpsChallengeColor = Color(0xFFB46CFF)
+val SentenceChallengeColor = Color(0xFF168BFF)
 
-// رنگ‌های اختصاصی چالش‌های پنجگانه
-val WordChallengeColor = Color(0xFF6C5CE7)       // بنفش
-val MemoryChallengeColor = Color(0xFF00D2D3)     // فیروزه‌ای
-val DiceChallengeColor = Color(0xFFFDCB6E)       // زرد
-val RpsChallengeColor = Color(0xFFFD79A8)        // صورتی
-val SentenceChallengeColor = Color(0xFF74B9FF)   // آبی
+val PanjganehBgDark = Color(0xFF030916)
+val PanjganehSurfaceDark = Color(0xFF071B37)
+val PanjganehGlassDark = Color(0xCC071B37)
+val PanjganehGlassBorderDark = Color(0x6652B8FF)
 
-// رنگ‌های پس‌زمینه و سطوح گلس‌مورفیسم (حالت تیره شاداب)
-val PanjganehBgDark = Color(0xFF0D0C1D)
-val PanjganehSurfaceDark = Color(0xFF16152B)
-val PanjganehGlassDark = Color(0x332E285F)
-val PanjganehGlassBorderDark = Color(0x666C5CE7)
-
-// رنگ‌های پس‌زمینه و سطوح (حالت روشن جذاب)
-val PanjganehBgLight = Color(0xFFF7F8FC)
+val PanjganehBgLight = Color(0xFFF4F7FC)
 val PanjganehSurfaceLight = Color(0xFFFFFFFF)
-val PanjganehGlassLight = Color(0xCCFFFFFF)
-val PanjganehGlassBorderLight = Color(0x4D6C5CE7)
+val PanjganehGlassLight = Color(0xD9FFFFFF)
+val PanjganehGlassBorderLight = Color(0x4D1677FF)
 
-// سازگاری برای اسامی عمومی قبلی
 val GoldPrimary = WarmYellow
-val GoldLight = Color(0xFFFFEAA7)
-val GoldDark = Color(0xFFE17055)
+val GoldLight = Color(0xFFFFE680)
+val GoldDark = Color(0xFFB98500)
 val SkySecondary = TurquoiseSecondary
-val EmeraldTertiary = Color(0xFF00B894)
+val EmeraldTertiary = Color(0xFF20D6B5)
 val ArenaBackground = PanjganehBgDark
-val ArenaSurface = PanjganehSurfaceDark
-val ArenaSurfaceElevated = Color(0xFF222044)
-val ArenaCardBack = Color(0xFF1E1B4B)
-val ArenaSurfaceBorder = Color(0x406C5CE7)
+val ArenaSurface = Color(0xF0071B37)
+val ArenaSurfaceElevated = Color(0xF00A2548)
+val ArenaCardBack = Color(0xF0082042)
+val ArenaSurfaceBorder = Color(0x6652B8FF)
 val ArenaError = CoralRed
-val TextPrimary = Color(0xFFFDFDFD)
-val TextSecondary = Color(0xFFB4B2D8)
-val TextMuted = Color(0xFF7D7A9F)
-val VipGold = Color(0xFFFFD700)
+val TextPrimary = Color(0xFFF7FAFF)
+val TextSecondary = Color(0xFFB5C9E6)
+val TextMuted = Color(0xFF7189AA)
+val VipGold = Color(0xFFFFE680)
 
-// ==========================================
-// 🌈 گرادیان‌های رنگارنگ و نئونی
-// ==========================================
 val SplashGradient = Brush.verticalGradient(
-    colors = listOf(
-        Color(0xFF2E1C4D),
-        Color(0xFF15102A),
-        Color(0xFF0D0C1D)
-    )
+    colors = listOf(Color(0xFF071B37), Color(0xFF041127), PanjganehBgDark)
 )
 
 val HeroJoyfulGradient = Brush.linearGradient(
-    colors = listOf(PurplePrimary, TurquoiseSecondary, SkyBlue)
+    colors = listOf(Color(0xFF0D4DA8), Color(0xFF1677FF), Color(0xFF22D3EE))
 )
 
 val CardJoyfulGradient = Brush.linearGradient(
-    colors = listOf(
-        Color(0x336C5CE7),
-        Color(0x2600D2D3),
-        Color(0x1AFD79A8)
-    )
+    colors = listOf(Color(0x331677FF), Color(0x2022D3EE), Color(0x14FFD21F))
 )
 
 val ButtonJoyfulGradient = Brush.horizontalGradient(
-    colors = listOf(PurplePrimary, TurquoiseSecondary)
+    colors = listOf(Color(0xFFFFD21F), Color(0xFFFFA800))
 )
 
 val VipCrownGradient = Brush.linearGradient(
-    colors = listOf(Color(0xFFFFEAA7), Color(0xFFFDCB6E), Color(0xFFE17055))
+    colors = listOf(Color(0xFFFFE680), Color(0xFFFFD21F), Color(0xFFB98500))
 )
 
 val CreatorCardBorderGradient = Brush.linearGradient(
-    colors = listOf(TurquoiseSecondary, PinkTertiary, PurplePrimary)
+    colors = listOf(Color(0xFF22D3EE), Color(0xFF1677FF), Color(0xFFFFD21F))
 )
