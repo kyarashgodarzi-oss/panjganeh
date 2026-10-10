@@ -67,6 +67,29 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew :app:bundleRelease --stacktrace
 
+      - name: Generate Cafe Bazaar BIN
+        env:
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --silent --show-error \
+            https://github.com/cafebazaar/bundle-signer/releases/download/v0.1.13/bundlesigner-0.1.13.jar \
+            --output bundlesigner-0.1.13.jar
+          BUNDLE_PATH="$(find app/build/outputs/bundle/release -maxdepth 1 -type f -name '*.aab' -print -quit)"
+          test -n "$BUNDLE_PATH" || { echo "::error::Release AAB not found"; exit 1; }
+          mkdir -p app/build/outputs/bin/release
+          java -jar bundlesigner-0.1.13.jar genbin -v \
+            --bundle "$BUNDLE_PATH" \
+            --bin app/build/outputs/bin/release \
+            --v2-signing-enabled true \
+            --v3-signing-enabled false \
+            --ks release-keystore.jks \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass env:STORE_PASSWORD \
+            --key-pass env:KEY_PASSWORD
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
