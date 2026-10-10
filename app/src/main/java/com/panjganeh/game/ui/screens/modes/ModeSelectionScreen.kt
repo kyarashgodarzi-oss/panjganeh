@@ -1,7 +1,12 @@
 package com.panjganeh.game.ui.screens.modes
 
 import android.widget.Toast
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,7 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.CardGiftcard
 import androidx.compose.material.icons.filled.Memory
@@ -32,25 +37,35 @@ import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.data.local.entity.ChallengeItemEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
+import com.panjganeh.game.ui.components.ArenaReferencePrimaryButton
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.DiceChallengeColor
@@ -77,6 +92,7 @@ fun ModeSelectionScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var showOfflineChallenges by remember { mutableStateOf(false) }
     val challenges by gameRepository.allChallenges.collectAsState(initial = emptyList())
     val vip by userRepository.vipState.collectAsState(initial = null)
     val isVip = vip?.isVip == true &&
@@ -102,34 +118,141 @@ fun ModeSelectionScreen(
         )
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 18.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                androidx.compose.material3.Card(
-                    Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(22.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = .78f)),
-                    border = BorderStroke(1.dp, PurplePrimary.copy(alpha = .40f))
+                Row(
+                    Modifier.fillMaxWidth().padding(bottom = 2.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(Modifier.fillMaxWidth().padding(18.dp)) {
-                        Text("CHOOSE YOUR BATTLE", color = WarmYellow, fontSize = 11.sp, fontWeight = FontWeight.Black, letterSpacing = 1.3.sp)
-                        Text("یک میدان را انتخاب کن و وارد نبرد شو.", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 4.dp))
-                        Text("هر نبرد یک امتیاز و یک مسیر برای قهرمانی دارد.", color = TextSecondary, fontSize = 11.sp, modifier = Modifier.padding(top = 4.dp))
-                        Row(Modifier.fillMaxWidth().padding(top = 14.dp), horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-                            ModePill("آنلاین", "دوستان", TurquoiseSecondary, onNavigateToOnline, Modifier.weight(1f))
-                            ModePill("آفلاین", "حریف AI", SkyBlue, null, Modifier.weight(1f))
-                            ModePill("روزانه", "جایزه", PinkTertiary, onNavigateToRewards, Modifier.weight(1f))
-                        }
+                    IconButton(onClick = { if (showOfflineChallenges) showOfflineChallenges = false else onNavigateBack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "بازگشت", tint = TextPrimary)
+                    }
+                    Column(Modifier.weight(1f).padding(start = 4.dp)) {
+                        Text(if (showOfflineChallenges) "پنج چالش آفلاین" else "انتخاب حالت بازی", color = TextPrimary, fontSize = 19.sp, fontWeight = FontWeight.Black)
+                        Text(if (showOfflineChallenges) "یک چالش را برای شروع انتخاب کن" else "وارد میدان شو؛ قهرمانی منتظر توست", color = TextSecondary, fontSize = 10.sp)
                     }
                 }
             }
+            if (!showOfflineChallenges) {
+            item {
+                Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(11.dp)) {
+                    ModeChoiceCard(
+                        title = "بازی آنلاین (به‌زودی)",
+                        subtitle = "اتصال آنلاین هنوز فعال نیست",
+                        icon = Icons.Default.SportsKabaddi,
+                        accent = TurquoiseSecondary,
+                        onClick = onNavigateToOnline,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    ModeChoiceCard(
+                        title = "بازی آفلاین",
+                        subtitle = "پنج چالش با هوش مصنوعی",
+                        icon = Icons.Default.Casino,
+                        accent = SkyBlue,
+                        onClick = { showOfflineChallenges = true },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            item {
+                Card(
+                    Modifier.fillMaxWidth().clickable(onClick = onNavigateToRewards).testTag("mode_daily_rewards"),
+                    shape = RoundedCornerShape(17.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF092345)),
+                    border = BorderStroke(1.dp, WarmYellow.copy(alpha = .52f))
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.CardGiftcard, contentDescription = null, tint = WarmYellow, modifier = Modifier.size(28.dp))
+                        Column(Modifier.weight(1f).padding(horizontal = 11.dp)) {
+                            Text("جایزه‌های روزانه", color = WarmYellow, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                            Text("هر روز جایزه بگیر و برای نبرد بعدی آماده شو", color = TextSecondary, fontSize = 10.sp, modifier = Modifier.padding(top = 3.dp))
+                        }
+                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = WarmYellow)
+                    }
+                }
+            }
+            }
+            if (showOfflineChallenges) {
             items(challenges.take(5), key = { it.challengeId }) { challenge ->
                 SelectionCard(challenge, ::play)
+            }
             }
             item {
                 Spacer(Modifier.height(8.dp))
                 Text("هر نبرد با یک بلیط شروع می‌شود • VIP بدون محدودیت", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+            }
+        }
+    }
+}
+
+@Composable
+private fun ModeChoiceCard(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    accent: Color,
+    onClick: (() -> Unit)?,
+    modifier: Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val cardScale by animateFloatAsState(
+        targetValue = if (isPressed && onClick != null) 0.975f else 1f,
+        animationSpec = tween(durationMillis = 130),
+        label = "mode_choice_press_scale"
+    )
+    Card(
+        modifier = modifier
+            .height(126.dp)
+            .scale(cardScale)
+            .then(
+                if (onClick != null) Modifier.clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = onClick
+                ) else Modifier
+            )
+            .testTag("mode_choice_" + title),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+        border = BorderStroke(1.2.dp, accent.copy(alpha = .65f))
+    ) {
+        Box(Modifier.fillMaxSize()) {
+            androidx.compose.foundation.Image(
+                painter = androidx.compose.ui.res.painterResource(R.drawable.arena_hero_banner_1789948811846),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                Modifier.fillMaxSize().background(
+                    Brush.verticalGradient(
+                        listOf(
+                            accent.copy(alpha = .20f),
+                            Color(0xFF06142B).copy(alpha = .78f),
+                            Color(0xFF06142B).copy(alpha = .97f)
+                        )
+                    )
+                )
+            )
+            Column(
+                Modifier.fillMaxSize().padding(12.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(26.dp))
+                Text(title, color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 7.dp))
+                Text(subtitle, color = TextSecondary, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 3.dp))
+                if (onClick != null) {
+                    Text("ورود به میدان  ›", color = WarmYellow, fontSize = 10.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(top = 7.dp))
+                } else {
+                    Text("یک بازی را از پایین انتخاب کن", color = SkyBlue, fontSize = 9.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 7.dp))
+                }
             }
         }
     }

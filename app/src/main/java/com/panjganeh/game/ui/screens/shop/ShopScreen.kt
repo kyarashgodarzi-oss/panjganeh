@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.screens.shop
 
 import android.app.Activity
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.OndemandVideo
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,10 +35,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +62,7 @@ import com.panjganeh.game.billing.BazaarConfig
 import com.panjganeh.game.billing.PurchaseResult
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -64,6 +72,7 @@ import com.panjganeh.game.ui.theme.GoldDark
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
+import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.VipGold
@@ -79,11 +88,14 @@ fun ShopScreen(
     val context = LocalContext.current
     val activity = context as? Activity
     val scope = rememberCoroutineScope()
+    var roomCode by remember { mutableStateOf("۲۶۷ ۴۹۱") }
+    var inputRoomCode by remember { mutableStateOf("") }
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
 
-    val isVip = vip?.isVip == true
+    val isVip = vip?.isVip == true &&
+        (vip?.expireTimestamp == 0L || (vip?.expireTimestamp ?: 0L) > System.currentTimeMillis())
 
     // Launcher برای دریافت نتیجه خرید کافه‌بازار
     val purchaseLauncher = rememberLauncherForActivityResult(
@@ -105,12 +117,7 @@ fun ShopScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "فروشگاه پنجگانه",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "فروشگاه و آنلاین", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -121,6 +128,89 @@ fun ShopScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("online_room_card"),
+                    shape = RoundedCornerShape(22.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.4.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary, Color(0xFF173F6C)))
+                    )
+                ) {
+                    Column(
+                        Modifier.fillMaxWidth().padding(18.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("اتاق آنلاین (نمایشی)", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                        Box(
+                            Modifier.fillMaxWidth(0.72f).padding(top = 12.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0xFF0C2548))
+                                .border(1.5.dp, SkySecondary.copy(alpha = 0.65f), RoundedCornerShape(16.dp))
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(roomCode, color = GoldPrimary, fontWeight = FontWeight.Black, fontSize = 24.sp, letterSpacing = 2.sp)
+                        }
+                        Button(
+                            onClick = {
+                                val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, "کد نمایشی اتاق پنجگانه: $roomCode — اتصال واقعی آنلاین هنوز فعال نیست.")
+                                }
+                                context.startActivity(Intent.createChooser(sendIntent, "اشتراک‌گذاری کد نمایشی اتاق"))
+                            },
+                            modifier = Modifier.fillMaxWidth(0.76f).padding(top = 12.dp).height(48.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = GoldPrimary, contentColor = Color(0xFF1B1404))
+                        ) {
+                            Icon(Icons.Default.Share, null)
+                            Text("اشتراک‌گذاری کد نمایشی", fontWeight = FontWeight.Black, modifier = Modifier.padding(start = 8.dp))
+                        }
+                        Row(
+                            Modifier.fillMaxWidth(0.82f).padding(top = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(Modifier.weight(1f).height(1.dp).background(SkySecondary.copy(alpha = 0.45f)))
+                            Text("یا", color = TextMuted, fontSize = 13.sp, modifier = Modifier.padding(horizontal = 10.dp))
+                            Box(Modifier.weight(1f).height(1.dp).background(SkySecondary.copy(alpha = 0.45f)))
+                        }
+                        Text("پیوستن به بازی", color = TextPrimary, fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 15.dp))
+                        OutlinedTextField(
+                            value = inputRoomCode,
+                            onValueChange = { inputRoomCode = it },
+                            enabled = false,
+                            placeholder = { Text("ورود کد تا فعال‌شدن آنلاین غیرفعال است", color = TextMuted, fontSize = 13.sp) },
+                            singleLine = true,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = SkySecondary,
+                                unfocusedBorderColor = Color(0xFF173F6C),
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary
+                            ),
+                            shape = RoundedCornerShape(15.dp),
+                            modifier = Modifier.fillMaxWidth(0.88f).padding(top = 8.dp)
+                        )
+                        Button(
+                            onClick = {
+                                Toast.makeText(context, "اتصال آنلاین هنوز فعال نیست؛ این کدها نمایشی هستند.", Toast.LENGTH_LONG).show()
+                            },
+                            enabled = false,
+                            modifier = Modifier.fillMaxWidth(0.88f).padding(top = 10.dp).height(48.dp),
+                            shape = RoundedCornerShape(17.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                disabledContainerColor = EmeraldTertiary.copy(alpha = 0.20f),
+                                disabledContentColor = TextMuted
+                            )
+                        ) {
+                            Text("اتصال آنلاین فعال نیست", fontWeight = FontWeight.Black, fontSize = 16.sp)
+                        }
+                    }
+                }
+            }
+
+            // ═══════════════════════════════════════════════════════════
             // بخش دریافت سکه رایگان با ویدیوی تپسل
             item {
                 Card(
@@ -229,7 +319,6 @@ fun ShopScreen(
                 )
             }
 
-            // ═══════════════════════════════════════════════════════════
             // بنر تبلیغاتی تپسل (اگه کاربر VIP نباشه)
             // ═══════════════════════════════════════════════════════════
             item {
@@ -278,6 +367,14 @@ fun ProductCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(
+                    if (isVipProduct) Brush.horizontalGradient(
+                        listOf(VipGold.copy(alpha = 0.10f), ArenaSurface, ArenaSurface)
+                    ) else Brush.horizontalGradient(
+                        listOf(iconColor.copy(alpha = 0.08f), ArenaSurface, ArenaSurface)
+                    ),
+                    RoundedCornerShape(20.dp)
+                )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween

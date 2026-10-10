@@ -1,5 +1,10 @@
 package com.panjganeh.game.ui.components
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,18 +46,21 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.panjganeh.game.R
 import com.panjganeh.game.ai.AiProfile
 import com.panjganeh.game.ui.theme.ArenaBackground
@@ -66,37 +76,53 @@ import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
 import com.panjganeh.game.ui.theme.TurquoiseSecondary
+import com.panjganeh.game.ui.theme.WordChallengeColor
+import com.panjganeh.game.ui.theme.MemoryChallengeColor
+import com.panjganeh.game.ui.theme.DiceChallengeColor
+import com.panjganeh.game.ui.theme.RpsChallengeColor
+import com.panjganeh.game.ui.theme.SentenceChallengeColor
 
 @Composable
 fun BattleArenaBackground(
     challenge: String,
     modifier: Modifier = Modifier
 ) {
-    val resource = when {
-        challenge.contains("تاس") -> R.drawable.arena_hero_banner_1789948811846
-        challenge.contains("کلمات") -> R.drawable.arena_clash_icon_1789948798958
-        challenge.contains("حافظه") -> R.drawable.arena_hero_banner_1789948811846
-        challenge.contains("قیچی") -> R.drawable.arena_clash_icon_1789948798958
-        else -> R.drawable.arena_hero_banner_1789948811846
+    val challengeAccent = when {
+        challenge.contains("تاس") -> DiceChallengeColor
+        challenge.contains("کلمات") -> WordChallengeColor
+        challenge.contains("حافظه") -> MemoryChallengeColor
+        challenge.contains("قیچی") -> RpsChallengeColor
+        challenge.contains("جملات") || challenge.contains("جمله") -> SentenceChallengeColor
+        else -> TurquoiseSecondary
     }
-    Box(modifier.background(ArenaBackground)) {
-        Image(
-            painter = painterResource(resource),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            alpha = 0.34f
-        )
-        Box(
-            Modifier.fillMaxSize().background(
+    Box(
+        modifier
+            .fillMaxSize()
+            .background(
                 Brush.verticalGradient(
-                    listOf(
-                        ArenaBackground.copy(alpha = 0.48f),
-                        ArenaBackground.copy(alpha = 0.78f),
-                        ArenaBackground
-                    )
+                    listOf(Color(0xFF030916), Color(0xFF06142B), ArenaBackground)
                 )
             )
+    ) {
+        Box(
+            Modifier
+                .align(Alignment.TopStart)
+                .size(240.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(challengeAccent.copy(alpha = 0.14f), Color.Transparent)
+                    )
+                )
+        )
+        Box(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .size(280.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(challengeAccent.copy(alpha = 0.09f), Color.Transparent)
+                    )
+                )
         )
     }
 }
@@ -118,9 +144,9 @@ fun BattleHeader(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 10.dp)
+            .padding(horizontal = 14.dp, vertical = 4.dp)
             .testTag("battle_header"),
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = ArenaSurface.copy(alpha = 0.88f)),
         border = androidx.compose.foundation.BorderStroke(
             1.5.dp,
@@ -136,7 +162,7 @@ fun BattleHeader(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp)
+                .padding(horizontal = 10.dp, vertical = 8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -144,8 +170,8 @@ fun BattleHeader(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(58.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(13.dp))
                         .background(
                             if (urgent) ArenaError.copy(alpha = .14f)
                             else GoldPrimary.copy(alpha = .12f)
@@ -154,7 +180,7 @@ fun BattleHeader(
                             1.dp,
                             if (urgent) ArenaError.copy(alpha = .60f)
                             else GoldPrimary.copy(alpha = .60f),
-                            RoundedCornerShape(16.dp)
+                            RoundedCornerShape(13.dp)
                         ),
                     contentAlignment = Alignment.Center
                 ) {
@@ -192,10 +218,10 @@ fun BattleHeader(
                     Text(
                         challengeTitle,
                         color = TextPrimary,
-                        fontSize = 20.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Black,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 3.dp)
+                        modifier = Modifier.padding(top = 2.dp)
                     )
                 }
 
@@ -214,10 +240,24 @@ fun BattleHeader(
                 }
             }
 
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 3.dp, vertical = 4.dp)
+                    .height(2.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(GoldPrimary, TurquoiseSecondary, PurplePrimary)
+                        )
+                    )
+                    .testTag("battle_reference_accent")
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .padding(top = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FighterBadge(
@@ -230,7 +270,7 @@ fun BattleHeader(
 
                 Box(
                     modifier = Modifier
-                        .size(42.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
                         .background(ArenaBackground)
                         .border(1.dp, ArenaSurfaceBorder, CircleShape),
@@ -261,7 +301,7 @@ fun BattleRoundStars(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 30.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -271,7 +311,7 @@ fun BattleRoundStars(
                     Icons.Default.Star,
                     contentDescription = null,
                     tint = if (userScore > index) GoldPrimary else ArenaSurfaceBorder,
-                    modifier = Modifier.size(27.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -279,7 +319,7 @@ fun BattleRoundStars(
         Text(
             "اولین به ۳ برد برنده است",
             color = TextMuted,
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             fontWeight = FontWeight.Medium
         )
 
@@ -289,7 +329,7 @@ fun BattleRoundStars(
                     Icons.Default.Star,
                     contentDescription = null,
                     tint = if (aiScore > index) SkySecondary else ArenaSurfaceBorder,
-                    modifier = Modifier.size(27.dp)
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -327,23 +367,94 @@ fun BattleResultDialog(
     onPlayAgain: () -> Unit,
     onBackHome: () -> Unit
 ) {
-    Dialog(onDismissRequest = {}) {
+    val resultPulse = rememberInfiniteTransition(label = "result_pulse").animateFloat(
+        initialValue = 0.96f,
+        targetValue = 1.04f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 900),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "result_pulse_scale"
+    )
+
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Card(
-            Modifier.fillMaxWidth().padding(12.dp).testTag("battle_result_dialog"),
-            shape=RoundedCornerShape(30.dp),
-            colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),
+            Modifier.fillMaxSize().testTag("battle_result_dialog"),
+            shape=RoundedCornerShape(0.dp),
+            colors=CardDefaults.cardColors(containerColor=ArenaSurface),
             border=androidx.compose.foundation.BorderStroke(
                 1.5.dp,
                 if(isWin) Brush.linearGradient(listOf(GoldPrimary, TurquoiseSecondary)) else Brush.linearGradient(listOf(ArenaError, PurplePrimary))
             )
         ) {
-            Column(Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment=Alignment.CenterHorizontally) {
-                Box(Modifier.size(82.dp).clip(CircleShape).background(if(isWin) GoldPrimary.copy(alpha=.15f) else ArenaError.copy(alpha=.13f)).border(2.dp, if(isWin) GoldPrimary else ArenaError, CircleShape), contentAlignment=Alignment.Center) {
-                    Icon(if(isWin) Icons.Default.EmojiEvents else Icons.Default.Close, null, tint=if(isWin) GoldPrimary else ArenaError, modifier=Modifier.size(46.dp))
+            Column(
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 22.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(Modifier.fillMaxWidth().height(42.dp)) {
+                    Text(
+                        "نتیجه مرحله",
+                        color = TextPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                    IconButton(
+                        onClick = onBackHome,
+                        modifier = Modifier.align(AbsoluteAlignment.CenterRight).size(42.dp)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "بازگشت", tint = TextSecondary)
+                    }
                 }
+                Spacer(Modifier.height(4.dp))
+                Image(
+                    painter = painterResource(R.drawable.arena_hero_banner_1789948811846),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(220.dp)
+                        .height(240.dp)
+                        .border(2.dp, if (isWin) GoldPrimary else ArenaError, RoundedCornerShape(22.dp))
+                        .clip(RoundedCornerShape(22.dp))
+                )
+                Spacer(Modifier.height(12.dp))
                 Spacer(Modifier.height(14.dp))
-                Text(if(isWin) "پیروزی!" else "نبرد تمام شد", color=if(isWin) GoldLight else ArenaError, fontSize=26.sp, fontWeight=FontWeight.Black)
-                Text(if(isWin) "تو کنترل میدان را در دست گرفتی." else "این راند را از دست دادی؛ دوباره وارد میدان شو.", color=TextSecondary, fontSize=12.sp, textAlign=TextAlign.Center, modifier=Modifier.padding(top=5.dp))
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(
+                            if (isWin) Brush.horizontalGradient(listOf(GoldPrimary, Color(0xFFFF8A00)))
+                            else Brush.horizontalGradient(listOf(ArenaError, Color(0xFF991B1B)))
+                        )
+                        .padding(horizontal = 34.dp, vertical = 7.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        if (isWin) "برد!" else "باخت!",
+                        color = if (isWin) ArenaBackground else Color.White,
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+                Spacer(Modifier.height(9.dp))
+                Text(
+                    if (isWin) "شما در این مرحله پیروز شدید!" else "حریف این مرحله را برد!",
+                    color = TextSecondary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(16.dp))
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(13.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    ScoreColumn("شما", userScore, GoldPrimary)
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("VS", color = TextMuted, fontWeight = FontWeight.Black)
+                    }
+                    ScoreColumn("حریف AI", aiScore, SkySecondary)
+                }
                 Spacer(Modifier.height(18.dp))
                 Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(18.dp)).background(ArenaBackground).padding(16.dp), horizontalArrangement=Arrangement.SpaceEvenly) {
                     ScoreColumn("شما", userScore, GoldPrimary)
@@ -361,11 +472,13 @@ fun BattleResultDialog(
                 }
                 Spacer(Modifier.height(18.dp))
                 Row(Modifier.fillMaxWidth(), horizontalArrangement=Arrangement.spacedBy(9.dp)) {
-                    OutlinedButton(onClick=onBackHome, Modifier.weight(1f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp)) {
-                        Text("خروج", color=TextSecondary, fontWeight=FontWeight.Bold)
+                    OutlinedButton(onClick=onPlayAgain, Modifier.weight(1f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp)) {
+                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(16.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text("دوباره بازی کن", color=TextSecondary, fontWeight=FontWeight.Bold)
                     }
-                    Button(onClick=onPlayAgain, Modifier.weight(1.25f).height(48.dp).testTag("play_again_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=PurplePrimary)) {
-                        Icon(Icons.Default.Replay, null, modifier=Modifier.size(18.dp)); Spacer(Modifier.width(5.dp)); Text("نبرد دوباره", fontWeight=FontWeight.Black)
+                    Button(onClick=onBackHome, Modifier.weight(1.25f).height(48.dp).testTag("back_home_button"), shape=RoundedCornerShape(14.dp), colors=ButtonDefaults.buttonColors(containerColor=GoldPrimary, contentColor=ArenaBackground)) {
+                        Text("ادامه", fontWeight=FontWeight.Black)
                     }
                 }
             }

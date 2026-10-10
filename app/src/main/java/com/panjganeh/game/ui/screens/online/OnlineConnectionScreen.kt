@@ -1,6 +1,7 @@
 package com.panjganeh.game.ui.screens.online
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,7 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Public
@@ -32,10 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.panjganeh.game.R
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.PurplePrimary
@@ -50,10 +54,21 @@ fun OnlineConnectionScreen(
     onNavigateBack: () -> Unit
 ) {
     Box(Modifier.fillMaxSize().background(ArenaBackground)) {
+        Image(
+            painter = painterResource(R.drawable.arena_clash_icon_1789948798958),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+            alpha = 0.20f
+        )
         Box(
             Modifier.fillMaxSize().background(
                 Brush.verticalGradient(
-                    listOf(Color(0xFF0B1930), Color(0xFF07101E), ArenaBackground)
+                    listOf(
+                        Color(0xFF0B1930).copy(alpha = .76f),
+                        Color(0xFF07101E).copy(alpha = .90f),
+                        ArenaBackground.copy(alpha = .98f)
+                    )
                 )
             )
         )
@@ -69,7 +84,7 @@ fun OnlineConnectionScreen(
                         .clickable(onClick = onNavigateBack),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.ArrowBack, "بازگشت", tint = TextPrimary)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = TextPrimary)
                 }
                 Column(Modifier.weight(1f).padding(horizontal = 12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("اتصال آنلاین", color = TextPrimary, fontSize = 21.sp, fontWeight = FontWeight.Black)
@@ -103,15 +118,19 @@ fun OnlineConnectionScreen(
 
             Button(
                 onClick = { },
+                enabled = false,
                 modifier = Modifier.fillMaxWidth().height(54.dp).padding(top = 10.dp),
                 shape = RoundedCornerShape(17.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = WarmYellow)
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = WarmYellow.copy(alpha = 0.24f),
+                    disabledContentColor = TextMuted
+                )
             ) {
-                Icon(Icons.Default.Wifi, null, tint = Color(0xFF241407))
-                Text("جستجوی حریف", color = Color(0xFF241407), fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.padding(start = 7.dp))
+                Icon(Icons.Default.Wifi, null, tint = TextMuted)
+                Text("سرویس آنلاین فعال نیست", color = TextMuted, fontWeight = FontWeight.Black, fontSize = 15.sp, modifier = Modifier.padding(start = 7.dp))
             }
 
-            Text("اتصال آنلاین در این نسخه به زیرساخت سرویس آنلاین بازی وابسته است.", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
+            Text("تا زمان اتصال زیرساخت آنلاین، جستجوی حریف غیرفعال است؛ بازی آفلاین همچنان در دسترس است.", color = TextMuted, fontSize = 9.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 12.dp))
         }
     }
 }

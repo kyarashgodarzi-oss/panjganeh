@@ -22,6 +22,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -45,6 +46,7 @@ class BazaarBillingManager(
         private const val BAZAAR_BILLING_ACTION = "ir.cafebazaar.pardakht.InAppBillingService.BIND"
         private const val BILLING_API_VERSION = 3
         private const val ITEM_TYPE_INAPP = "inapp"
+        private const val TRANSACTION_CONSUME_PURCHASE = IBinder.FIRST_CALL_TRANSACTION + 4
 
         // Response keys
         private const val RESPONSE_CODE = "RESPONSE_CODE"
@@ -64,6 +66,9 @@ class BazaarBillingManager(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var billingService: IBinder? = null
+    private var isBinding = false
+    private var pendingOnConnected: (() -> Unit)? = null
+    private var pendingOnFailed: ((Throwable) -> Unit)? = null
     private val isPurchaseInProgress = AtomicBoolean(false)
 
     private val _purchaseEvents = MutableSharedFlow<PurchaseResult>()
@@ -78,13 +83,29 @@ class BazaarBillingManager(
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            isBinding = false
+            if (service == null) {
+                Log.e(TAG, "Bazaar billing service returned a null binder")
+                billingService = null
+                val failure = pendingOnFailed
+                pendingOnConnected = null
+                pendingOnFailed = null
+                failure?.invoke(Exception("اتصال به سرویس پرداخت کافه‌بازار ناموفق بود"))
+                return
+            }
+
             Log.d(TAG, "Connected to Bazaar billing service")
             billingService = service
+            val callback = pendingOnConnected
+            pendingOnConnected = null
+            pendingOnFailed = null
+            callback?.invoke()
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.w(TAG, "Disconnected from Bazaar billing service")
             billingService = null
+            isBinding = false
         }
     }
 
@@ -93,7 +114,15 @@ class BazaarBillingManager(
             onConnected?.invoke()
             return
         }
+        if (isBinding) {
+            if (onConnected != null) pendingOnConnected = onConnected
+            if (onFailed != null) pendingOnFailed = onFailed
+            return
+        }
 
+        isBinding = true
+        pendingOnConnected = onConnected
+        pendingOnFailed = onFailed
         val serviceIntent = Intent(BAZAAR_BILLING_ACTION).apply {
             setPackage(BAZAAR_PACKAGE)
         }
@@ -102,12 +131,19 @@ class BazaarBillingManager(
             val bound = context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE)
             if (!bound) {
                 Log.e(TAG, "Could not bind to Bazaar billing service")
-                onFailed?.invoke(Exception("کافه بازار نصب نیست یا اتصال برقرار نشد"))
-            } else {
-                onConnected?.invoke()
+                isBinding = false
+                val failure = pendingOnFailed
+                pendingOnConnected = null
+                pendingOnFailed = null
+                failure?.invoke(Exception("کافه بازار نصب نیست یا اتصال برقرار نشد"))
             }
+            // bindService(true) فقط شروع اتصال را تأیید می‌کند؛ callback
+            // واقعی باید پس از onServiceConnected اجرا شود.
         } catch (e: Exception) {
             Log.e(TAG, "Error binding: ${e.message}")
+            isBinding = false
+            pendingOnConnected = null
+            pendingOnFailed = null
             onFailed?.invoke(e)
         }
     }
@@ -179,7 +215,9 @@ class BazaarBillingManager(
                 }
 
                 val request = IntentSenderRequest.Builder(pendingIntent.intentSender).build()
-                activityLauncher.launch(request)
+                withContext(Dispatchers.Main) {
+                    activityLauncher.launch(request)
+                }
             } catch (e: RemoteException) {
                 isPurchaseInProgress.set(false)
                 Log.e(TAG, "RemoteException: ${e.message}")
@@ -237,13 +275,19 @@ class BazaarBillingManager(
                 val json = JSONObject(purchaseData)
                 val productId = json.getString("productId")
                 val purchaseState = json.getInt("purchaseState")
+                val purchaseToken = json.optString("purchaseToken").trim()
 
                 if (purchaseState != 0) {
                     emitError("وضعیت خرید نامعتبر است")
                     return@launch
                 }
+                if (purchaseToken.isBlank()) {
+                    Log.e(TAG, "Verified purchase is missing purchaseToken")
+                    emitError("شناسه معتبر خرید از کافه‌بازار دریافت نشد")
+                    return@launch
+                }
 
-                deliverProduct(productId)
+                deliverProduct(productId, purchaseToken)
             } catch (e: Exception) {
                 Log.e(TAG, "Error parsing purchase: ${e.message}")
                 emitError("خطا در پردازش اطلاعات خرید")
@@ -251,28 +295,70 @@ class BazaarBillingManager(
         }
     }
 
-    private suspend fun deliverProduct(sku: String) {
+    private suspend fun deliverProduct(sku: String, purchaseToken: String) {
         try {
-            val token = "bazaar_" + System.currentTimeMillis()
-            when (sku) {
-                BazaarConfig.SKU_VIP_MONTHLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 30, sku = sku, token = token)
-                    userRepository.addCoins(500)
-                }
-                BazaarConfig.SKU_VIP_YEARLY -> {
-                    userRepository.setVip(isVip = true, durationDays = 365, sku = sku, token = token)
-                    userRepository.addCoins(5000)
-                    userRepository.addTickets(10)
-                }
-                BazaarConfig.SKU_COINS_1000 -> userRepository.addCoins(1000)
-                BazaarConfig.SKU_COINS_5000 -> userRepository.addCoins(5000)
-                BazaarConfig.SKU_TICKETS_10 -> userRepository.addTickets(10)
+            if (sku !in BazaarConfig.ALL_PRODUCTS.map { it.sku }) {
+                Log.e(TAG, "Verified purchase has an unknown product ID: $sku")
+                _purchaseEvents.emit(PurchaseResult.Error("محصول خریداری‌شده در برنامه تعریف نشده است"))
+                return
             }
 
-            _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
+            val delivered = userRepository.deliverPurchaseOnce(sku, purchaseToken)
+
+            // Coins and tickets are consumable products. Consume even when the
+            // token was already delivered so a prior consume failure can recover
+            // without granting the reward twice.
+            if (isConsumable(sku) && !consumePurchase(purchaseToken)) {
+                Log.w(TAG, "Purchase was delivered=$delivered but Bazaar consumption failed for $sku")
+            }
+
+            if (delivered) {
+                _purchaseEvents.emit(PurchaseResult.Success(sku, "خرید با موفقیت انجام شد!"))
+            } else {
+                Log.w(TAG, "Purchase token was already processed; duplicate reward ignored")
+                _purchaseEvents.emit(PurchaseResult.Error("این خرید قبلاً ثبت شده و پاداش آن دوباره تحویل نمی‌شود"))
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error delivering product: ${e.message}")
             _purchaseEvents.emit(PurchaseResult.Error("خطا در تحویل محصول"))
+        }
+    }
+
+    private fun isConsumable(sku: String): Boolean =
+        sku == BazaarConfig.SKU_COINS_1000 ||
+            sku == BazaarConfig.SKU_COINS_5000 ||
+            sku == BazaarConfig.SKU_TICKETS_10
+
+    /**
+     * Consumes a successfully delivered one-time product so it can be purchased again.
+     * VIP products are non-consumable and must never be consumed.
+     */
+    private suspend fun consumePurchase(purchaseToken: String): Boolean {
+        val service = billingService ?: return false
+        return try {
+            val data = android.os.Parcel.obtain()
+            val reply = android.os.Parcel.obtain()
+            try {
+                data.writeInterfaceToken("com.android.vending.billing.IInAppBillingService")
+                data.writeInt(BILLING_API_VERSION)
+                data.writeString(context.packageName)
+                data.writeString(purchaseToken)
+                service.transact(TRANSACTION_CONSUME_PURCHASE, data, reply, 0)
+                reply.readException()
+                val responseCode = reply.readInt()
+                if (responseCode == BILLING_RESPONSE_RESULT_OK) {
+                    true
+                } else {
+                    Log.w(TAG, "Bazaar consumePurchase returned response code $responseCode")
+                    false
+                }
+            } finally {
+                data.recycle()
+                reply.recycle()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to consume purchase token: ${e.message}")
+            false
         }
     }
 
@@ -307,5 +393,8 @@ class BazaarBillingManager(
             Log.w(TAG, "Error unbinding: ${e.message}")
         }
         billingService = null
+        isBinding = false
+        pendingOnConnected = null
+        pendingOnFailed = null
     }
 }

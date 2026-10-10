@@ -1,14 +1,41 @@
 package com.panjganeh.game.ui.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Gamepad
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.panjganeh.game.PanjganehApplication
 import com.panjganeh.game.challenges.dice.DiceBattleScreen
@@ -64,10 +91,37 @@ fun ArenaNavGraph(
     val settings by gameRepo.settings.collectAsStateWithLifecycle(initialValue = null)
     val aiDifficulty = settings?.aiDifficulty ?: "متوسط"
 
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry?.destination?.route
+    val showReferenceBottomBar = currentRoute in setOf(
+        ArenaDestinations.SHOP,
+        ArenaDestinations.REWARDS,
+        ArenaDestinations.LEADERBOARD,
+        ArenaDestinations.PROFILE,
+        ArenaDestinations.SETTINGS,
+        ArenaDestinations.HELP,
+        ArenaDestinations.MODES
+    )
+
+    Scaffold(
+        containerColor = Color(0xFF050A14),
+        bottomBar = {
+            if (showReferenceBottomBar) {
+                ReferenceBottomNavigation(
+                    currentRoute = currentRoute,
+                    onHome = { navController.navigate(ArenaDestinations.HOME) { popUpTo(ArenaDestinations.HOME) { inclusive = false } } },
+                    onProfile = { navController.navigate(ArenaDestinations.PROFILE) },
+                    onLeaderboard = { navController.navigate(ArenaDestinations.LEADERBOARD) },
+                    onGame = { navController.navigate(ArenaDestinations.MODES) },
+                    onShop = { navController.navigate(ArenaDestinations.SHOP) }
+                )
+            }
+        }
+    ) { rootPadding ->
     NavHost(
         navController = navController,
         startDestination = ArenaDestinations.SPLASH,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(bottom = rootPadding.calculateBottomPadding())
     ) {
         composable(ArenaDestinations.SPLASH) {
             SplashScreen(
@@ -101,6 +155,7 @@ fun ArenaNavGraph(
                 onNavigateToLeaderboard = { navController.navigate(ArenaDestinations.LEADERBOARD) },
                 onNavigateToProfile = { navController.navigate(ArenaDestinations.PROFILE) },
                 onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.SHOP) },
                 onNavigateToModes = { navController.navigate(ArenaDestinations.MODES) }
             )
         }
@@ -120,7 +175,7 @@ fun ArenaNavGraph(
                     }
                     navController.navigate(destination)
                 },
-                onNavigateToOnline = { navController.navigate(ArenaDestinations.ONLINE) },
+                onNavigateToOnline = { navController.navigate(ArenaDestinations.SHOP) },
                 onNavigateToRewards = { navController.navigate(ArenaDestinations.REWARDS) },
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -160,7 +215,8 @@ fun ArenaNavGraph(
                 userRepository = userRepo,
                 gameRepository = gameRepo,
                 tapsellManager = tapsellManager,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSettings = { navController.navigate(ArenaDestinations.SETTINGS) }
             )
         }
 
@@ -254,5 +310,48 @@ fun ArenaNavGraph(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+    }
+    }
+}
+
+@Composable
+private fun ReferenceBottomNavigation(
+    currentRoute: String?,
+    onHome: () -> Unit,
+    onProfile: () -> Unit,
+    onLeaderboard: () -> Unit,
+    onGame: () -> Unit,
+    onShop: () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth()
+            .background(Color(0xFF030812))
+            .border(1.dp, Color(0xFF12233B))
+            .padding(horizontal = 3.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ReferenceNavItem("خانه", Icons.Default.Home, currentRoute == ArenaDestinations.HOME, onHome)
+        ReferenceNavItem("فروشگاه", Icons.Default.ShoppingCart, currentRoute == ArenaDestinations.SHOP, onShop)
+        ReferenceNavItem("مسابقه", Icons.Default.SportsEsports, currentRoute == ArenaDestinations.MODES, onGame)
+        ReferenceNavItem("رتبه‌بندی", Icons.Default.EmojiEvents, currentRoute == ArenaDestinations.LEADERBOARD, onLeaderboard)
+        ReferenceNavItem("پروفایل", Icons.Default.Person, currentRoute == ArenaDestinations.PROFILE, onProfile)
+    }
+}
+
+@Composable
+private fun ReferenceNavItem(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        Modifier.clip(RoundedCornerShape(12.dp)).clickable(onClick = onClick).padding(horizontal = 7.dp, vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(icon, contentDescription = label, tint = if (selected) Color(0xFFFFC928) else Color(0xFF8A9AAF), modifier = Modifier.size(21.dp))
+        Text(label, color = if (selected) Color(0xFFFFC928) else Color(0xFF8A9AAF), fontSize = 8.sp, fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
     }
 }

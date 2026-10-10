@@ -1,6 +1,8 @@
 package com.panjganeh.game.ui.screens.leaderboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -52,6 +58,7 @@ import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
 import com.panjganeh.game.ui.theme.TextSecondary
+import com.panjganeh.game.ui.theme.TurquoiseSecondary
 import com.panjganeh.game.ui.theme.VipGold
 
 data class LeaderboardPlayer(
@@ -87,16 +94,16 @@ fun LeaderboardScreen(
         LeaderboardPlayer(8, "سیروس ربات", "تازه وارد", 980, 28)
     ).sortedByDescending { it.trophies }
         .mapIndexed { idx, player -> player.copy(rank = idx + 1) }
+    val currentUserRank = leaderboard.firstOrNull { it.isUser }?.rank ?: 0
+    var selectedFilter by remember { mutableStateOf(0) }
+    // The production model does not yet expose a friends leaderboard.
+    // Keep the reference tab, but don't misrepresent the current user as their own friends list.
+    val visiblePlayers = if (selectedFilter == 1) emptyList() else leaderboard
 
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "جدول برترین‌های پنجگانه",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "رتبه‌بندی", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
@@ -109,40 +116,86 @@ fun LeaderboardScreen(
         ) {
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth().testTag("leaderboard_banner"),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF10233B)),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        width = 1.5.dp,
-                        brush = Brush.horizontalGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF)))
+                        brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF25496B))
                     )
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(GoldPrimary.copy(alpha = 0.2f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(imageVector = Icons.Default.EmojiEvents, contentDescription = null, tint = GoldPrimary, modifier = Modifier.size(28.dp))
-                            }
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(text = "لیگ هفتگی جنگجویان", color = GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(text = "با پیروزی در نبردها جام کسب کنید و رتبه خود را ارتقا دهید", color = TextSecondary, fontSize = 11.sp)
-                            }
+                        Icon(Icons.Default.EmojiEvents, null, tint = GoldPrimary, modifier = Modifier.size(18.dp))
+                        Text(
+                            "نام‌ها، رتبه‌ها، جام‌ها و تعداد پیروزی‌ها نمونه‌اند و از سرور دریافت نمی‌شوند.",
+                            color = TextSecondary,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            item {
+                Row(
+                    Modifier.fillMaxWidth()
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(Color(0xFF071A34))
+                        .border(1.dp, Color(0xFF163B66), RoundedCornerShape(15.dp))
+                        .padding(5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    listOf("هفتگی · نمونه", "دوستان", "کل · نمونه").forEachIndexed { index, label ->
+                        Box(
+                            Modifier.weight(1f)
+                                .clip(RoundedCornerShape(11.dp))
+                                .background(if (index == selectedFilter) Color(0xFF1687FF) else Color.Transparent)
+                                .clickable { selectedFilter = index }
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(label, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
             }
 
-            itemsIndexed(leaderboard) { _, player ->
+            if (visiblePlayers.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+                        border = CardDefaults.outlinedCardBorder().copy(
+                            brush = androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp, horizontal = 18.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(Icons.Default.Person, null, tint = TextMuted, modifier = Modifier.size(28.dp))
+                            Text(
+                                "فهرست دوستان هنوز در دسترس نیست",
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                            Text(
+                                "با فعال شدن قابلیت دوستان، رتبه‌ی آن‌ها اینجا نمایش داده می‌شود.",
+                                color = TextSecondary,
+                                fontSize = 11.sp,
+                                modifier = Modifier.padding(top = 5.dp)
+                            )
+                        }
+                    }
+                }
+            }
+
+            itemsIndexed(visiblePlayers) { _, player ->
                 val isTop3 = player.rank <= 3
                 val rankColor = when (player.rank) {
                     1 -> GoldPrimary
@@ -170,6 +223,16 @@ fun LeaderboardScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                if (player.isUser) Brush.horizontalGradient(
+                                    listOf(GoldPrimary.copy(alpha = 0.16f), ArenaSurface, ArenaSurface)
+                                ) else if (isTop3) Brush.horizontalGradient(
+                                    listOf(rankColor.copy(alpha = 0.09f), ArenaSurface, ArenaSurface)
+                                ) else Brush.horizontalGradient(
+                                    listOf(ArenaSurface.copy(alpha = 0.96f), ArenaSurface)
+                                ),
+                                RoundedCornerShape(16.dp)
+                            )
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween

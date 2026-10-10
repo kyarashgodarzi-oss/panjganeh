@@ -49,6 +49,7 @@ import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
 import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
+import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
 import com.panjganeh.game.ui.theme.SkySecondary
@@ -129,26 +130,26 @@ fun RockPaperScissorsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 38.dp),
+                        .padding(horizontal = 16.dp, vertical = 18.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(180.dp)
+                            .size(58.dp)
                             .clip(CircleShape)
                             .background(GoldPrimary.copy(alpha = 0.18f))
-                            .border(4.dp, GoldPrimary, CircleShape),
+                            .border(2.dp, GoldPrimary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = state.countdownSeconds.coerceAtLeast(0).toString(),
-                            fontSize = 58.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Black,
                             color = GoldPrimary
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(28.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = if (state.isCountingDown) {
@@ -179,23 +180,31 @@ fun RockPaperScissorsScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        listOf(
-                            RpsChoice.ROCK,
-                            RpsChoice.PAPER,
-                            RpsChoice.SCISSORS
-                        ).forEach { choice ->
-                            val isSelected = state.userChoice == choice
-                            RpsReferenceChoice(
-                                choice = choice,
-                                selected = isSelected,
-                                enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
-                                onClick = { viewModel.onUserSelect(choice) },
-                                modifier = Modifier.weight(1f)
-                            )
+                        RpsReferenceChoice(
+                            choice = RpsChoice.PAPER,
+                            selected = state.userChoice == RpsChoice.PAPER,
+                            enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
+                            onClick = { viewModel.onUserSelect(RpsChoice.PAPER) },
+                            modifier = Modifier.fillMaxWidth(0.56f)
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            listOf(RpsChoice.SCISSORS, RpsChoice.ROCK).forEach { choice ->
+                                RpsReferenceChoice(
+                                    choice = choice,
+                                    selected = state.userChoice == choice,
+                                    enabled = !state.isCountingDown && !state.isRevealed && !state.isGameOver,
+                                    onClick = { viewModel.onUserSelect(choice) },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
                         }
                     }
                 }
@@ -231,17 +240,22 @@ private fun RpsReferenceChoice(
         RpsChoice.PAPER -> "✋"
         RpsChoice.SCISSORS -> "✌️"
     }
+    val accent = when (choice) {
+        RpsChoice.ROCK -> SkySecondary
+        RpsChoice.PAPER -> EmeraldTertiary
+        RpsChoice.SCISSORS -> Color(0xFFB46CFF)
+    }
     Box(
         modifier = modifier
-            .height(194.dp)
+            .height(118.dp)
             .clip(RoundedCornerShape(22.dp))
             .background(
-                if (selected) GoldPrimary.copy(alpha = 0.16f)
-                else Color(0xFF070B17).copy(alpha = 0.84f)
+                if (selected) accent.copy(alpha = 0.26f)
+                else accent.copy(alpha = 0.10f)
             )
             .border(
-                if (selected) 2.dp else 1.dp,
-                if (selected) GoldPrimary else ArenaSurfaceBorder,
+                if (selected) 2.dp else 1.2.dp,
+                if (selected) GoldPrimary else accent.copy(alpha = 0.8f),
                 RoundedCornerShape(22.dp)
             )
             .clickable(enabled = enabled, onClick = onClick)
@@ -249,7 +263,7 @@ private fun RpsReferenceChoice(
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(emoji, fontSize = 54.sp)
+            Text(emoji, fontSize = 40.sp)
             Spacer(Modifier.height(10.dp))
             Text(
                 choice.titleFa,

@@ -155,12 +155,12 @@ fun MemoryCardsScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // جدول 4x4 کارت‌های حافظه
+            // چیدمان سه‌ستونه مطابق مرجع؛ هر ۱۶ کارت بازی حفظ می‌شوند
             LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 33.dp)
+                    .padding(horizontal = 24.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(ArenaSurface.copy(alpha = 0.86f))
                     .border(1.dp, ArenaSurfaceBorder.copy(alpha = 0.85f), RoundedCornerShape(24.dp))

@@ -53,6 +53,7 @@ import com.panjganeh.game.ads.TapsellManager
 import com.panjganeh.game.data.local.entity.RewardItemEntity
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -60,6 +61,7 @@ import com.panjganeh.game.ui.theme.ArenaSurfaceBorder
 import com.panjganeh.game.ui.theme.EmeraldTertiary
 import com.panjganeh.game.ui.theme.GoldLight
 import com.panjganeh.game.ui.theme.GoldPrimary
+import com.panjganeh.game.ui.theme.VipGold
 import com.panjganeh.game.ui.theme.SkySecondary
 import com.panjganeh.game.ui.theme.TextMuted
 import com.panjganeh.game.ui.theme.TextPrimary
@@ -85,12 +87,7 @@ fun DailyRewardsScreen(
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "جوایز ورود روزانه",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "جوایز ورود روزانه", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         Column(
@@ -101,6 +98,7 @@ fun DailyRewardsScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(10.dp))
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp),
@@ -220,7 +218,22 @@ fun RewardCard(
         )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(14.dp),
+            modifier = Modifier.fillMaxWidth()
+                .background(
+                    when {
+                        isLocked -> Brush.horizontalGradient(
+                            listOf(ArenaSurface.copy(alpha = 0.25f), ArenaSurface)
+                        )
+                        isDay7 -> Brush.horizontalGradient(
+                            listOf(GoldPrimary.copy(alpha = 0.16f), ArenaSurface, VipGold.copy(alpha = 0.08f))
+                        )
+                        else -> Brush.horizontalGradient(
+                            listOf(iconColor.copy(alpha = 0.09f), ArenaSurface)
+                        )
+                    },
+                    RoundedCornerShape(18.dp)
+                )
+                .padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
