@@ -104,8 +104,16 @@ jobs:
           path: app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
 
+      - name: Upload Cafe Bazaar BIN
+        uses: actions/upload-artifact@v4
+        with:
+          name: panjganeh-release-bin
+          path: app/build/outputs/bin/release/*.bin
+          if-no-files-found: error
+
       - name: Cleanup Sensitive Files
         if: always()
         run: |
           rm -f release-keystore.jks
           rm -f local.properties
+          rm -f bundlesigner-0.1.13.jar
