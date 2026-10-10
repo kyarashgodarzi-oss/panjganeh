@@ -29,6 +29,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
@@ -73,6 +75,8 @@ import com.panjganeh.game.data.local.entity.GameSettingsEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
+import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.AvailableThemes
 import com.panjganeh.game.ui.theme.CreatorCardBorderGradient
 import com.panjganeh.game.ui.theme.LocalAppLanguage
@@ -89,7 +93,8 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToHelp: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -108,12 +113,10 @@ fun SettingsScreen(
     val currentRoomSettings = roomSettings ?: GameSettingsEntity()
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = if (currentLang == "en") "Settings" else "تنظیمات پیشرفته",
+            ReferenceSimpleTopBar(
+                title = if (currentLang == "en") "Settings" else "تنظیمات",
                 onBackClick = onNavigateBack
             )
         }
@@ -121,6 +124,7 @@ fun SettingsScreen(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -602,7 +606,7 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = if (currentLang == "en") "Panjganeh — Version 1.0.0" else "پنجگانه — نسخه ۱.۰.۰",
+                                    text = if (currentLang == "en") "Panjganeh — Version 1.1.0" else "پنجگانه — نسخه ۱.۱.۰",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = (14 * fontScale).sp
@@ -696,6 +700,40 @@ fun SettingsScreen(
                                 )
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onNavigateToHelp)
+                        .testTag("help_entry_card"),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, TurquoiseSecondary.copy(alpha = .45f))
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.HelpOutline, null, tint = TurquoiseSecondary, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = if (currentLang == "en") "Help & Tutorials" else "راهنما و آموزش بازی",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = (13 * fontScale).sp
+                            )
+                            Text(
+                                text = if (currentLang == "en") "Learn the five Arena challenges" else "قوانین و آموزش پنج چالش",
+                                color = Color(0xFF94A3B8),
+                                fontSize = (10 * fontScale).sp
+                            )
+                        }
+                        Icon(Icons.Default.ChevronLeft, null, tint = TurquoiseSecondary, modifier = Modifier.size(18.dp))
                     }
                 }
             }
