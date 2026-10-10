@@ -48,7 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
+import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -100,7 +102,9 @@ fun SentenceBuilderScreen(
     Scaffold(
         containerColor = ArenaBackground
     ) { paddingValues ->
-        Column(
+        Box(Modifier.fillMaxSize()) {
+            BattleArenaBackground(challenge = "ساخت جملات", modifier = Modifier.fillMaxSize())
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -116,7 +120,12 @@ fun SentenceBuilderScreen(
                 onExitClick = onNavigateBack
             )
 
-            // اطلاعات پیشرفت
+            BattleRoundStars(
+                userScore = state.userScore,
+                aiScore = state.aiScore
+            )
+
+                        // اطلاعات پیشرفت
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,8 +159,8 @@ fun SentenceBuilderScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(20.dp),
+                    .padding(horizontal = 33.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = when (state.checkStatus) {
                         true -> EmeraldTertiary.copy(alpha = 0.1f)
@@ -191,54 +200,45 @@ fun SentenceBuilderScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    if (state.constructedWords.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "برای افزودن کلمات به این بخش، روی کاشی‌های پایین ضربه بزنید",
-                                color = TextMuted.copy(alpha = 0.6f),
-                                fontSize = 12.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    } else {
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                            verticalArrangement = Arrangement.spacedBy(6.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            state.constructedWords.forEach { tile ->
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(GoldPrimary.copy(alpha = 0.25f))
-                                        .border(1.dp, GoldPrimary, RoundedCornerShape(10.dp))
-                                        .clickable { viewModel.onRemoveConstructed(tile) }
-                                        .padding(horizontal = 10.dp, vertical = 6.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = tile.text,
-                                            color = TextPrimary,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 14.sp
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = null,
-                                            tint = TextMuted,
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                    }
-                                }
+                    val slotCount = maxOf(6, state.constructedWords.size)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        repeat(slotCount) { index ->
+                            val tile = state.constructedWords.getOrNull(index)
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp)
+                                    .clip(RoundedCornerShape(9.dp))
+                                    .background(if (tile == null) Color(0xFF071A34) else Color(0xFF261A4C))
+                                    .border(1.dp, if (tile == null) SkySecondary.copy(alpha = .7f) else Color(0xFFB69BFF), RoundedCornerShape(9.dp))
+                                    .clickable(enabled = tile != null) { tile?.let(viewModel::onRemoveConstructed) },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = tile?.text.orEmpty(),
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 10.sp,
+                                    maxLines = 1,
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                     }
+
+                    Text(
+                        text = state.feedbackMessage.ifBlank { "کلمات را به ترتیب در خانه‌های بالا قرار دهید" },
+                        color = when (state.checkStatus) {
+                            true -> EmeraldTertiary
+                            false -> ArenaError
+                            else -> TextMuted
+                        },
+                        fontSize = 11.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
 
                     Spacer(modifier = Modifier.height(10.dp))
 
@@ -290,10 +290,10 @@ fun SentenceBuilderScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(if (isUsed) ArenaBackground else SkySecondary.copy(alpha = 0.15f))
+                                .background(if (isUsed) ArenaBackground else Color(0xFF8B5CF6))
                                 .border(
                                     1.dp,
-                                    if (isUsed) ArenaSurfaceBorder.copy(alpha = 0.4f) else SkySecondary,
+                                    if (isUsed) ArenaSurfaceBorder.copy(alpha = 0.4f) else Color(0xFFB69BFF),
                                     RoundedCornerShape(12.dp)
                                 )
                                 .clickable(enabled = !isUsed) {
@@ -305,7 +305,7 @@ fun SentenceBuilderScreen(
                         ) {
                             Text(
                                 text = tile.text,
-                                color = if (isUsed) TextMuted.copy(alpha = 0.4f) else TextPrimary,
+                                color = if (isUsed) TextMuted.copy(alpha = 0.4f) else Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
@@ -337,6 +337,8 @@ fun SentenceBuilderScreen(
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(text = "بررسی و ثبت جمله (+۲۰ امتیاز)", fontWeight = FontWeight.ExtraBold)
             }
+        }
+
         }
 
         if (showResultDialog && state.isGameOver) {
