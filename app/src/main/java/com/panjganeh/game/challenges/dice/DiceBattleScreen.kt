@@ -51,7 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
+import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaSurface
@@ -121,7 +123,9 @@ fun DiceBattleScreen(
     Scaffold(
         containerColor = ArenaBackground
     ) { paddingValues ->
-        Column(
+        Box(Modifier.fillMaxSize()) {
+            BattleArenaBackground(challenge = "نبرد تاس", modifier = Modifier.fillMaxSize())
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -138,44 +142,10 @@ fun DiceBattleScreen(
                 onExitClick = onNavigateBack
             )
 
-            // نشانگر تعداد بردهای دست
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.userRoundWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) GoldPrimary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-
-                Text(
-                    text = "اولین به ۳ برد برنده نهایی است",
-                    color = TextMuted,
-                    fontSize = 12.sp
-                )
-
-                Row {
-                    for (i in 1..3) {
-                        val isWon = state.aiRoundWins >= i
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = null,
-                            tint = if (isWon) SkySecondary else ArenaSurfaceBorder,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            }
+            BattleRoundStars(
+                userScore = state.userRoundWins,
+                aiScore = state.aiRoundWins
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -183,7 +153,7 @@ fun DiceBattleScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 33.dp),
                 shape = RoundedCornerShape(24.dp),
                 colors = CardDefaults.cardColors(containerColor = ArenaSurface),
                 border = CardDefaults.outlinedCardBorder().copy(
@@ -193,54 +163,41 @@ fun DiceBattleScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(24.dp),
+                         .padding(horizontal = 18.dp, vertical = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // تاس کاربر
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "تاس شما", color = GoldLight, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            DiceVisual(
-                                value = state.userDiceValue,
-                                color = GoldPrimary,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        if (state.isRolling) {
-                                            rotationZ = diceRotation
-                                            scaleX = diceScale
-                                            scaleY = diceScale
-                                        }
-                                    }
-                            )
+                    Text(
+                        text = "تاس میدان",
+                        color = GoldLight,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 13.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    DiceVisual(
+                        value = state.userDiceValue,
+                        color = GoldPrimary,
+                        modifier = Modifier.graphicsLayer {
+                            if (state.isRolling) {
+                                rotationZ = diceRotation
+                                scaleX = diceScale
+                                scaleY = diceScale
+                            }
                         }
-
-                        Text(
-                            text = "VS",
-                            color = TextMuted,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 20.sp
-                        )
-
-                        // تاس AI
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(text = "تاس حریف", color = SkySecondary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(12.dp))
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(13.dp))
+                            .background(Color(0xB8071326))
+                            .border(1.dp, ArenaSurfaceBorder, RoundedCornerShape(13.dp))
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(7.dp)
+                    ) {
+                        repeat(5) { index ->
                             DiceVisual(
-                                value = state.aiDiceValue,
-                                color = SkySecondary,
-                                modifier = Modifier
-                                    .graphicsLayer {
-                                        if (state.isRolling) {
-                                            rotationZ = -diceRotation
-                                            scaleX = diceScale
-                                            scaleY = diceScale
-                                        }
-                                    }
+                                value = if (index == 4) state.aiDiceValue else state.userDiceValue,
+                                color = if (index == 4) SkySecondary else GoldPrimary,
+                                compact = true
                             )
                         }
                     }
@@ -293,6 +250,8 @@ fun DiceBattleScreen(
             }
         }
 
+        }
+
         if (showResultDialog && state.isGameOver) {
             BattleResultDialog(
                 isWin = state.isWin,
@@ -313,28 +272,30 @@ fun DiceBattleScreen(
 fun DiceVisual(
     value: Int,
     color: Color,
-    modifier: Modifier = Modifier
-) {
+    modifier: Modifier = Modifier,
+    compact: Boolean = false
+ ) {
+    val pipSize = if (compact) 5.dp else 18.dp
     Box(
         modifier = modifier
-            .size(90.dp)
+            .size(if (compact) 30.dp else 124.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(ArenaBackground)
             .border(2.5.dp, color, RoundedCornerShape(18.dp))
-            .padding(12.dp),
+            .padding(if (compact) 4.dp else 18.dp),
         contentAlignment = Alignment.Center
     ) {
         when (value) {
-            1 -> Box(modifier = Modifier.size(16.dp).clip(CircleShape).background(color))
+            1 -> Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
             2 -> Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             3 -> Column(
@@ -342,13 +303,13 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             4 -> Column(
@@ -356,12 +317,12 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(11.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             5 -> Column(
@@ -369,15 +330,15 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(10.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
             else -> Column(
@@ -385,16 +346,16 @@ fun DiceVisual(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
-                    Box(modifier = Modifier.size(9.dp).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
+                    Box(modifier = Modifier.size(pipSize).clip(CircleShape).background(color))
                 }
             }
         }
