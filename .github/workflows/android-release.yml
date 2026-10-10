@@ -1,9 +1,11 @@
 name: Android Release Build & CI
+# Premium redesign validation
 
 on:
   push:
     branches:
       - "main"
+      - "redesign/**"
   workflow_dispatch:
 
 jobs:
