@@ -43,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.panjganeh.game.ads.TapsellManager
+import com.panjganeh.game.ui.components.BattleArenaBackground
 import com.panjganeh.game.ui.components.BattleHeader
+import com.panjganeh.game.ui.components.BattleRoundStars
 import com.panjganeh.game.ui.components.BattleResultDialog
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaCardBack
@@ -92,7 +94,9 @@ fun MemoryCardsScreen(
     Scaffold(
         containerColor = ArenaBackground
     ) { paddingValues ->
-        Column(
+        Box(Modifier.fillMaxSize()) {
+            BattleArenaBackground(challenge = "حافظه کارت‌ها", modifier = Modifier.fillMaxSize())
+            Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
@@ -108,7 +112,12 @@ fun MemoryCardsScreen(
                 onExitClick = onNavigateBack
             )
 
-            // راهنمای وضعیت
+            BattleRoundStars(
+                userScore = state.userScore,
+                aiScore = state.aiScore
+            )
+
+                        // راهنمای وضعیت
             if (state.isInitialPreview) {
                 Box(
                     modifier = Modifier
@@ -146,12 +155,16 @@ fun MemoryCardsScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // جدول 4x4 کارت‌های حافظه
+            // چیدمان سه‌ستونه مطابق مرجع؛ هر ۱۶ کارت بازی حفظ می‌شوند
             LazyVerticalGrid(
-                columns = GridCells.Fixed(4),
+                columns = GridCells.Fixed(3),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 24.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(ArenaSurface.copy(alpha = 0.86f))
+                    .border(1.dp, ArenaSurfaceBorder.copy(alpha = 0.85f), RoundedCornerShape(24.dp))
+                    .padding(16.dp)
                     .testTag("memory_cards_grid"),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -163,6 +176,8 @@ fun MemoryCardsScreen(
                     )
                 }
             }
+        }
+
         }
 
         if (showResultDialog && state.isGameOver) {

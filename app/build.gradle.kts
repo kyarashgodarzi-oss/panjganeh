@@ -13,8 +13,8 @@ android {
     applicationId = "com.panjganeh.game"
     minSdk = 24
     targetSdk = 36
-    versionCode = 2
-    versionName = "1.1.0"
+    versionCode = 3
+    versionName = "2.0.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -39,7 +39,6 @@ android {
         keyPassword = keyPasswordEnv
       }
     }
-
     getByName("debug") {
       if (file("${rootDir}/debug.keystore").exists()) {
         storeFile = file("${rootDir}/debug.keystore")
@@ -55,38 +54,27 @@ android {
       isCrunchPngs = true
       isMinifyEnabled = true
       isShrinkResources = true
-
       proguardFiles(
           getDefaultProguardFile("proguard-android-optimize.txt"),
           "proguard-rules.pro"
       )
-
       signingConfigs.findByName("release")?.let {
         signingConfig = it
       }
     }
-
     debug {
       signingConfig = signingConfigs.getByName("debug")
     }
   }
-
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-
   buildFeatures {
     compose = true
     buildConfig = true
   }
-
-  testOptions {
-    unitTests {
-      isIncludeAndroidResources = true
-    }
-  }
-
+  testOptions { unitTests { isIncludeAndroidResources = true } }
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true

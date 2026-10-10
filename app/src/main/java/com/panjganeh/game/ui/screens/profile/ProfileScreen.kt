@@ -2,6 +2,7 @@ package com.panjganeh.game.ui.screens.profile
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,14 +16,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Button
@@ -60,6 +68,7 @@ import com.panjganeh.game.data.local.entity.MatchHistoryEntity
 import com.panjganeh.game.data.repository.GameRepository
 import com.panjganeh.game.data.repository.UserRepository
 import com.panjganeh.game.ui.components.ArenaTopBar
+import com.panjganeh.game.ui.components.ReferenceSimpleTopBar
 import com.panjganeh.game.ui.components.TapsellBanner
 import com.panjganeh.game.ui.theme.ArenaBackground
 import com.panjganeh.game.ui.theme.ArenaError
@@ -81,10 +90,12 @@ fun ProfileScreen(
     userRepository: UserRepository,
     gameRepository: GameRepository,
     tapsellManager: TapsellManager,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
     val user by userRepository.userProfile.collectAsStateWithLifecycle(initialValue = null)
     val vip by userRepository.vipState.collectAsStateWithLifecycle(initialValue = null)
@@ -100,19 +111,16 @@ fun ProfileScreen(
     val xpProgress = (user?.xp ?: 0).toFloat() / nextLevelXp.toFloat()
 
     Scaffold(
-        containerColor = ArenaBackground,
+        containerColor = Color.Transparent,
         topBar = {
-            ArenaTopBar(
-                user = user,
-                vip = vip,
-                title = "مشخصات و آمار نبردها",
-                onBackClick = onNavigateBack
-            )
+            ReferenceSimpleTopBar(title = "پروفایل", onBackClick = onNavigateBack)
         }
     ) { paddingValues ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
+                .background(Brush.verticalGradient(listOf(ArenaBackground, Color(0xFF0B1024))))
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -122,21 +130,27 @@ fun ProfileScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth().testTag("profile_main_card"),
                     shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(containerColor = ArenaSurface),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                     border = CardDefaults.outlinedCardBorder().copy(
-                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldDark))
-                        else androidx.compose.ui.graphics.SolidColor(ArenaSurfaceBorder)
+                        width = 1.5.dp,
+                        brush = if (isVip) Brush.horizontalGradient(listOf(VipGold, GoldPrimary))
+                        else Brush.horizontalGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF)))
                     )
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(20.dp),
+                        modifier = Modifier.fillMaxWidth()
+                            .background(
+                                Brush.verticalGradient(listOf(Color(0xFF1B1740), ArenaSurface)),
+                                RoundedCornerShape(24.dp)
+                            )
+                            .padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Box(
                             modifier = Modifier
                                 .size(74.dp)
                                 .clip(CircleShape)
-                                .background(Brush.linearGradient(listOf(GoldPrimary, GoldDark)))
+                                .background(Brush.linearGradient(listOf(Color(0xFF7C5CFF), Color(0xFF2DD4BF))))
                                 .border(2.5.dp, if (isVip) VipGold else GoldLight, CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
@@ -202,10 +216,61 @@ fun ProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    StatBox(modifier = Modifier.weight(1f), title = "کل بازی‌ها", value = "$totalMatches", color = TextPrimary)
-                    StatBox(modifier = Modifier.weight(1f), title = "پیروزی‌ها", value = "${user?.wins ?: 0}", color = EmeraldTertiary)
-                    StatBox(modifier = Modifier.weight(1f), title = "شکست‌ها", value = "${user?.losses ?: 0}", color = ArenaError)
-                    StatBox(modifier = Modifier.weight(1f), title = "نرخ برد", value = "$winRate%", color = GoldPrimary)
+                    StatBox(modifier = Modifier.weight(1f), title = "امتیاز کل", value = "${user?.xp ?: 0}", color = SkySecondary)
+                    StatBox(modifier = Modifier.weight(1f), title = "باخت‌ها", value = "${user?.losses ?: 0}", color = GoldPrimary)
+                    StatBox(modifier = Modifier.weight(1f), title = "بردها", value = "${user?.wins ?: 0}", color = EmeraldTertiary)
+                }
+            }
+
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("profile_achievements"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary.copy(alpha = .55f), GoldPrimary.copy(alpha = .45f)))
+                    )
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 15.dp)) {
+                        Text("مدال‌ها", color = GoldPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Row(
+                            Modifier.fillMaxWidth().padding(top = 14.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AchievementBadge(Icons.Default.Shield, "برنز", Color(0xFF2DD4BF))
+                            AchievementBadge(Icons.Default.Star, "طلا", GoldPrimary)
+                            AchievementBadge(Icons.Default.EmojiEvents, "نقره", Color(0xFFCBD5E1))
+                            AchievementBadge(Icons.Default.MilitaryTech, "برتر", Color(0xFFEF8D32))
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    Modifier.fillMaxWidth().testTag("profile_actions"),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF071B35)),
+                    border = CardDefaults.outlinedCardBorder().copy(
+                        width = 1.dp,
+                        brush = Brush.horizontalGradient(listOf(SkySecondary.copy(alpha = .45f), Color(0xFF173C68)))
+                    )
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        ProfileActionRow(Icons.Default.Person, "آواتار", SkySecondary) {
+                            Toast.makeText(context, user?.username ?: "پروفایل", Toast.LENGTH_SHORT).show()
+                        }
+                        ProfileActionRow(Icons.Default.Edit, "تغییر نام", Color(0xFF2DD4BF)) {
+                            newNameText = user?.username ?: ""
+                            showEditNameDialog = true
+                        }
+                        ProfileActionRow(Icons.Default.EmojiEvents, "آمار بازی", GoldPrimary) {
+                            scope.launch { listState.animateScrollToItem(4) }
+                        }
+                        ProfileActionRow(Icons.Default.Settings, "تنظیمات حساب", SkySecondary, onNavigateToSettings)
+                    }
                 }
             }
 
@@ -301,6 +366,43 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ProfileActionRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    tint: Color,
+    onClick: () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(20.dp))
+        Text(label, color = TextPrimary, fontSize = 13.sp, modifier = Modifier.weight(1f).padding(horizontal = 10.dp))
+        Icon(Icons.Default.ChevronLeft, contentDescription = null, tint = TextSecondary, modifier = Modifier.size(19.dp))
+    }
+}
+
+@Composable
+private fun AchievementBadge(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    tint: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier.size(44.dp).clip(CircleShape)
+                .background(tint.copy(alpha = .12f))
+                .border(1.5.dp, tint.copy(alpha = .85f), CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = label, tint = tint, modifier = Modifier.size(24.dp))
+        }
+        Text(label, color = TextSecondary, fontSize = 9.sp, modifier = Modifier.padding(top = 6.dp))
     }
 }
 

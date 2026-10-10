@@ -39,9 +39,6 @@ import com.panjganeh.game.data.local.entity.UserProfileEntity
 import com.panjganeh.game.data.local.entity.VipStateEntity
 import com.panjganeh.game.ui.theme.LocalFontScale
 import com.panjganeh.game.ui.theme.LocalPanjganehTheme
-import com.panjganeh.game.ui.theme.PinkTertiary
-import com.panjganeh.game.ui.theme.PurplePrimary
-import com.panjganeh.game.ui.theme.TurquoiseSecondary
 import com.panjganeh.game.ui.theme.VipCrownGradient
 import com.panjganeh.game.ui.theme.VipGold
 import com.panjganeh.game.ui.theme.WarmYellow
@@ -56,170 +53,116 @@ fun ArenaTopBar(
     onTicketsClick: () -> Unit = {},
     onProfileClick: () -> Unit = {}
 ) {
-    val fontScale = LocalFontScale.current
-    val currentTheme = LocalPanjganehTheme.current
+    val scale = LocalFontScale.current
+    val theme = LocalPanjganehTheme.current
     val isVip = vip?.isVip == true && (vip.expireTimestamp == 0L || vip.expireTimestamp > System.currentTimeMillis())
+    val shape = RoundedCornerShape(18.dp)
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .background(
+                Brush.horizontalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.surface,
+                        theme.primary.copy(alpha = 0.10f),
+                        MaterialTheme.colorScheme.surface
+                    )
+                ),
+                shape
+            )
+            .border(
+                1.dp,
+                Brush.horizontalGradient(
+                    listOf(
+                        theme.primary.copy(alpha = 0.28f),
+                        theme.secondary.copy(alpha = 0.20f),
+                        WarmYellow.copy(alpha = 0.20f)
+                    )
+                ),
+                shape
+            )
+            .padding(horizontal = 10.dp, vertical = 7.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (onBackClick != null) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    onClick = onBackClick,
-                    modifier = Modifier.size(38.dp).testTag("topbar_back_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "بازگشت",
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
+                IconButton(onClick = onBackClick, modifier = Modifier.size(36.dp).testTag("topbar_back_button")) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "بازگشت", tint = MaterialTheme.colorScheme.onSurface)
                 }
                 if (title != null) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = title,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = (18 * fontScale).sp
-                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(title, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (16 * scale).sp)
                 }
             }
         } else {
-            // بخش اطلاعات قهرمان در صفحه اصلی
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
-                    .clickable { onProfileClick() }
-                    .padding(4.dp)
-                    .testTag("topbar_profile_section")
+                modifier = Modifier.clip(shape).clickable(onClick = onProfileClick).padding(4.dp).testTag("topbar_profile_section"),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isVip) VipCrownGradient
-                            else Brush.linearGradient(listOf(currentTheme.primary, currentTheme.secondary))
-                        )
-                        .border(
-                            2.dp,
-                            if (isVip) VipGold else currentTheme.primary,
-                            CircleShape
-                        ),
+                    modifier = Modifier.size(42.dp).clip(CircleShape)
+                        .background(if (isVip) VipCrownGradient else Brush.linearGradient(listOf(theme.primary, theme.secondary)))
+                        .border(2.dp, if (isVip) VipGold else theme.primary, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(Icons.Default.Person, null, tint = Color.White, modifier = Modifier.size(23.dp))
                 }
-                Spacer(modifier = Modifier.width(10.dp))
+                Spacer(Modifier.width(9.dp))
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = user?.username ?: "قهرمان پنجگانه",
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = (14 * fontScale).sp
-                        )
+                        Text(user?.username ?: "قهرمان پنجگانه", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.ExtraBold, fontSize = (12 * scale).sp)
                         if (isVip) {
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.WorkspacePremium,
-                                contentDescription = "VIP",
-                                tint = VipGold,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Icons.Default.WorkspacePremium, "VIP", tint = VipGold, modifier = Modifier.size(15.dp))
                         }
                     }
-                    Text(
-                        text = "سطح ${user?.level ?: 1} (${user?.title ?: "تازه وارد"})",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontSize = (11 * fontScale).sp
-                    )
+                    Text("سطح " + (user?.level ?: 1) + " • " + (user?.title ?: "تازه‌وارد"), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = (10 * scale).sp)
                 }
             }
         }
 
-        // بخش نمایش سکه‌ها و بلیط‌ها با استایل گلس‌مورفیک
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // شمارنده سکه
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.background)
-                    .border(1.dp, WarmYellow.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
-                    .clickable { onCoinsClick() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .testTag("coins_counter")
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MonetizationOn,
-                    contentDescription = "سکه",
-                    tint = WarmYellow,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${user?.coins ?: 0}",
-                    color = WarmYellow,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = (12 * fontScale).sp
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = WarmYellow,
-                    modifier = Modifier.size(12.dp)
-                )
-            }
-
-            // شمارنده بلیط
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.background)
-                    .border(1.dp, TurquoiseSecondary.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
-                    .clickable { onTicketsClick() }
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                    .testTag("tickets_counter")
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ConfirmationNumber,
-                    contentDescription = "بلیط",
-                    tint = TurquoiseSecondary,
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "${user?.tickets ?: 0}",
-                    color = TurquoiseSecondary,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = (12 * fontScale).sp
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = TurquoiseSecondary,
-                    modifier = Modifier.size(12.dp)
-                )
-            }
+        Row(horizontalArrangement = Arrangement.spacedBy(7.dp), verticalAlignment = Alignment.CenterVertically) {
+            ResourceChip(
+                icon = { Icon(Icons.Default.MonetizationOn, null, tint = WarmYellow, modifier = Modifier.size(15.dp)) },
+                value = (user?.coins ?: 0).toString(),
+                tint = WarmYellow,
+                onClick = onCoinsClick,
+                tag = "coins_counter"
+            )
+            ResourceChip(
+                icon = { Icon(Icons.Default.ConfirmationNumber, null, tint = theme.secondary, modifier = Modifier.size(15.dp)) },
+                value = (user?.tickets ?: 0).toString(),
+                tint = theme.secondary,
+                onClick = onTicketsClick,
+                tag = "tickets_counter"
+            )
         }
+    }
+}
+
+@Composable
+private fun ResourceChip(
+    icon: @Composable () -> Unit,
+    value: String,
+    tint: Color,
+    onClick: () -> Unit,
+    tag: String
+) {
+    Row(
+        modifier = Modifier.clip(RoundedCornerShape(14.dp))
+            .background(tint.copy(alpha = 0.10f))
+            .border(1.dp, tint.copy(alpha = 0.32f), RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .testTag(tag),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        icon()
+        Spacer(Modifier.width(4.dp))
+        Text(value, color = tint, fontWeight = FontWeight.ExtraBold, fontSize = 11.sp)
+        Spacer(Modifier.width(2.dp))
+        Icon(Icons.Default.Add, null, tint = tint, modifier = Modifier.size(11.dp))
     }
 }

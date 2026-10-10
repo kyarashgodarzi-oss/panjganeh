@@ -84,3 +84,13 @@ data class GameSettingsEntity(
     val musicEnabled: Boolean = true,
     val language: String = "fa"
 )
+
+/**
+ * خریدهای تأییدشده‌ای که پاداش آن‌ها یک‌بار تحویل شده است.
+ */
+@Entity(tableName = "processed_purchases")
+data class ProcessedPurchaseEntity(
+    @PrimaryKey val purchaseToken: String,
+    val sku: String,
+    val processedAt: Long = System.currentTimeMillis()
+)
